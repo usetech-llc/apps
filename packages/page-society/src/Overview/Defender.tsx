@@ -12,7 +12,7 @@ import { useApi, useCall } from '@polkadot/react-hooks';
 
 import { useTranslation } from '../translate';
 import DefenderVoting from './DefenderVoting';
-import VoteDisplay from './VoteDisplay';
+import Votes from './Votes';
 
 interface Props extends OwnMembers {
   className?: string;
@@ -34,26 +34,26 @@ function Defender ({ className, info, isMember, ownMembers }: Props): React.Reac
   }
 
   return (
-    <Table className={className}>
-      <Table.Head>
-        <th className='start'><h1>{t('defender')}</h1></th>
-        <th className='start'>{t('votes')}</th>
-        <th>&nbsp;</th>
-      </Table.Head>
-      <Table.Body>
-        <tr>
-          <td className='address all'>
-            <AddressSmall value={info.defender} />
-          </td>
-          <VoteDisplay votes={votes} />
-          <td className='button'>
-            <DefenderVoting
-              isMember={isMember}
-              ownMembers={ownMembers}
-            />
-          </td>
-        </tr>
-      </Table.Body>
+    <Table
+      className={className}
+      header={[
+        [t('defender'), 'start'],
+        [t('votes'), 'start'],
+        []
+      ]}
+    >
+      <tr>
+        <td className='address all'>
+          <AddressSmall value={info.defender} />
+        </td>
+        <Votes votes={votes} />
+        <td className='button'>
+          <DefenderVoting
+            isMember={isMember}
+            ownMembers={ownMembers}
+          />
+        </td>
+      </tr>
     </Table>
   );
 }

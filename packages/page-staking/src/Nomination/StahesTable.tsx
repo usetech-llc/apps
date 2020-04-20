@@ -6,6 +6,7 @@ import { useTranslation } from '@polkadot/app-staking/translate';
 import { ActiveEraInfo, EraIndex } from '@polkadot/types/interfaces';
 import { Option } from '@polkadot/types';
 import { DeriveStakingOverview, DeriveStakerReward } from '@polkadot/api-derive/types';
+import Account from "@polkadot/app-staking/Actions/Account";
 
 interface Props {
   allRewards?: Record<string, DeriveStakerReward[]>;
@@ -18,9 +19,11 @@ interface Props {
   ownStashes?: [string, boolean][];
   onUpdateControllerState: (controllerAlreadyBonded: boolean) => void;
   onUpdateNominatedState: (controllerAlreadyBonded: boolean) => void;
+  isInElection?: boolean;
+  validators?: string[];
 }
 
-function StashesTable({ className, allStashes, isVisible, next, allRewards, stakingOverview, controllerAccountId, ownStashes, onUpdateControllerState, onUpdateNominatedState }: Props): React.ReactElement<Props> {
+function StashesTable({ className, allStashes, isInElection, validators, isVisible, next, allRewards, stakingOverview, controllerAccountId, ownStashes, onUpdateControllerState, onUpdateNominatedState }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const { t } = useTranslation();
   const [foundStashes, setFoundStashes] = useState<[string, boolean][] | null>(null);
@@ -54,33 +57,49 @@ function StashesTable({ className, allStashes, isVisible, next, allRewards, stak
   }, [ownStashes, stashTypes]);
 
   return (
-    <Table className={className}>
-      <Table.Head>
-        <th className='start'><h1>{t('your accounts')}</h1></th>
-        <th className='address'>{t('controller')}</th>
-        <th className='number'>{t('rewards')}</th>
-        <th className='number'>{t('bonded')}</th>
-        <th colSpan={2}>&nbsp;</th>
-      </Table.Head>
-      <Table.Body empty={t('No funds staked yet. Bond funds to validate or nominate a validator.')}>
-        {foundStashes?.map(([stashId, isOwnStash]: Array<any>): React.ReactNode => (
-          <NominatedAccount
-            selectedControllerId={controllerAccountId}
-            activeEra={activeEra}
-            allStashes={allStashes}
-            isOwnStash={isOwnStash}
-            isVisible={isVisible}
-            key={stashId}
-            next={next}
-            onUpdateType={_onUpdateType}
-            onUpdateControllerState={onUpdateControllerState}
-            onUpdateNominatedState={onUpdateNominatedState}
-            rewards={allRewards && allRewards[stashId]}
-            stakingOverview={stakingOverview}
-            stashId={stashId}
-          />
-        ))}
-      </Table.Body>
+    <Table
+      empty={t('No funds staked yet. Bond funds to validate or nominate a validator')}
+      header={[
+        [t('stashes'), 'start'],
+        [t('controller'), 'address'],
+        [t('rewards'), 'number'],
+        [t('bonded'), 'number'],
+        [undefined, undefined, 2]
+      ]}
+    >
+      {/*<Table.Body empty={t('No funds staked yet. Bond funds to validate or nominate a validator.')}>
+
+      </Table.Body>*/}
+      {/*{foundStashes?.map(([stashId, isOwnStash]: Array<any>): React.ReactNode => (
+        <NominatedAccount
+          selectedControllerId={controllerAccountId}
+          activeEra={activeEra}
+          allStashes={allStashes}
+          isOwnStash={isOwnStash}
+          isVisible={isVisible}
+          key={stashId}
+          next={next}
+          onUpdateType={_onUpdateType}
+          onUpdateControllerState={onUpdateControllerState}
+          onUpdateNominatedState={onUpdateNominatedState}
+          rewards={allRewards && allRewards[stashId]}
+          stakingOverview={stakingOverview}
+          stashId={stashId}
+        />
+      ))}*/}
+      {foundStashes?.map(([stashId, isOwnStash]): React.ReactNode => (
+        <Account
+          activeEra={activeEra}
+          allStashes={allStashes}
+          isDisabled={isInElection}
+          isOwnStash={isOwnStash}
+          key={stashId}
+          next={next}
+          onUpdateType={_onUpdateType}
+          stashId={stashId}
+          validators={validators}
+        />
+      ))}
     </Table>
   )
 }

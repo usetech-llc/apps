@@ -81,9 +81,9 @@ function extractExternal (
   const pair = keyring.getPair(publicKey);
 
   return {
+    hardwareType: pair.meta.hardwareType,
     isExternal: !!pair.meta.isExternal,
-    isHardware: !!pair.meta.isHardware,
-    hardwareType: pair.meta.hardwareType
+    isHardware: !!pair.meta.isHardware
   };
 }
 
@@ -189,13 +189,19 @@ class Signer extends React.PureComponent<Props, State> {
       return null;
     }
 
-    const { isExternal, isHardware, hardwareType } = extractExternal(currentItem.accountId);
+    const { hardwareType, isExternal, isHardware } = extractExternal(currentItem.accountId);
 
     return (
       <Modal.Actions
         cancelLabel={signedTx ? t('Close') : undefined}
+        onCancel={
+          isQrVisible
+            ? this.onCancelQr
+            : signedTx
+              ? this.onCancelSign
+              : this.onCancel
+        }
         withOr={!signedTx}
-        onCancel={isQrVisible ? this.onCancelQr : signedTx ? this.onCancelSign : this.onCancel}
       >
         {!isRenderError && (!isQrVisible || !isQrScanning) && !signedTx && (
           <>
@@ -203,10 +209,9 @@ class Signer extends React.PureComponent<Props, State> {
             <Button.Or />
             <Button
               className='ui--signer-Signer-Submit'
+              icon={isQrVisible ? 'qrcode' : currentItem.isUnsigned ? 'sign-in' : isExternal ? 'qrcode' : 'sign-in'}
               isDisabled={!isSendable}
               isPrimary
-              onClick={isQrVisible ? this.activateQrScanning : this.onSend}
-              tabIndex={2}
               label={
                 isQrVisible
                   ? t('Scan Signature Qr')
@@ -220,7 +225,8 @@ class Signer extends React.PureComponent<Props, State> {
                           ? t('Sign and Submit')
                           : t('Sign (no submission)')
               }
-              icon={isQrVisible ? 'qrcode' : currentItem.isUnsigned ? 'sign-in' : isExternal ? 'qrcode' : 'sign-in'}
+              onClick={isQrVisible ? this.activateQrScanning : this.onSend}
+              tabIndex={2}
             />
           </>
         )}
@@ -275,12 +281,12 @@ class Signer extends React.PureComponent<Props, State> {
       <>
         <Toggle
           className='tipToggle'
+          isDisabled={!!signedTx}
           label={
             showTip
               ? t('Include an optional tip for faster processing')
               : t('Do not include a tip for the block author')
           }
-          isDisabled={!!signedTx}
           onChange={this.onShowTip}
           value={showTip}
         />
@@ -288,10 +294,10 @@ class Signer extends React.PureComponent<Props, State> {
           <InputBalance
             defaultValue={new BN(0)}
             help={t('Add a tip to this extrinsic, paying the block author for greater priority')}
-            isZeroable
             isDisabled={!!signedTx}
-            onChange={this.onChangeTip}
+            isZeroable
             label={t('Tip (optional)')}
+            onChange={this.onChangeTip}
           />
         )}
       </>
@@ -300,16 +306,16 @@ class Signer extends React.PureComponent<Props, State> {
 
   private renderSignToggle (): React.ReactNode {
     const { t } = this.props;
-    const { isSubmit, isQrVisible, isQrScanning } = this.state;
+    const { isQrScanning, isQrVisible, isSubmit } = this.state;
 
     return <Toggle
       className='signToggle'
+      isDisabled={isQrVisible || isQrScanning}
       label={
         isSubmit
           ? t('Sign and Submit')
           : t('Sign (no submission)')
       }
-      isDisabled={isQrVisible || isQrScanning}
       onChange={this.onToggleSign}
       value={isSubmit}
     />;
@@ -326,13 +332,29 @@ class Signer extends React.PureComponent<Props, State> {
     return (
       <>
         <br />
-        <InputNumber isZeroable={true} label={t('Nonce')} labelExtra={t('Current account nonce: {{accountNonce}}', { replace: { accountNonce } })} isDisabled={!!signedTx} value={accountNonce} onChange={this.onChangeNonce} />
-        <InputNumber isZeroable={true} label={t('Lifetime (# of blocks)')} labelExtra={t('Set to 0 to make transaction immortal')} isDisabled={!!signedTx} value={blocks} onChange={this.onChangeBlocks} />
-        {!!signedTx && <Output
-          label={t('Signed transaction')}
-          value={signedTx}
-          withCopy
-        />}
+        <InputNumber
+          isDisabled={!!signedTx}
+          isZeroable
+          label={t('Nonce')}
+          labelExtra={t('Current account nonce: {{accountNonce}}', { replace: { accountNonce } })}
+          onChange={this.onChangeNonce}
+          value={accountNonce}
+        />
+        <InputNumber
+          isDisabled={!!signedTx}
+          isZeroable
+          label={t('Lifetime (# of blocks)')}
+          labelExtra={t('Set to 0 to make transaction immortal')}
+          onChange={this.onChangeBlocks}
+          value={blocks}
+        />
+        {!!signedTx && (
+          <Output
+            label={t('Signed transaction')}
+            value={signedTx}
+            withCopy
+          />
+        )}
       </>
     );
   }
@@ -374,8 +396,8 @@ class Signer extends React.PureComponent<Props, State> {
         onChange={this.onChangePassword}
         onEnter={this.onSend}
         password={password}
-        value={currentItem.accountId}
         tabIndex={1}
+        value={currentItem.accountId}
       />
     );
   }
@@ -496,9 +518,9 @@ class Signer extends React.PureComponent<Props, State> {
       this.setState({
         isQrVisible: true,
         qrAddress: payload.address,
-        qrPayload: createType(registry, 'ExtrinsicPayload', payload, { version: payload.version }).toU8a(),
-        qrResolve: resolve,
-        qrReject: reject
+        qrPayload: registry.createType('ExtrinsicPayload', payload, { version: payload.version }).toU8a(),
+        qrReject: reject,
+        qrResolve: resolve
       });
     });
   };
@@ -541,7 +563,7 @@ class Signer extends React.PureComponent<Props, State> {
   private async sendExtrinsic (queueTx: QueueTx, password?: string): Promise<void> {
     const { queueSetTxStatus } = this.props;
     const { isSubmit, showTip, tip } = this.state;
-    const { accountId, extrinsic, id, payload, isUnsigned } = queueTx;
+    const { accountId, extrinsic, id, isUnsigned, payload } = queueTx;
 
     if (!isUnsigned) {
       assert(accountId, 'Expected an accountId with signed transactions');
@@ -550,6 +572,7 @@ class Signer extends React.PureComponent<Props, State> {
 
       if (unlockError) {
         this.setState({ unlockError });
+
         return;
       }
     }
@@ -605,7 +628,7 @@ class Signer extends React.PureComponent<Props, State> {
     }
   }
 
-  private async makeExtrinsicCall (extrinsic: SubmittableExtrinsic, { id, txFailedCb, txSuccessCb, txStartCb, txUpdateCb }: QueueTx, extrinsicCall: (...params: any[]) => any, pair?: KeyringPair): Promise<void> {
+  private async makeExtrinsicCall (extrinsic: SubmittableExtrinsic, { id, txFailedCb, txStartCb, txSuccessCb, txUpdateCb }: QueueTx, extrinsicCall: (...params: any[]) => any, pair?: KeyringPair): Promise<void> {
     const { api, queueSetTxStatus } = this.props;
     const { showTip, tip } = this.state;
 
@@ -718,6 +741,7 @@ class Signer extends React.PureComponent<Props, State> {
       signer = { signPayload: this.signQrPayload };
     } else if (isInjected) {
       const injected = await web3FromSource(source);
+
       signer = injected?.signer;
     }
 
@@ -737,6 +761,7 @@ class Signer extends React.PureComponent<Props, State> {
       this.setState({ signedTx });
     } catch (e) {
       queueSetTxStatus(id, 'error', undefined, e);
+
       if (isFunction(txFailedCb)) {
         txFailedCb(e);
       }

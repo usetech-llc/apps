@@ -14,14 +14,14 @@ import Tooltip from '../Tooltip';
 
 let idCounter = 0;
 
-function Button ({ children, className, floated, icon, isBasic = false, isCircular = false, isDisabled = false, isIcon, isFluid = false, isLoading = false, isNegative = false, isPositive = false, isPrimary = false, label, labelPosition, onClick, size, style, tabIndex, tooltip }: ButtonProps): React.ReactElement<ButtonProps> {
+function Button ({ children, className, floated, icon, isBasic = false, isCircular = false, isDisabled = false, isFluid = false, isIcon, isLoading = false, isNegative = false, isPositive = false, isPrimary = false, label, labelPosition, onClick, size, style, tabIndex, tooltip }: ButtonProps): React.ReactElement<ButtonProps> {
   const [triggerId] = useState(`button-${++idCounter}`);
   const props = {
     basic: isBasic,
     circular: isCircular,
     className: `${className} ${isIcon && 'isIcon'}`,
-    'data-tip': !!tooltip,
     'data-for': triggerId,
+    'data-tip': !!tooltip,
     disabled: isDisabled,
     floated,
     fluid: isFluid,
@@ -31,8 +31,8 @@ function Button ({ children, className, floated, icon, isBasic = false, isCircul
     onClick,
     positive: isPositive,
     primary: isPrimary,
-    size: size || (isIcon ? 'tiny' : undefined),
     secondary: !isBasic && !(isPositive || isPrimary || isNegative),
+    size: size || (isIcon ? 'tiny' : undefined),
     style,
     tabIndex
   };
@@ -40,7 +40,12 @@ function Button ({ children, className, floated, icon, isBasic = false, isCircul
   return (
     <>
       {isUndefined(label) && isUndefined(children)
-        ? <SUIButton {...props} icon={icon} />
+        ? (
+          <SUIButton
+            {...props}
+            icon={icon}
+          />
+        )
         : (
           <SUIButton {...props}>
             {icon && (

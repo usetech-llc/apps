@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 // Copyright 2017-2020 @polkadot/app-explorer authors & contributors
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
@@ -63,7 +62,7 @@ function calcWidth (children: LinkArray): number {
 
 // counts the height of a specific node
 function calcHeight (children: LinkArray): number {
-  return children.reduce((max, { hdr, arr }): number => {
+  return children.reduce((max, { arr, hdr }): number => {
     hdr.height = hdr.isEmpty
       ? 0
       : 1 + calcHeight(arr);
@@ -183,7 +182,10 @@ function renderRows (rows: Row[]): React.ReactNode[] {
         return (
           <tr key={bn}>
             <td key='blockNumber' />
-            <td className='header isLink' colSpan={cols[0].width}>
+            <td
+              className='header isLink'
+              colSpan={cols[0].width}
+            >
               <div className='link'>&#8942;</div>
             </td>
           </tr>

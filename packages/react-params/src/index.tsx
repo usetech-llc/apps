@@ -15,6 +15,7 @@ import translate from './translate';
 import { createValue } from './values';
 
 interface Props extends I18nProps {
+  children?: React.ReactNode;
   isDisabled?: boolean;
   onChange?: (value: RawParams) => void;
   onEnter?: () => void;
@@ -74,7 +75,7 @@ class Params extends React.PureComponent<Props, State> {
   }
 
   public render (): React.ReactNode {
-    const { className, isDisabled, onEnter, onEscape, overrides, params, style, withBorder = true } = this.props;
+    const { children, className, isDisabled, onEnter, onEscape, overrides, params, style, withBorder = true } = this.props;
     const { values = this.props.values } = this.state;
 
     if (!values || !values.length) {
@@ -103,6 +104,7 @@ class Params extends React.PureComponent<Props, State> {
               />
             ))}
           </div>
+          {children}
         </ErrorBoundary>
       </div>
     );
@@ -130,7 +132,7 @@ class Params extends React.PureComponent<Props, State> {
   }
 
   private triggerUpdate = (): void => {
-    const { onChange, isDisabled } = this.props;
+    const { isDisabled, onChange } = this.props;
     const { values } = this.state;
 
     if (isDisabled || !values) {
@@ -180,6 +182,8 @@ export default translate(
       display: inline-block;
       font-size: 1rem;
       line-height: 1.714rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .ui--Param-text .icon {

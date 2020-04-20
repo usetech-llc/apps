@@ -10,7 +10,9 @@ import { EraIndex, ValidatorPrefs } from '@polkadot/types/interfaces';
 import { Codec, ITuple } from '@polkadot/types/types';
 import { AddressInfo, AddressMini, AddressSmall, Button, Expander, Menu, Popup, StakingBonded, StakingRedeemable, StakingUnbonding, StatusContext, TxButton } from '@polkadot/react-components';
 import { useAccounts, useApi, useCall, useToggle } from '@polkadot/react-hooks';
+import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { FormatBalance } from '@polkadot/react-query';
+import { ApiPromise } from '@polkadot/api';
 import { useTranslation } from '../translate';
 import BondExtra from '../Actions/Account/BondExtra';
 import InjectKeys from '../Actions/Account/InjectKeys';
@@ -20,8 +22,8 @@ import SetRewardDestination from '../Actions/Account/SetRewardDestination';
 import SetSessionKey from '../Actions/Account/SetSessionKey';
 import Unbond from '../Actions/Account/Unbond';
 import Validate from '../Actions/Account/Validate';
-import { getStakeState, createPayout, StakeState } from '../Actions/Account';
-import useInactives from '../Actions/Account/useInactives';
+import { getStakeState, StakeState } from '../Actions/Account';
+import useInactives from './useInactives';
 
 type ValidatorInfo = ITuple<[ValidatorPrefs, Codec]> | ValidatorPrefs;
 
@@ -39,6 +41,20 @@ interface Props {
   stakingOverview?: DeriveStakingOverview;
   stashId: string;
   selectedControllerId?: string | null,
+}
+
+export function createPayout (api: ApiPromise, payoutRewards: DeriveStakerReward[]): SubmittableExtrinsic<'promise'> {
+  return payoutRewards.length === 1
+    ? payoutRewards[0].isValidator
+      ? api.tx.staking.payoutValidator(payoutRewards[0].era)
+      : api.tx.staking.payoutNominator(payoutRewards[0].era, payoutRewards[0].nominating)
+    : api.tx.utility.batch(
+      payoutRewards.map(({ era, isValidator, nominating }): SubmittableExtrinsic<'promise'> =>
+        isValidator
+          ? api.tx.staking.payoutValidator(era)
+          : api.tx.staking.payoutNominator(era, nominating)
+      )
+    );
 }
 
 function NominatedAccount ({ allStashes, className, isOwnStash, next, onUpdateType, rewards, stakingOverview, stashId, selectedControllerId, onUpdateControllerState, onUpdateNominatedState }: Props): React.ReactElement<Props> {

@@ -29,9 +29,10 @@ interface Props {
   isVisible: boolean;
   stakingOverview?: DeriveStakingOverview;
   next?: string[];
+  isInElection?: boolean;
 }
 
-function Nomination ({ className, isVisible, stakingOverview, next }: Props): React.ReactElement<Props> {
+function Nomination ({ className, isVisible, stakingOverview, next, isInElection }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const [currentStep, setCurrentStep] = useState<string>(steps[0]);
   const [alreadyHaveStashes, setAlreadyHaveStashes] = useState<boolean>(false);
@@ -56,6 +57,8 @@ function Nomination ({ className, isVisible, stakingOverview, next }: Props): Re
     ? api.tx.staking.bond(controllerAccountId, amount, destination)
     : null;
   const existentialDeposit = api.consts.balances.existentialDeposit;
+
+  console.log('isInElection', isInElection);
 
   function onStatusChange() {}
 
@@ -365,6 +368,8 @@ function Nomination ({ className, isVisible, stakingOverview, next }: Props): Re
             stakingOverview={stakingOverview}
             isVisible={isVisible}
             next={next}
+            isInElection={isInElection}
+            validators={validators}
           />
         )}
       </div>
