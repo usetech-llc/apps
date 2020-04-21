@@ -6,7 +6,7 @@ import { useTranslation } from '@polkadot/app-staking/translate';
 import { ActiveEraInfo, EraIndex } from '@polkadot/types/interfaces';
 import { Option } from '@polkadot/types';
 import { DeriveStakingOverview, DeriveStakerReward } from '@polkadot/api-derive/types';
-import Account from "@polkadot/app-staking/Actions/Account";
+// import Account from "@polkadot/app-staking/Actions/Account";
 
 interface Props {
   allRewards?: Record<string, DeriveStakerReward[]>;
@@ -70,24 +70,25 @@ function StashesTable({ className, allStashes, isInElection, validators, isVisib
       {/*<Table.Body empty={t('No funds staked yet. Bond funds to validate or nominate a validator.')}>
 
       </Table.Body>*/}
-      {/*{foundStashes?.map(([stashId, isOwnStash]: Array<any>): React.ReactNode => (
+      {foundStashes?.map(([stashId, isOwnStash]: Array<any>): React.ReactNode => (
         <NominatedAccount
           selectedControllerId={controllerAccountId}
           activeEra={activeEra}
           allStashes={allStashes}
+          isDisabled={isInElection}
           isOwnStash={isOwnStash}
-          isVisible={isVisible}
           key={stashId}
           next={next}
           onUpdateType={_onUpdateType}
+          stashId={stashId}
+          validators={validators}
           onUpdateControllerState={onUpdateControllerState}
           onUpdateNominatedState={onUpdateNominatedState}
           rewards={allRewards && allRewards[stashId]}
           stakingOverview={stakingOverview}
-          stashId={stashId}
         />
-      ))}*/}
-      {foundStashes?.map(([stashId, isOwnStash]): React.ReactNode => (
+      ))}
+     {/* {foundStashes?.map(([stashId, isOwnStash]): React.ReactNode => (
         <Account
           activeEra={activeEra}
           allStashes={allStashes}
@@ -99,7 +100,7 @@ function StashesTable({ className, allStashes, isInElection, validators, isVisib
           stashId={stashId}
           validators={validators}
         />
-      ))}
+      ))}*/}
     </Table>
   )
 }

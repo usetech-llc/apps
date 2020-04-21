@@ -1,23 +1,24 @@
 // Copyright 2020
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
+
+import { DeriveStakingOverview } from '@polkadot/api-derive/types';
+import { Balance } from '@polkadot/types/interfaces/runtime';
+import BN from 'bn.js';
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
-import BN from 'bn.js';
 import CreateModal from '@polkadot/app-accounts/Accounts/modals/Create';
 import { useApi, useOwnStashes, useToggle} from '@polkadot/react-hooks';
 import { useTranslation} from '@polkadot/app-accounts/translate';
-import { DeriveStakingOverview } from '@polkadot/api-derive/types';
 import { Available } from '@polkadot/react-query';
 import { AddressInfo, Button, InputBalance, TxButton, Spinner } from '@polkadot/react-components';
 import TabsHeader from '@polkadot/app-staking/Nomination/TabsHeader';
 import StashesTable from '@polkadot/app-staking/Nomination/StahesTable';
 import { useBalanceClear, useFees, WholeFeesType } from '@polkadot/app-staking/Nomination/useBalance';
-import { Balance } from '@polkadot/types/interfaces/runtime';
 import Summary from '@polkadot/app-staking/Nomination/Summary';
 import { formatBalance } from '@polkadot/util';
 import EraToTime from './EraToTime';
-import useValidators from './useValidators';
+// import useValidators from './useValidators';
 import AccountSelector from './AccountSelector';
 import ControllerAccountSelector from './ControllerAccountSelector';
 
@@ -32,7 +33,7 @@ interface Props {
   isInElection?: boolean;
 }
 
-function Nomination ({ className, isVisible, stakingOverview, next, isInElection }: Props): React.ReactElement<Props> {
+function Nomination ({ className, isVisible, stakingOverview, next, isInElection, validators }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const [currentStep, setCurrentStep] = useState<string>(steps[0]);
   const [alreadyHaveStashes, setAlreadyHaveStashes] = useState<boolean>(false);
@@ -50,7 +51,7 @@ function Nomination ({ className, isVisible, stakingOverview, next, isInElection
   const controllerBalance: Balance | null = useBalanceClear(controllerAccountId);
   const accountBalance: Balance | null = useBalanceClear(senderId);
   const ownStashes = useOwnStashes();
-  const { validators, validatorsLoading } = useValidators();
+  // const { validators, validatorsLoading } = useValidators();
   const { t } = useTranslation();
   const destination = 2; // 2 means controller account
   const extrinsic = (amount && controllerAccountId)
@@ -166,7 +167,7 @@ function Nomination ({ className, isVisible, stakingOverview, next, isInElection
    * Set validators list.
    * If filtered validators
    */
-  useEffect(() => {
+  /* useEffect(() => {
     if (validators && validators.length) {
       setSelectedValidators(
         validators.map((validator): string => validator.key).slice(0, 16)
@@ -176,7 +177,7 @@ function Nomination ({ className, isVisible, stakingOverview, next, isInElection
         stakingOverview.validators.map((acc): string => acc.toString()).slice(0, 16)
       );
     }
-  }, [validators, stakingOverview]);
+  }, [validators, stakingOverview]); */
 
   useEffect(() => {
     if (!wholeFees) {
@@ -282,7 +283,7 @@ function Nomination ({ className, isVisible, stakingOverview, next, isInElection
                   withRewardDestination
                 />
                 <section>
-                  <h1>Bond</h1>
+                  <h1>{t('Enter the amount you would like to Bond and click Next:')}</h1>
                   <div className='ui--row'>
                     <div className='large'>
                       <InputBalance
@@ -332,7 +333,7 @@ function Nomination ({ className, isVisible, stakingOverview, next, isInElection
               accountId={senderId}
               isDisabled={controllerAlreadyBonded}
               isPrimary
-              label={t('Enter the amount you would like to Bond and click Next:')}
+              label={t('Bond')}
               icon='sign-in'
               extrinsic={extrinsic}
             />

@@ -41,35 +41,20 @@ interface Props {
   stakingOverview?: DeriveStakingOverview;
   stashId: string;
   selectedControllerId?: string | null,
+  isDisabled?: boolean;
+  validators?: string[];
 }
 
-export function createPayout (api: ApiPromise, payoutRewards: DeriveStakerReward[]): SubmittableExtrinsic<'promise'> {
-  return payoutRewards.length === 1
-    ? payoutRewards[0].isValidator
-      ? api.tx.staking.payoutValidator(payoutRewards[0].era)
-      : api.tx.staking.payoutNominator(payoutRewards[0].era, payoutRewards[0].nominating)
-    : api.tx.utility.batch(
-      payoutRewards.map(({ era, isValidator, nominating }): SubmittableExtrinsic<'promise'> =>
-        isValidator
-          ? api.tx.staking.payoutValidator(era)
-          : api.tx.staking.payoutNominator(era, nominating)
-      )
-    );
-}
-
-function NominatedAccount ({ allStashes, className, isOwnStash, next, onUpdateType, rewards, stakingOverview, stashId, selectedControllerId, onUpdateControllerState, onUpdateNominatedState }: Props): React.ReactElement<Props> {
+function NominatedAccount ({ allStashes, className, isOwnStash, next, onUpdateType, isDisabled, validators, stashId, selectedControllerId, onUpdateControllerState, onUpdateNominatedState }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-  const { queueExtrinsic } = useContext(StatusContext);
   const { api } = useApi();
   const { allAccounts } = useAccounts();
   const validateInfo = useCall<ValidatorInfo>(api.query.staking.validators, [stashId]);
-  const balancesAll = useCall<DeriveBalancesAll>(api.derive.balances.all as any, [stashId]);
-  const stakingAccount = useCall<DeriveStakingAccount>(api.derive.staking.account as any, [stashId]);
-  const [[payoutRewards, payoutEras, payoutTotal], setStakingRewards] = useState<[DeriveStakerReward[], EraIndex[], BN]>([[], [], new BN(0)]);
-  const [{ controllerId, destination, destinationId, hexSessionIdQueue, hexSessionIdNext, isLoading, isOwnController, isStashNominating, isStashValidating, nominees, validatorPrefs }, setStakeState] = useState<StakeState>({ controllerId: null, destinationId: 0, hexSessionIdNext: null, hexSessionIdQueue: null, isLoading: true, isOwnController: false, isStashNominating: false, isStashValidating: false, sessionIds: [] });
+  const balancesAll = useCall<DeriveBalancesAll>(api.derive.balances.all, [stashId]);
+  const stakingAccount = useCall<DeriveStakingAccount>(api.derive.staking.account, [stashId]);
+  const [{ controllerId, destination, destinationId, hexSessionIdNext, hexSessionIdQueue, isLoading, isOwnController, isStashNominating, isStashValidating, nominating, sessionIds, stakingLedger }, setStakeState] = useState<StakeState>({ controllerId: null, destinationId: 0, hexSessionIdNext: null, hexSessionIdQueue: null, isLoading: true, isOwnController: false, isStashNominating: false, isStashValidating: false, sessionIds: [] });
   const [activeNoms, setActiveNoms] = useState<string[]>([]);
-  const [maxUnBond, setMaxUnbond] = useState(new BN(0));
-  const inactiveNoms = useInactives(stashId, nominees);
+  const inactiveNoms = useInactives(stashId, nominating);
   const [isBondExtraOpen, toggleBondExtra] = useToggle();
   const [isInjectOpen, toggleInject] = useToggle();
   const [isNominateOpen, toggleNominate] = useToggle();
@@ -83,92 +68,52 @@ function NominatedAccount ({ allStashes, className, isOwnStash, next, onUpdateTy
   useEffect((): void => {
     if (stakingAccount && validateInfo) {
       const state = getStakeState(allAccounts, allStashes, stakingAccount, stashId, validateInfo);
+
       setStakeState(state);
-      if (state.isStashValidating) {
-        onUpdateType(stashId, 'validator');
-      } else if (state.isStashNominating) {
-        onUpdateType(stashId, 'nominator');
-      } else {
-        onUpdateType(stashId, 'other');
-      }
+      onUpdateType(
+        stashId,
+        state.isStashValidating
+          ? 'validator'
+          : state.isStashNominating
+          ? 'nominator'
+          : 'other'
+      );
     }
   }, [allAccounts, allStashes, onUpdateType, stakingAccount, stashId, validateInfo]);
 
   useEffect((): void => {
-    // if controller already used
-    if (controllerId === selectedControllerId) {
-      onUpdateControllerState(true);
-      if (isStashNominating) {
-        onUpdateNominatedState(true);
-      }
-    }
-  }, [controllerId, onUpdateControllerState, selectedControllerId, isStashNominating]);
-
-  useEffect((): void => {
-    nominees && setActiveNoms(
-      nominees.filter((id): boolean => !inactiveNoms.includes(id))
+    nominating && setActiveNoms(
+      nominating.filter((id): boolean => !inactiveNoms.includes(id))
     );
-  }, [inactiveNoms, nominees]);
-
-  useEffect((): void => {
-    rewards && setStakingRewards([
-      rewards,
-      rewards.map(({ era }): EraIndex => era),
-      rewards.reduce((result, { total }) => result.iadd(total), new BN(0))
-    ]);
-  }, [rewards]);
-
-  useEffect(() => {
-    setMaxUnbond(stakingAccount?.stakingLedger?.active.unwrap());
-  }, [stakingAccount]);
-
-  const _doPayout = useCallback(
-    (): void => queueExtrinsic({
-      accountId: controllerId,
-      extrinsic: createPayout(api, payoutRewards)
-    }),
-    [api, controllerId, payoutRewards, queueExtrinsic]
-  );
+  }, [inactiveNoms, nominating]);
 
   return (
     <tr className={className}>
       <td className='address'>
-        <BondExtra
-          controllerId={controllerId}
-          isOpen={isBondExtraOpen}
-          onClose={toggleBondExtra}
-          stashId={stashId}
-        />
-        <Unbond
-          controllerId={controllerId}
-          isOpen={isUnbondOpen}
-          onClose={toggleUnbond}
-          stashId={stashId}
-        />
-        <Validate
-          controllerId={controllerId}
-          isOpen={isValidateOpen}
-          onClose={toggleValidate}
-          stashId={stashId}
-          validatorPrefs={validatorPrefs}
-        />
+        <AddressSmall value={stashId} />
+        {isBondExtraOpen && (
+          <BondExtra
+            onClose={toggleBondExtra}
+            stashId={stashId}
+          />
+        )}
         {isInjectOpen && (
           <InjectKeys onClose={toggleInject} />
         )}
         {isNominateOpen && controllerId && (
           <Nominate
             controllerId={controllerId}
+            isOpen={isNominateOpen}
             next={next}
-            nominees={nominees}
+            nominating={nominating}
             onClose={toggleNominate}
-            stakingOverview={stakingOverview}
             stashId={stashId}
+            validators={validators}
           />
         )}
-        {isSetControllerOpen && (
+        {isSetControllerOpen && controllerId && (
           <SetControllerAccount
             defaultControllerId={controllerId}
-            isValidating={isStashValidating}
             onClose={toggleSetController}
             stashId={stashId}
           />
@@ -186,7 +131,21 @@ function NominatedAccount ({ allStashes, className, isOwnStash, next, onUpdateTy
             onClose={toggleSetSession}
           />
         )}
-        <AddressSmall value={stashId} />
+        {isUnbondOpen && (
+          <Unbond
+            controllerId={controllerId}
+            onClose={toggleUnbond}
+            stakingLedger={stakingLedger}
+            stashId={stashId}
+          />
+        )}
+        {isValidateOpen && controllerId && (
+          <Validate
+            controllerId={controllerId}
+            onClose={toggleValidate}
+            stashId={stashId}
+          />
+        )}
       </td>
       <td className='address'>
         <AddressMini value={controllerId} />
@@ -246,63 +205,79 @@ function NominatedAccount ({ allStashes, className, isOwnStash, next, onUpdateTy
           ? null
           : (
             <>
-              {(isStashNominating || isStashValidating) && (
-                <TxButton
-                  accountId={controllerId}
-                  isDisabled={!isOwnController}
-                  isPrimary={false}
-                  label={'Stop'}
-                  icon='stop'
-                  key='stop'
-                  tx='staking.chill'
-                />
-              )}
-              <TxButton
-                isDisabled={!isOwnController || isStashNominating}
-                accountId={controllerId}
-                isPrimary
-                label={t('Unbond')}
-                icon='sign-out'
-                params={[maxUnBond]}
-                tx='staking.unbond'
-                withSpinner={false}
-              />
+              {(isStashNominating || isStashValidating)
+                ? (
+                  <TxButton
+                    accountId={controllerId}
+                    icon='stop'
+                    isDisabled={!isOwnController || isDisabled}
+                    isPrimary={false}
+                    key='stop'
+                    label={t('Stop')}
+                    tx='staking.chill'
+                  />
+                )
+                : (
+                  <Button.Group>
+                    {(!sessionIds.length || hexSessionIdNext === '0x')
+                      ? (
+                        <Button
+                          icon='sign-in'
+                          isDisabled={!isOwnController || isDisabled}
+                          key='set'
+                          label={t('Session Key')}
+                          onClick={toggleSetSession}
+                        />
+                      )
+                      : (
+                        <Button
+                          icon='check circle outline'
+                          isDisabled={!isOwnController || isDisabled}
+                          key='validate'
+                          label={t('Validate')}
+                          onClick={toggleValidate}
+                        />
+                      )
+                    }
+                    <Button.Or key='nominate.or' />
+                    <Button
+                      icon='hand paper outline'
+                      isDisabled={!isOwnController || isDisabled}
+                      key='nominate'
+                      label={t('Nominate')}
+                      onClick={toggleNominate}
+                    />
+                  </Button.Group>
+                )
+              }
               <Popup
+                isOpen={isSettingsOpen}
                 key='settings'
                 onClose={toggleSettings}
-                open={isSettingsOpen}
-                position='bottom right'
                 trigger={
                   <Button
                     icon='setting'
+                    isDisabled={isDisabled}
                     onClick={toggleSettings}
                   />
                 }
               >
                 <Menu
-                  vertical
-                  text
                   onClick={toggleSettings}
+                  text
+                  vertical
                 >
-                  {api.query.staking.activeEra && (
-                    <Menu.Item
-                      disabled={payoutEras.length === 0}
-                      onClick={_doPayout}
-                    >
-                      <Trans i18nKey='payoutEras'>
-                        {t('Payout reward')}&nbsp;{
-                        payoutEras.length
-                          ? <>(<FormatBalance value={payoutTotal} />)</>
-                          : ''
-                      }
-                      </Trans>
-                    </Menu.Item>
-                  )}
                   <Menu.Item
                     disabled={!isOwnStash && !balancesAll?.freeBalance.gtn(0)}
                     onClick={toggleBondExtra}
                   >
                     {t('Bond more funds')}
+                  </Menu.Item>
+                  <Menu.Item
+                    disabled={!isOwnController}
+                    onClick={toggleUnbond}
+                  >
+                    {t('Unbond funds')}
                   </Menu.Item>
                   <Menu.Divider />
                   <Menu.Item
@@ -319,8 +294,8 @@ function NominatedAccount ({ allStashes, className, isOwnStash, next, onUpdateTy
                   </Menu.Item>
                   {isStashValidating &&
                   <Menu.Item
-                    disabled={!isOwnController}
-                    onClick={toggleValidate}
+                      disabled={!isOwnController}
+                      onClick={toggleValidate}
                   >
                     {t('Change validator preferences')}
                   </Menu.Item>
@@ -328,16 +303,16 @@ function NominatedAccount ({ allStashes, className, isOwnStash, next, onUpdateTy
                   <Menu.Divider />
                   {!isStashNominating &&
                   <Menu.Item
-                    disabled={!isOwnController}
-                    onClick={toggleSetSession}
+                      disabled={!isOwnController}
+                      onClick={toggleSetSession}
                   >
                     {t('Change session keys')}
                   </Menu.Item>
                   }
                   {isStashNominating &&
                   <Menu.Item
-                    disabled={!isOwnController}
-                    onClick={toggleNominate}
+                      disabled={!isOwnController}
+                      onClick={toggleNominate}
                   >
                     {t('Set nominees')}
                   </Menu.Item>
