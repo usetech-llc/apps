@@ -218,5 +218,6 @@
   "Payout all": "Payout all",
   "Retrieving info for all applicable eras, this will take some time": "Retrieving info for all applicable eras, this will take some time",
   "Nominations ({{count}})": "Nominations ({{count}})",
-  "priority {{index}}": "priority {{index}}"
+  "priority {{index}}": "priority {{index}}",
+  "Renew nominations": "Renew nominations"
 }

@@ -102,6 +102,8 @@ function NominatedAccount ({ allStashes, className, isOwnStash, next, onUpdateTy
     setMaxUnbond(stakingAccount?.stakingLedger?.active.unwrap());
   }, [stakingAccount]);
 
+  const selectedValidators = [];
+
   return (
     <tr className={className}>
       <td className='address'>
@@ -221,15 +223,26 @@ function NominatedAccount ({ allStashes, className, isOwnStash, next, onUpdateTy
           : (
             <>
               {(isStashNominating || isStashValidating) && (
-                <TxButton
-                  accountId={controllerId}
-                  isDisabled={!isOwnController}
-                  isPrimary={false}
-                  label={'Stop'}
-                  icon='stop'
-                  key='stop'
-                  tx='staking.chill'
-                />
+                <>
+                  <TxButton
+                    accountId={controllerId}
+                    isDisabled={!isOwnController}
+                    isPrimary={false}
+                    label={'Stop'}
+                    icon='stop'
+                    key='stop'
+                    tx='staking.chill'
+                  />
+                  <TxButton
+                    accountId={controllerId}
+                    isDisabled={!isOwnController}
+                    isPrimary
+                    params={[selectedValidators]}
+                    label={t('Renew nominations')}
+                    icon='recycle'
+                    tx='staking.nominate'
+                  />
+                </>
               )}
               <TxButton
                 isDisabled={!isOwnController || isStashNominating}
