@@ -59,7 +59,7 @@ function getFiltered (stakingOverview: DeriveStakingOverview, favorites: string[
   const validators = filterAccounts(validatorIds, allElected, favorites, []);
   const elected = filterAccounts(allElected, allElected, favorites, validatorIds);
   const waiting = filterAccounts(next, [], favorites, allElected);
-
+  console.log('getFiltered', elected, 'validators', validators, 'waiting', waiting);
   return {
     elected,
     validators,
