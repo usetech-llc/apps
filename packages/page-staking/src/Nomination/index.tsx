@@ -11,7 +11,7 @@ import CreateModal from '@polkadot/app-accounts/Accounts/modals/Create';
 import { useApi, useOwnStashes, useToggle} from '@polkadot/react-hooks';
 import { useTranslation} from '@polkadot/app-accounts/translate';
 import { Available } from '@polkadot/react-query';
-import { AddressInfo, Button, InputBalance, TxButton, Spinner } from '@polkadot/react-components';
+import { AddressInfo, Button, InputBalance, TxButton /*, Spinner*/ } from '@polkadot/react-components';
 import TabsHeader from '@polkadot/app-staking/Nomination/TabsHeader';
 import StashesTable from '@polkadot/app-staking/Nomination/StahesTable';
 import { useBalanceClear, useFees, WholeFeesType } from '@polkadot/app-staking/Nomination/useBalance';
@@ -36,7 +36,7 @@ interface Props {
 function Nomination ({ className, isVisible, stakingOverview, next, isInElection, validators }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const [currentStep, setCurrentStep] = useState<string>(steps[0]);
-  const [alreadyHaveStashes, setAlreadyHaveStashes] = useState<boolean>(false);
+  const [alreadyHaveStashes /*, setAlreadyHaveStashes*/ ] = useState<boolean>(false);
   const [isNominated, setIsNominated] = useState<boolean>(false);
   const [controllerAccountId, setControllerAccountId] = useState<string | null>(null);
   const [senderId, setSenderId] = useState<string | null>(null);
@@ -341,7 +341,7 @@ function Nomination ({ className, isVisible, stakingOverview, next, isInElection
           {currentStep === steps[3] && controllerAlreadyBonded && (
             <TxButton
               accountId={controllerAccountId}
-              isDisabled={!selectedValidators?.length || !controllerAlreadyBonded || isNominated || validatorsLoading}
+              isDisabled={!selectedValidators.length || !controllerAlreadyBonded || isNominated || validatorsLoading}
               isPrimary
               params={[selectedValidators]}
               label={t('Nominate')}
