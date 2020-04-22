@@ -54,6 +54,7 @@ function NominatedAccount ({ allStashes, className, isOwnStash, next, onUpdateTy
   const stakingAccount = useCall<DeriveStakingAccount>(api.derive.staking.account, [stashId]);
   const [{ controllerId, destination, destinationId, hexSessionIdNext, hexSessionIdQueue, isLoading, isOwnController, isStashNominating, isStashValidating, nominating, sessionIds, stakingLedger }, setStakeState] = useState<StakeState>({ controllerId: null, destinationId: 0, hexSessionIdNext: null, hexSessionIdQueue: null, isLoading: true, isOwnController: false, isStashNominating: false, isStashValidating: false, sessionIds: [] });
   const [activeNoms, setActiveNoms] = useState<string[]>([]);
+  const [maxUnBond, setMaxUnbond] = useState(new BN(0));
   const inactiveNoms = useInactives(stashId, nominating);
   const [isBondExtraOpen, toggleBondExtra] = useToggle();
   const [isInjectOpen, toggleInject] = useToggle();
@@ -82,10 +83,24 @@ function NominatedAccount ({ allStashes, className, isOwnStash, next, onUpdateTy
   }, [allAccounts, allStashes, onUpdateType, stakingAccount, stashId, validateInfo]);
 
   useEffect((): void => {
+    // if controller already used
+    if (controllerId === selectedControllerId) {
+      onUpdateControllerState(true);
+      if (isStashNominating) {
+        onUpdateNominatedState(true);
+      }
+    }
+  }, [controllerId, onUpdateControllerState, selectedControllerId, isStashNominating]);
+
+  useEffect((): void => {
     nominating && setActiveNoms(
       nominating.filter((id): boolean => !inactiveNoms.includes(id))
     );
   }, [inactiveNoms, nominating]);
+
+  useEffect(() => {
+    setMaxUnbond(stakingAccount?.stakingLedger?.active.unwrap());
+  }, [stakingAccount]);
 
   return (
     <tr className={className}>
@@ -205,51 +220,27 @@ function NominatedAccount ({ allStashes, className, isOwnStash, next, onUpdateTy
           ? null
           : (
             <>
-              {(isStashNominating || isStashValidating)
-                ? (
-                  <TxButton
-                    accountId={controllerId}
-                    icon='stop'
-                    isDisabled={!isOwnController || isDisabled}
-                    isPrimary={false}
-                    key='stop'
-                    label={t('Stop')}
-                    tx='staking.chill'
-                  />
-                )
-                : (
-                  <Button.Group>
-                    {(!sessionIds.length || hexSessionIdNext === '0x')
-                      ? (
-                        <Button
-                          icon='sign-in'
-                          isDisabled={!isOwnController || isDisabled}
-                          key='set'
-                          label={t('Session Key')}
-                          onClick={toggleSetSession}
-                        />
-                      )
-                      : (
-                        <Button
-                          icon='check circle outline'
-                          isDisabled={!isOwnController || isDisabled}
-                          key='validate'
-                          label={t('Validate')}
-                          onClick={toggleValidate}
-                        />
-                      )
-                    }
-                    <Button.Or key='nominate.or' />
-                    <Button
-                      icon='hand paper outline'
-                      isDisabled={!isOwnController || isDisabled}
-                      key='nominate'
-                      label={t('Nominate')}
-                      onClick={toggleNominate}
-                    />
-                  </Button.Group>
-                )
-              }
+              {(isStashNominating || isStashValidating) && (
+                <TxButton
+                  accountId={controllerId}
+                  isDisabled={!isOwnController}
+                  isPrimary={false}
+                  label={'Stop'}
+                  icon='stop'
+                  key='stop'
+                  tx='staking.chill'
+                />
+              )}
+              <TxButton
+                isDisabled={!isOwnController || isStashNominating}
+                accountId={controllerId}
+                isPrimary
+                label={t('Unbond')}
+                icon='sign-out'
+                params={[maxUnBond]}
+                tx='staking.unbond'
+                withSpinner={false}
+              />
               <Popup
                 isOpen={isSettingsOpen}
                 key='settings'
