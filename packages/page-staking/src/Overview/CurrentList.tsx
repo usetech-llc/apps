@@ -24,9 +24,9 @@ interface Props {
   stakingOverview?: DeriveStakingOverview;
 }
 
-type AccountExtend = [string, boolean, boolean];
+export type AccountExtend = [string, boolean, boolean];
 
-interface Filtered {
+export interface Filtered {
   elected?: AccountExtend[];
   validators?: AccountExtend[];
   waiting?: AccountExtend[];
@@ -53,13 +53,13 @@ function accountsToString (accounts: AccountId[]): string[] {
   return accounts.map((accountId): string => accountId.toString());
 }
 
-function getFiltered (stakingOverview: DeriveStakingOverview, favorites: string[], next?: string[]): Filtered {
+export function getFiltered (stakingOverview: DeriveStakingOverview, favorites: string[], next?: string[]): Filtered {
   const allElected = accountsToString(stakingOverview.nextElected);
   const validatorIds = accountsToString(stakingOverview.validators);
   const validators = filterAccounts(validatorIds, allElected, favorites, []);
   const elected = filterAccounts(allElected, allElected, favorites, validatorIds);
   const waiting = filterAccounts(next, [], favorites, allElected);
-  console.log('getFiltered', elected, 'validators', validators, 'waiting', waiting);
+
   return {
     elected,
     validators,

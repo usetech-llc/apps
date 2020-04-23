@@ -18,7 +18,7 @@ import { useBalanceClear, useFees, WholeFeesType } from '@polkadot/app-staking/N
 import Summary from '@polkadot/app-staking/Nomination/Summary';
 import { formatBalance } from '@polkadot/util';
 import EraToTime from './EraToTime';
-// import useValidators from './useValidators';
+import useValidators from './useValidators';
 import AccountSelector from './AccountSelector';
 import ControllerAccountSelector from './ControllerAccountSelector';
 
@@ -51,15 +51,13 @@ function Nomination ({ className, isVisible, stakingOverview, next, isInElection
   const controllerBalance: Balance | null = useBalanceClear(controllerAccountId);
   const accountBalance: Balance | null = useBalanceClear(senderId);
   const ownStashes = useOwnStashes();
-  // const { validators, validatorsLoading } = useValidators();
+  useValidators(stakingOverview, next);
   const { t } = useTranslation();
   const destination = 2; // 2 means controller account
   const extrinsic = (amount && controllerAccountId)
     ? api.tx.staking.bond(controllerAccountId, amount, destination)
     : null;
   const existentialDeposit = api.consts.balances.existentialDeposit;
-
-  console.log('isInElection', isInElection);
 
   function onStatusChange() {}
 
@@ -322,7 +320,7 @@ function Nomination ({ className, isVisible, stakingOverview, next, isInElection
               isDisabled={!wholeFees || feesLoading}
               accountId={senderId}
               icon='send'
-              label={t('Fees')}
+              label={t('Next')}
               params={[controllerAccountId, transferableAmount]}
               tx='balances.transfer'
               withSpinner

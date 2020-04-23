@@ -196,7 +196,6 @@
   "Bond to controller account. Bond fees and per-transaction fees apply and will be calculated upon submission.": "Bond to controller account. Bond fees and per-transaction fees apply and will be calculated upon submission.",
   "amount to bond": "amount to bond",
   "Your account balance": "Your account balance",
-  "Fees": "Fees",
   "Back": "Back",
   "Next": "Next",
   "No funds staked yet. Bond funds to validate or nominate a validator": "No funds staked yet. Bond funds to validate or nominate a validator",

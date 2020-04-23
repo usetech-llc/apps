@@ -1,5 +1,4 @@
 mkdir -p /chain-data
-
 if [ -d "/chain-data/chains" ]
 then
     chmod 777 -R /chain-data
