@@ -30,11 +30,11 @@ interface AllInfo {
   validators: ValidatorInfo[];
 }
 
-export type SortBy = 'rankOverall' | 'rankBondOwn' | 'rankBondOther' | 'rankBondTotal' | 'rankComm';
+type SortBy = 'rankOverall' | 'rankBondOwn' | 'rankBondOther' | 'rankBondTotal' | 'rankComm';
 
 const PERBILL = new BN(1_000_000_000);
 
-export function sortValidators (list: ValidatorInfo[]): ValidatorInfo[] {
+function sortValidators (list: ValidatorInfo[]): ValidatorInfo[] {
   return list
     .filter((a) => a.bondTotal.gtn(0))
     .sort((a, b): number => b.commissionPer - a.commissionPer)
@@ -91,7 +91,7 @@ export function sortValidators (list: ValidatorInfo[]): ValidatorInfo[] {
     });
 }
 
-export function extractInfo (allAccounts: string[], amount: BN = new BN(0), electedInfo: DeriveStakingElected, favorites: string[], lastReward = new BN(1)): AllInfo {
+function extractInfo (allAccounts: string[], amount: BN = new BN(0), electedInfo: DeriveStakingElected, favorites: string[], lastReward = new BN(1)): AllInfo {
   const nominators: string[] = [];
   let totalStaked = new BN(0);
   const perValidatorReward = lastReward.divn(electedInfo.info.length);
@@ -156,7 +156,7 @@ export function extractInfo (allAccounts: string[], amount: BN = new BN(0), elec
   return { nominators, totalStaked, validators };
 }
 
-export function sort (sortBy: SortBy, sortFromMax: boolean, validators: ValidatorInfo[]): ValidatorInfo[] {
+function sort (sortBy: SortBy, sortFromMax: boolean, validators: ValidatorInfo[]): ValidatorInfo[] {
   return validators
     .sort((a, b): number => sortFromMax
       ? a[sortBy] - b[sortBy]
@@ -210,6 +210,28 @@ function Targets ({ className }: Props): React.ReactElement<Props> {
     }
   }, [allAccounts, amount, electedInfo, favorites, lastReward, sortBy, sortFromMax]);
 
+  const header = useMemo(() => [
+    [t('validators'), 'start', 3],
+    ...['rankComm', 'rankBondTotal', 'rankBondOwn', 'rankBondOther', 'rankOverall'].map((header) => [
+      <>{labels[header]}<Icon name={sortBy === header ? (sortFromMax ? 'chevron down' : 'chevron up') : 'minus'} /></>,
+      `isClickable ${sortBy === header && 'ui--highlight--border'} number`,
+      1,
+      (): void => _sort(header as 'rankComm')
+    ]),
+    []
+  ], [_sort, labels, sortBy, sortFromMax, t]);
+
+  const filter = useMemo(() => (
+    <InputBalance
+      className='balanceInput'
+      help={t('The amount that will be used on a per-validator basis to calculate rewards for that validator.')}
+      isFull
+      label={t('amount to use for estimation')}
+      onChange={setAmount}
+      value={_amount}
+    />
+  ), [_amount, t]);
+
   return (
     <div className={className}>
       <Summary
@@ -220,26 +242,8 @@ function Targets ({ className }: Props): React.ReactElement<Props> {
       />
       <Table
         empty={sorted && t('No active validators to check for rewards available')}
-        filter={
-          <InputBalance
-            className='balanceInput'
-            help={t('The amount that will be used on a per-validator basis to calculate rewards for that validator.')}
-            isFull
-            label={t('amount to use for estimation')}
-            onChange={setAmount}
-            value={_amount}
-          />
-        }
-        header={[
-          [t('validators'), 'start', 3],
-          ...['rankComm', 'rankBondTotal', 'rankBondOwn', 'rankBondOther', 'rankOverall'].map((header) => [
-            <>{labels[header]}<Icon name={sortBy === header ? (sortFromMax ? 'chevron down' : 'chevron up') : 'minus'} /></>,
-            `isClickable ${sortBy === header && 'ui--highlight--border'} number`,
-            1,
-            (): void => _sort(header as 'rankComm')
-          ]),
-          []
-        ]}
+        filter={filter}
+        header={header}
       >
         {sorted?.map((info): React.ReactNode =>
           <Validator

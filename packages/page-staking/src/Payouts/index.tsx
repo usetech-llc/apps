@@ -6,10 +6,11 @@ import { DeriveStakerReward } from '@polkadot/api-derive/types';
 import { PayoutStash, PayoutValidator } from './types';
 
 import BN from 'bn.js';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { Button, Table } from '@polkadot/react-components';
 import { useApi, useOwnEraRewards } from '@polkadot/react-hooks';
+import { FormatBalance } from '@polkadot/react-query';
 
 import ElectionBanner from '../ElectionBanner';
 import { useTranslation } from '../translate';
@@ -25,6 +26,7 @@ interface Props {
 }
 
 interface Available {
+  stashTotal?: BN | null;
   stashes?: PayoutStash[];
   validators?: PayoutValidator[];
 }
@@ -87,17 +89,51 @@ function extractStashes (allRewards: Record<string, DeriveStakerReward[]>): Payo
 
 function Payouts ({ className, isInElection }: Props): React.ReactElement<Props> {
   const { api } = useApi();
-  const [{ stashes, validators }, setPayouts] = useState<Available>({});
+  const [{ stashTotal, stashes, validators }, setPayouts] = useState<Available>({});
   const stakerPayoutsAfter = useStakerPayouts();
   const { allRewards } = useOwnEraRewards();
   const { t } = useTranslation();
 
   useEffect((): void => {
-    allRewards && setPayouts({
-      stashes: extractStashes(allRewards),
-      validators: groupByValidator(allRewards)
-    });
+    if (allRewards) {
+      const stashes = extractStashes(allRewards);
+      const stashTotal = stashes.length
+        ? stashes.reduce((total: BN, { available }) => total.add(available), new BN(0))
+        : null;
+
+      setPayouts({
+        stashTotal,
+        stashes,
+        validators: groupByValidator(allRewards)
+      });
+    }
   }, [allRewards]);
+
+  const headerStashes = useMemo(() => [
+    [t('payout/stash'), 'start'],
+    [t('eras'), 'start'],
+    [t('available')],
+    [('remaining')],
+    [undefined, undefined, 3]
+  ], [t]);
+
+  const headerValidators = useMemo(() => [
+    [t('payout/validator'), 'start'],
+    [t('eras'), 'start'],
+    [t('available')],
+    [('remaining')],
+    [undefined, undefined, 3]
+  ], [t]);
+
+  const footer = useMemo(() => (
+    <tr>
+      <td colSpan={2} />
+      <td className='number'>
+        {stashTotal && <FormatBalance value={stashTotal} />}
+      </td>
+      <td colSpan={4} />
+    </tr>
+  ), [stashTotal]);
 
   return (
     <div className={className}>
@@ -113,13 +149,8 @@ function Payouts ({ className, isInElection }: Props): React.ReactElement<Props>
       <Table
         empty={stashes && t('No pending payouts for your stashes')}
         emptySpinner={t('Retrieving info for all applicable eras, this will take some time')}
-        header={[
-          [t('payout/stash'), 'start'],
-          [t('eras'), 'start'],
-          [t('available')],
-          [('remaining')],
-          [undefined, undefined, 3]
-        ]}
+        footer={footer}
+        header={headerStashes}
         isFixed
       >
         {stashes?.map((payout): React.ReactNode => (
@@ -134,13 +165,7 @@ function Payouts ({ className, isInElection }: Props): React.ReactElement<Props>
       {api.tx.staking.payoutStakers && (
         <Table
           empty={validators && t('No pending era payouts from validators')}
-          header={[
-            [t('payout/validator'), 'start'],
-            [t('eras'), 'start'],
-            [t('total')],
-            [('remaining')],
-            [undefined, undefined, 3]
-          ]}
+          header={headerValidators}
           isFixed
         >
           {validators?.map((payout): React.ReactNode => (
