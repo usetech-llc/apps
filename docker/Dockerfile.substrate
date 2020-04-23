@@ -1,7 +1,7 @@
 FROM ubuntu:latest as data
 LABEL maintainer="gz@usetech.com"
 
-EXPOSE 9944 
+EXPOSE 9944
 VOLUME ["/chain-data"]
 
 RUN apt-get update; apt-get install -y curl unzip
@@ -17,7 +17,7 @@ RUN git clone https://github.com/paritytech/substrate substrate
 WORKDIR /substrate/substrate
 
 RUN git fetch --all
-RUN git checkout fc6e2a625d8
+RUN git checkout b08804b9a2a
 COPY ["docker/chainspec.json", "./chainspec.json"]
 
 ENV PATH="/root/.cargo/bin:${PATH}"

@@ -70,25 +70,6 @@ function Voting ({ councilProposals, isDisabled }: Props): React.ReactElement<Pr
     [councilOptId, councilProposals]
   );
 
-  const _onChangeVote = useCallback(
-    (vote?: boolean) => setVoteValue(isBoolean(vote) ? vote : true),
-    []
-  );
-
-  const _onChangeProposal = useCallback(
-    (optionId: number): void => {
-      const councilProp = councilProposals.find(({ votes }): boolean => !!(votes?.index.eq(optionId)));
-
-      if (councilProp && councilProp.votes) {
-        setCouncilInfo({ councilHash: councilProp.hash, councilId: councilProp.votes.index });
-        setCouncilOptId(councilOptId);
-      } else {
-        setCouncilInfo({ councilHash: null, councilId: null });
-      }
-    },
-    [councilOptId, councilProposals]
-  );
-
   if (!hasAccounts || !councilOpts.length) {
     return null;
   }

@@ -13,7 +13,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 		echo "This OS is not supported with this script at present. Sorry."
 		echo "Please refer to https://github.com/paritytech/substrate for setup information."
 		exit 1
-	elif [ -f /etc/SuSE-release ]; then
+elif [ -f /etc/SuSE-release ]; then
 		echo "Suse Linux detected."
 		echo "This OS is not supported with this script at present. Sorry."
 		echo "Please refer to https://github.com/paritytech/substrate for setup information."

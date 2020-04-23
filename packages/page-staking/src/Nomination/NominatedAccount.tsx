@@ -23,7 +23,7 @@ import SetSessionKey from '../Actions/Account/SetSessionKey';
 import Unbond from '../Actions/Account/Unbond';
 import Validate from '../Actions/Account/Validate';
 import { getStakeState, StakeState } from '../Actions/Account';
-import useInactives from './useInactives';
+import useInactives from '../Actions/useInactives';
 
 type ValidatorInfo = ITuple<[ValidatorPrefs, Codec]> | ValidatorPrefs;
 

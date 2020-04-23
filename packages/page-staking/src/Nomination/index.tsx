@@ -51,7 +51,7 @@ function Nomination ({ className, isVisible, stakingOverview, next, isInElection
   const controllerBalance: Balance | null = useBalanceClear(controllerAccountId);
   const accountBalance: Balance | null = useBalanceClear(senderId);
   const ownStashes = useOwnStashes();
-  useValidators(stakingOverview, next);
+  const { filteredValidators, validatorsLoading } = useValidators();
   const { t } = useTranslation();
   const destination = 2; // 2 means controller account
   const extrinsic = (amount && controllerAccountId)
@@ -165,17 +165,17 @@ function Nomination ({ className, isVisible, stakingOverview, next, isInElection
    * Set validators list.
    * If filtered validators
    */
-  /* useEffect(() => {
-    if (validators && validators.length) {
+  useEffect(() => {
+    if (filteredValidators && filteredValidators.length) {
       setSelectedValidators(
-        validators.map((validator): string => validator.key).slice(0, 16)
+        filteredValidators.map((validator): string => validator.key).slice(0, 16)
       );
     } else {
       stakingOverview && setSelectedValidators(
         stakingOverview.validators.map((acc): string => acc.toString()).slice(0, 16)
       );
     }
-  }, [validators, stakingOverview]); */
+  }, [filteredValidators, stakingOverview]);
 
   useEffect(() => {
     if (!wholeFees) {
