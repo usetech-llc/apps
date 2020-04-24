@@ -10,17 +10,13 @@ export default {
     'Kusama CC3': 'kusama'
   },
   create: (chain: string, path: string, data: BN | number | string): string =>
-    `https://${chain}.subscan.io/${path}/${data.toString()}`,
+    `https://${chain}.polkassembly.io/${path}/${data.toString()}`,
   isActive: true,
   paths: {
-    address: 'account',
-    block: 'block',
-    council: 'council',
-    extrinsic: 'extrinsic',
+    council: 'motion',
     proposal: 'proposal',
-    referendum: 'referenda',
-    techcomm: 'tech',
+    referendum: 'referendum',
     treasury: 'treasury'
   },
-  url: 'https://subscan.io/'
+  url: 'https://polkassembly.io/'
 };

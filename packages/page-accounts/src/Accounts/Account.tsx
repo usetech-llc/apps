@@ -51,7 +51,7 @@ function Account ({ account: { address, meta }, className, filter, isFavorite, s
   const recoveryInfo = useCall<RecoveryConfig | null>(api.api.query.recovery?.recoverable, [address], {
     transform: (opt: Option<RecoveryConfig>) => opt.unwrapOr(null)
   });
-  const { genesisHash, isDevelopment, isEditable, isExternal, name: accName, onSaveGenesisHash, tags } = useAccountInfo(address);
+  const { flags: { isDevelopment, isEditable, isExternal }, genesisHash, name: accName, onSaveGenesisHash, tags } = useAccountInfo(address);
   const [isVisible, setIsVisible] = useState(true);
   const [isBackupOpen, toggleBackup] = useToggle();
   const [isDeriveOpen, toggleDerive] = useToggle();
@@ -223,16 +223,13 @@ function Account ({ account: { address, meta }, className, filter, isFavorite, s
         <CryptoType accountId={address} />
       </td>
       <td className='all'>
-        <div className='tags--toggle'>
-          {tags.length
-            ? tags.map((tag): React.ReactNode => (
-              <Tag
-                key={tag}
-                label={tag}
-              />
-            ))
-            : <label>{t('no tags')}</label>
-          }
+        <div className='tags'>
+          {tags.map((tag): React.ReactNode => (
+            <Tag
+              key={tag}
+              label={tag}
+            />
+          ))}
         </div>
       </td>
       <td className='number'>
@@ -341,21 +338,8 @@ function Account ({ account: { address, meta }, className, filter, isFavorite, s
 }
 
 export default React.memo(styled(Account)`
-  .accounts--Account-buttons {
-    text-align: right;
-  }
-
-  .tags--toggle {
-    cursor: pointer;
+  .tags {
     width: 100%;
     min-height: 1.5rem;
-
-    label {
-      cursor: pointer;
-    }
-  }
-
-  .name--input {
-    width: 16rem;
   }
 `);
