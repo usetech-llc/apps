@@ -1,23 +1,27 @@
-import { useState, useEffect } from 'react';
-import {useApi, useCall} from '@polkadot/react-hooks';
-import { DeriveBalancesAll } from '@polkadot/api-derive/types';
-import { formatNumber } from '@polkadot/util';
-import { Balance } from '@polkadot/types/interfaces/runtime';
+// Copyright 2017-2020 @polkadot/app-staking authors & contributors
 import BN from 'bn.js';
-import { formatBalance } from '@polkadot/util';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { useState, useEffect, useCallback } from 'react';
+import { useApi, useCall } from '@polkadot/react-hooks';
+import { DeriveBalancesAll } from '@polkadot/api-derive/types';
+import { formatNumber, formatBalance } from '@polkadot/util';
+import { Balance } from '@polkadot/types/interfaces/runtime';
 
 // Known account we want to use (available on dev chain, with funds)
 
-export function useBalance (address?: string | null): string | null  {
+export function useBalance (address?: string | null): string | null {
   const api = useApi();
   const balancesAll = useCall<DeriveBalancesAll>(api.api.derive.balances.all as any, [address]);
-  return balancesAll ? formatNumber(balancesAll.freeBalance) : null
+
+  return balancesAll ? formatNumber(balancesAll.freeBalance) : null;
 }
 
-export function useBalanceClear (address?: string | null): Balance | null  {
+export function useBalanceClear (address?: string | null): Balance | null {
   const api = useApi();
   const balancesAll = useCall<DeriveBalancesAll>(api.api.derive.balances.all as any, [address]);
-  return balancesAll ? balancesAll.availableBalance : null
+
+  return balancesAll ? balancesAll.availableBalance : null;
 }
 
 export type WholeFeesType = {
@@ -33,7 +37,8 @@ export type WholeFeesType = {
  * @return {WholeFeesType} { wholeFees, feesLoading }
  */
 
-export function useFees (bondedAddress?: string | null, senderAddress?: string | null, validators?: string[]): WholeFeesType  {
+export function useFees (bondedAddress?: string | null, senderAddress?: string | null, validators?: string[]): WholeFeesType {
+  const [amount, setAmount] = useState<BN>(new BN(1));
   const [paymentFees, setPaymentFees] = useState<Balance | null>(null);
   const [bondFees, setBondFees] = useState<Balance | null>(null);
   const [feesLoading, setFeesLoading] = useState<boolean>(false);
@@ -42,43 +47,17 @@ export function useFees (bondedAddress?: string | null, senderAddress?: string |
   const [stopNominationFees, setStopNominationFees] = useState();
   const api = useApi();
   const existentialDeposit = api.api.consts.balances.existentialDeposit;
-  // any amount to get fees
-  const si = formatBalance.findSi('-');
-  const TEN = new BN(10);
-  const basePower = formatBalance.getDefaults().decimals;
-  const siPower = new BN(basePower + si.power);
-  const amount = new BN(1000).mul(TEN.pow(siPower));
 
-  async function getPaymentFees(addr1: string, addr2: string) {
-    const fees = await api.api.tx.balances.transfer(addr1, amount).paymentInfo(addr2);
-    setPaymentFees(fees.partialFee);
-  }
+  const calculateAmount = useCallback((): void => {
+    // any amount to get fees
+    const si = formatBalance.findSi('-');
+    const TEN = new BN(10);
+    const basePower = formatBalance.getDefaults().decimals;
+    const siPower = new BN(basePower + si.power);
+    const amount = new BN(1).mul(TEN.pow(siPower));
 
-  async function getBondFees(addr1: string, addr2: string) {
-    const fees = await api.api.tx.staking.bond(addr1, amount, 2).paymentInfo(addr2);
-    setBondFees(fees.partialFee);
-  }
-
-  async function getStartNominationFees(validators: string[], addr: string) {
-    const fees = await api.api.tx.staking.nominate(validators).paymentInfo(addr);
-    setStartNominationFees(fees.partialFee);
-  }
-
-  async function getStopNominationFees(addr: string) {
-    const fees = await api.api.tx.staking.chill().paymentInfo(addr);
-    setStopNominationFees(fees.partialFee);
-  }
-
-  async function setWholeFeesAsync() {
-    if (bondedAddress && senderAddress && validators) {
-      setFeesLoading(true);
-      await getPaymentFees(bondedAddress, senderAddress);
-      await getBondFees(bondedAddress, senderAddress);
-      await getStopNominationFees(senderAddress);
-      await getStartNominationFees(validators, senderAddress);
-      setFeesLoading(false);
-    }
-  }
+    setAmount(amount);
+  }, []);
 
   useEffect(() => {
     if (bondFees && startNominationFees && stopNominationFees && paymentFees) {
@@ -87,17 +66,40 @@ export function useFees (bondedAddress?: string | null, senderAddress?: string |
         .add(existentialDeposit)
         .add(startNominationFees)
         .add(stopNominationFees);
+
       setWholeFees(whole);
     }
-  }, [bondFees, startNominationFees, stopNominationFees]);
+  }, [bondFees, existentialDeposit, paymentFees, startNominationFees, stopNominationFees]);
 
   useEffect(() => {
-    if (!wholeFees) {
-      setWholeFeesAsync().then();
-    }
-  }, [bondedAddress, senderAddress, validators]);
+    if (!wholeFees && bondedAddress && senderAddress && validators) {
+      setFeesLoading(true);
+      const fessGetter = forkJoin({
+        bondFees: api.api.tx.staking.bond(bondedAddress, amount, 2).paymentInfo(senderAddress),
+        paymentFees: api.api.tx.balances.transfer(bondedAddress, amount).paymentInfo(senderAddress),
+        startNominationFees: api.api.tx.staking.nominate(validators).paymentInfo(senderAddress),
+        stopNominationFees: api.api.tx.staking.chill().paymentInfo(senderAddress)
+      }).pipe(catchError((error) => {
+        setFeesLoading(false);
 
-  return { wholeFees, feesLoading };
+        return of(error);
+      }));
+
+      fessGetter.subscribe(({ bondFees, paymentFees, startNominationFees, stopNominationFees }) => {
+        setFeesLoading(false);
+        setPaymentFees(paymentFees.partialFee);
+        setBondFees(bondFees.partialFee);
+        setStartNominationFees(startNominationFees.partialFee);
+        setStopNominationFees(stopNominationFees.partialFee);
+      });
+    }
+  }, [amount, api.api.tx.staking, api.api.tx.balances, bondedAddress, senderAddress, validators, wholeFees]);
+
+  useEffect(() => {
+    calculateAmount();
+  }, [calculateAmount]);
+
+  return { feesLoading, wholeFees };
 }
 
 export default useBalance;
