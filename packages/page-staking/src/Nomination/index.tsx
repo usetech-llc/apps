@@ -53,7 +53,7 @@ function Nomination ({ className, isInElection, isVisible, next, stakingOverview
   const controllerBalance: Balance | null = useBalanceClear(controllerAccountId);
   const accountBalance: Balance | null = useBalanceClear(senderId);
   const ownStashes = useOwnStashes();
-  console.log('ownStashes', ownStashes);
+  // console.log('ownStashes', ownStashes);
   const { filteredValidators, validatorsLoading } = useValidators();
   const { t } = useTranslation();
   const destination = 2; // 2 means controller account
@@ -207,6 +207,7 @@ function Nomination ({ className, isInElection, isVisible, next, stakingOverview
     setStepsState(['completed', 'completed', 'completed', 'completed']);
   }, [ownStashes]); */
 
+  // console.log('ownStashes', ownStashes);
   return (
     <main className={`${className} ${!isVisible ? 'staking--hidden' : ''} simple-nominatio`}>
       <TabsHeader
@@ -224,8 +225,7 @@ function Nomination ({ className, isInElection, isVisible, next, stakingOverview
           <br />
           <h3>{t('Select your account that holds funds')}:</h3>
           <br />
-          <Available label={balanceWrapper(t('Your account balance'))}
-            params={senderId} />
+          <Available label={balanceWrapper(t('Your account balance'))} params={senderId} />
           <AccountSelector
             onChange={setSenderId}
             setStepsState={setStepsState}

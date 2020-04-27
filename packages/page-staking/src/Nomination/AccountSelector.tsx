@@ -44,7 +44,8 @@ function AccountSelector ({ className, onChange, setStepsState, stepsState, titl
     }
 
     setStepsState(newStepsState);
-  }, [balance, existentialDeposit, stepsState, setStepsState]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [balance, existentialDeposit]);
 
   return (
     <section className={className} >
