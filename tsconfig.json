@@ -3,7 +3,8 @@
   "exclude": [
     "build/**/*",
     "**/build/**/*",
-    "docker/**/*"
+    "docker/**/*",
+    "node_modules/**/*"
   ],
   "compilerOptions": {
     "baseUrl": ".",
