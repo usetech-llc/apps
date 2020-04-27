@@ -4,23 +4,27 @@
 
 import { DeriveStakingElected, DeriveSessionIndexes } from '@polkadot/api-derive/types';
 import { Balance, ValidatorPrefs, ValidatorPrefsTo196 } from '@polkadot/types/interfaces';
+import { StakerState } from '@polkadot/react-hooks/types';
 import { ValidatorInfo } from './types';
 
 import BN from 'bn.js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { registry } from '@polkadot/react-api';
-import { Icon, InputBalance, Table } from '@polkadot/react-components';
+import { Icon, InputBalance, Table, Button } from '@polkadot/react-components';
 import { useAccounts, useApi, useCall, useDebounce, useFavorites } from '@polkadot/react-hooks';
-import { createType, Option } from '@polkadot/types';
+import { Option } from '@polkadot/types';
 
 import { STORE_FAVS_BASE } from '../constants';
 import { useTranslation } from '../translate';
+import Nominate from './Nominate';
 import Summary from './Summary';
 import Validator from './Validator';
+import useOwnNominators from './useOwnNominators';
 
 interface Props {
   className?: string;
+  ownStashes?: StakerState[];
 }
 
 export interface AllInfo {
@@ -32,6 +36,7 @@ export interface AllInfo {
 
 export type SortBy = 'rankOverall' | 'rankBondOwn' | 'rankBondOther' | 'rankBondTotal' | 'rankComm';
 
+const MAX_NOMINATIONS = 16;
 export const PERBILL = new BN(1_000_000_000);
 
 function sortValidators (list: ValidatorInfo[]): ValidatorInfo[] {
@@ -88,7 +93,11 @@ function sortValidators (list: ValidatorInfo[]): ValidatorInfo[] {
       info.rankOverall = index + 1;
 
       return info;
-    });
+    })
+    .sort((a, b): number => a.isFavorite === b.isFavorite
+      ? 0
+      : (a.isFavorite ? -1 : 1)
+    );
 }
 
 export function extractInfo (allAccounts: string[], amount: BN = new BN(0), electedInfo: DeriveStakingElected, favorites: string[], lastReward = new BN(1)): AllInfo {
@@ -98,12 +107,12 @@ export function extractInfo (allAccounts: string[], amount: BN = new BN(0), elec
   const validators = sortValidators(
     electedInfo.info.map(({ accountId, exposure: _exposure, validatorPrefs }): ValidatorInfo => {
       const exposure = _exposure || {
-        others: createType(registry, 'Vec<IndividualExposure>'),
-        own: createType(registry, 'Compact<Balance>'),
-        total: createType(registry, 'Compact<Balance>')
+        others: registry.createType('Vec<IndividualExposure>'),
+        own: registry.createType('Compact<Balance>'),
+        total: registry.createType('Compact<Balance>')
       };
       const prefs = (validatorPrefs as (ValidatorPrefs | ValidatorPrefsTo196)) || {
-        commission: createType(registry, 'Compact<Perbill>')
+        commission: registry.createType('Compact<Perbill>')
       };
       const bondOwn = exposure.own.unwrap();
       const bondTotal = exposure.total.unwrap();
@@ -157,7 +166,7 @@ export function extractInfo (allAccounts: string[], amount: BN = new BN(0), elec
 }
 
 export function sort (sortBy: SortBy, sortFromMax: boolean, validators: ValidatorInfo[]): ValidatorInfo[] {
-  return validators
+  return [...validators]
     .sort((a, b): number => sortFromMax
       ? a[sortBy] - b[sortBy]
       : b[sortBy] - a[sortBy]
@@ -168,12 +177,12 @@ export function sort (sortBy: SortBy, sortFromMax: boolean, validators: Validato
     );
 }
 
-function Targets ({ className }: Props): React.ReactElement<Props> {
+function Targets ({ className, ownStashes }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
   const { allAccounts } = useAccounts();
+  const ownNominators = useOwnNominators(ownStashes);
   const lastEra = useCall<BN>(api.derive.session.indexes, [], {
-    defaultValue: new BN(0),
     transform: ({ activeEra }: DeriveSessionIndexes) => activeEra.gtn(0) ? activeEra.subn(1) : new BN(0)
   }) || new BN(0);
   const lastReward = useCall<BN>(api.query.staking.erasValidatorReward, [lastEra], {
@@ -182,23 +191,47 @@ function Targets ({ className }: Props): React.ReactElement<Props> {
   const [_amount, setAmount] = useState<BN | undefined>(new BN(1_000));
   const electedInfo = useCall<DeriveStakingElected>(api.derive.staking.electedInfo, []);
   const [favorites, toggleFavorite] = useFavorites(STORE_FAVS_BASE);
+  const [selected, setSelected] = useState<string[]>([]);
   const [{ nominators, sorted, totalStaked, validators }, setWorkable] = useState<AllInfo>({ nominators: [], validators: [] });
   const [{ sortBy, sortFromMax }, setSortBy] = useState<{ sortBy: SortBy; sortFromMax: boolean }>({ sortBy: 'rankOverall', sortFromMax: true });
   const amount = useDebounce(_amount);
   const labels = useMemo(
-    (): Record<string, string> => ({ rankBondOther: t('other stake'), rankBondOwn: t('own stake'), rankBondTotal: t('total stake'), rankComm: t('commission'), rankOverall: t('profit/era est') }),
+    (): Record<string, string> => ({
+      rankBondOther: t('other stake'),
+      rankBondOwn: t('own stake'),
+      rankBondTotal: t('total stake'),
+      rankComm: t('commission'),
+      rankOverall: t('profit/era est')
+    }),
     [t]
   );
 
   const _sort = useCallback(
-    (newSortBy: SortBy): void =>
-      setSortBy(({ sortBy, sortFromMax }) => ({
-        sortBy: newSortBy,
-        sortFromMax: newSortBy === sortBy
-          ? !sortFromMax
-          : true
-      })),
+    (newSortBy: SortBy) => setSortBy(({ sortBy, sortFromMax }) => ({
+      sortBy: newSortBy,
+      sortFromMax: newSortBy === sortBy
+        ? !sortFromMax
+        : true
+    })),
     []
+  );
+
+  const _toggleSelected = useCallback(
+    (address: string) => setSelected(
+      selected.includes(address)
+        ? selected.filter((accountId): boolean => address !== accountId)
+        : [...selected, address]
+    ),
+    [selected]
+  );
+
+  const _selectProfitable = useCallback(
+    () => setSelected(
+      validators
+        .filter((_, index) => index < MAX_NOMINATIONS)
+        .map(({ key }) => key)
+    ),
+    [validators]
   );
 
   useEffect((): void => {
@@ -224,7 +257,7 @@ function Targets ({ className }: Props): React.ReactElement<Props> {
   const filter = useMemo(() => (
     <InputBalance
       className='balanceInput'
-      help={t('The amount that will be used on a per-validator basis to calculate rewards for that validator.')}
+      help={t('The amount that will be used on a per-validator basis to calculate profits for that validator.')}
       isFull
       label={t('amount to use for estimation')}
       onChange={setAmount}
@@ -240,16 +273,32 @@ function Targets ({ className }: Props): React.ReactElement<Props> {
         numValidators={validators.length}
         totalStaked={totalStaked}
       />
+      <Button.Group>
+        <Button
+          icon='check'
+          isDisabled={!validators.length || !ownNominators?.length}
+          label={t('Select best')}
+          onClick={_selectProfitable}
+        />
+        <Button.Or />
+        <Nominate
+          ownNominators={ownNominators}
+          targets={selected}
+        />
+      </Button.Group>
       <Table
-        empty={sorted && t('No active validators to check for rewards available')}
+        empty={sorted && t('No active validators to check')}
         filter={filter}
         header={header}
       >
         {sorted?.map((info): React.ReactNode =>
           <Validator
+            canSelect={selected.length < MAX_NOMINATIONS}
             info={info}
+            isSelected={selected.includes(info.key)}
             key={info.key}
             toggleFavorite={toggleFavorite}
+            toggleSelected={_toggleSelected}
           />
         )}
       </Table>
@@ -259,7 +308,7 @@ function Targets ({ className }: Props): React.ReactElement<Props> {
 
 export default React.memo(styled(Targets)`
   text-align: center;
-  
+
   th {
     i.icon {
       margin-left: 0.5rem;
