@@ -6,7 +6,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Table } from '@polkadot/react-components';
 import NominatedAccount from '@polkadot/app-staking/Nomination/NominatedAccount';
 import { useTranslation } from '@polkadot/app-staking/translate';
-import { DeriveStakingOverview, DeriveStakerReward } from '@polkadot/api-derive/types';
+import { DeriveStakingOverview } from '@polkadot/api-derive/types';
 
 interface Props {
   controllerAccountId?: string | null;
@@ -59,7 +59,7 @@ function StashesTable ({ allStashes, controllerAccountId, next, onUpdateControll
         [undefined, undefined, 2]
       ]}
     >
-      {foundStashes?.map(([stashId, isOwnStash]: Array<any>): React.ReactNode => (
+      {foundStashes?.map(([stashId]: Array<any>): React.ReactNode => (
         <NominatedAccount
           allStashes={allStashes}
           key={stashId}

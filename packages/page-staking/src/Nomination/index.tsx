@@ -26,6 +26,7 @@ const steps = ['choose', 'create', 'bond', 'nominate'];
 const stepInitialState = ['', 'disabled', 'disabled', 'disabled'];
 
 interface Props {
+  allStashes?: string[];
   className?: string;
   isVisible: boolean;
   stakingOverview?: DeriveStakingOverview;
@@ -34,7 +35,7 @@ interface Props {
   validators?: string[];
 }
 
-function Nomination ({ className, isInElection, isVisible, next, stakingOverview, validators }: Props): React.ReactElement<Props> {
+function Nomination ({ allStashes, className, isInElection, isVisible, next, stakingOverview }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const [currentStep, setCurrentStep] = useState<string>(steps[0]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -225,7 +226,10 @@ function Nomination ({ className, isInElection, isVisible, next, stakingOverview
           <br />
           <h3>{t('Select your account that holds funds')}:</h3>
           <br />
-          <Available label={balanceWrapper(t('Your account balance'))} params={senderId} />
+          <Available
+            label={balanceWrapper(t('Your account balance'))}
+            params={senderId}
+          />
           <AccountSelector
             onChange={setSenderId}
             setStepsState={setStepsState}
@@ -368,6 +372,7 @@ function Nomination ({ className, isInElection, isVisible, next, stakingOverview
         </Button.Group>
         {(currentStep === steps[2] || currentStep === steps[3]) && (
           <StashesTable
+            allStashes={allStashes}
             controllerAccountId={controllerAccountId}
             isInElection={isInElection}
             isVisible={isVisible}
