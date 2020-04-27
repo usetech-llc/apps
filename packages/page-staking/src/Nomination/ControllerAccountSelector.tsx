@@ -40,7 +40,8 @@ function ControllerAccountSelector ({ className, onChange, senderId, setStepsSta
     }
 
     setStepsState(newStepsState);
-  }, [senderId, value, stepsState, setStepsState]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [senderId, value]);
 
   return (
     <section className={className} >
