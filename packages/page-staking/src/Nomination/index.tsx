@@ -1,4 +1,4 @@
-// Copyright 2020
+// Copyright 2017-2020 @polkadot/app-staking authors & contributors
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
@@ -8,10 +8,10 @@ import BN from 'bn.js';
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import CreateModal from '@polkadot/app-accounts/Accounts/modals/Create';
-import { useApi, useOwnStashes, useToggle} from '@polkadot/react-hooks';
-import { useTranslation} from '@polkadot/app-accounts/translate';
+import { useApi, useOwnStashes, useToggle } from '@polkadot/react-hooks';
+import { useTranslation } from '@polkadot/app-accounts/translate';
 import { Available } from '@polkadot/react-query';
-import { AddressInfo, Button, InputBalance, TxButton /*, Spinner*/ } from '@polkadot/react-components';
+import { AddressInfo, Button, InputBalance, TxButton /*, Spinner */ } from '@polkadot/react-components';
 import TabsHeader from '@polkadot/app-staking/Nomination/TabsHeader';
 import StashesTable from '@polkadot/app-staking/Nomination/StahesTable';
 import { useBalanceClear, useFees, WholeFeesType } from '@polkadot/app-staking/Nomination/useBalance';
@@ -31,12 +31,14 @@ interface Props {
   stakingOverview?: DeriveStakingOverview;
   next?: string[];
   isInElection?: boolean;
+  validators?: string[];
 }
 
-function Nomination ({ className, isVisible, stakingOverview, next, isInElection, validators }: Props): React.ReactElement<Props> {
+function Nomination ({ className, isInElection, isVisible, next, stakingOverview, validators }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const [currentStep, setCurrentStep] = useState<string>(steps[0]);
-  const [alreadyHaveStashes /*, setAlreadyHaveStashes*/ ] = useState<boolean>(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [alreadyHaveStashes, setAlreadyHaveStashes] = useState<boolean>(false);
   const [isNominated, setIsNominated] = useState<boolean>(false);
   const [controllerAccountId, setControllerAccountId] = useState<string | null>(null);
   const [senderId, setSenderId] = useState<string | null>(null);
@@ -44,7 +46,7 @@ function Nomination ({ className, isVisible, stakingOverview, next, isInElection
   const [controllerAlreadyBonded, setControllerAlreadyBonded] = useState<boolean>(false);
   const [isCreateOpen, toggleCreate] = useToggle();
   const [selectedValidators, setSelectedValidators] = useState<string[]>([]);
-  const { wholeFees, feesLoading } : WholeFeesType = useFees(controllerAccountId, senderId, selectedValidators);
+  const { feesLoading, wholeFees }: WholeFeesType = useFees(controllerAccountId, senderId, selectedValidators);
   const [transferableAmount, setTransferableAmount] = useState<BN>(new BN(1));
   const [amountToBond, setAmountToBond] = useState<BN | undefined>();
   const [amount, setAmount] = useState<BN | undefined | null>(null);
@@ -59,107 +61,81 @@ function Nomination ({ className, isVisible, stakingOverview, next, isInElection
     : null;
   const existentialDeposit = api.consts.balances.existentialDeposit;
 
-  function onStatusChange() {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const onStatusChange = useCallback(() => {
+  }, []);
 
-  function setStepsStateAction() {
-    if (controllerAlreadyBonded && !isNominated) {
-      setStepsState((prevState): string[] => {
-        const newState = [...prevState];
-        newState[2] = 'completed';
-        newState[3] = '';
-        return newState;
-      });
-      // go to last tab
-      if (currentStep === steps[2]) {
-        setCurrentStep(steps[3]);
-      }
-    }
-    if (isNominated) {
-      setStepsState((prevState): string[] => {
-        const newState = [...prevState];
-        newState[2] = 'completed';
-        newState[3] = 'completed';
-        return newState;
-      });
-      // go to last tab
-      if (currentStep === steps[2]) {
-        setCurrentStep(steps[3]);
-      }
-    }
-  }
-
-  function balanceWrapper(text: string): React.ReactNode {
+  function balanceWrapper (text: string): React.ReactNode {
     return (
       <strong className='label'>{text}</strong>
     );
   }
 
-  function goBack() {
+  const goBack = useCallback((): void => {
     const ind = steps.indexOf(currentStep);
-    setCurrentStep(steps[ind - 1]);
-  }
 
-  function goNext() {
+    setCurrentStep(steps[ind - 1]);
+  }, [currentStep]);
+
+  const goNext = useCallback((): void => {
     const ind = steps.indexOf(currentStep);
+
     if (ind < 3) {
       setCurrentStep(steps[ind + 1]);
     }
-  }
+  }, [currentStep]);
 
-  function disableNext() {
+  const disableNext = useCallback((): boolean => {
     const ind = steps.indexOf(currentStep);
-    return stepsState[ind + 1] === 'disabled';
-  }
 
-  function resetControllerInfo(accountId: string | null) {
+    return stepsState[ind + 1] === 'disabled';
+  }, [currentStep, stepsState]);
+
+  const resetControllerInfo = useCallback((accountId: string | null): void => {
     setControllerAlreadyBonded(false);
     setControllerAccountId(accountId);
-  }
+  }, []);
 
   /**
    * double fees for case if fees will be changed on a small count of funds
    * @todo - compare with account balance and throw error if more
    */
-  function setAmountToTransfer() {
+  const setAmountToTransfer = useCallback((): void => {
     const minAmount = new BN(0);
+
     setTransferableAmount(
       minAmount
         .iadd(wholeFees)
         .iadd(wholeFees)
         .isub(controllerBalance || new BN(0))
     );
-  }
+  }, [controllerBalance, wholeFees]);
 
-  function calculateMaxPreFilledBalance() {
+  const calculateMaxPreFilledBalance = useCallback((): void => {
     if (accountBalance && wholeFees && !amountToBond) {
       // double wholeFees
       setAmountToBond(accountBalance.isub(wholeFees).isub(wholeFees).isub(existentialDeposit));
     }
-    return 0;
-  }
+  }, [accountBalance, amountToBond, existentialDeposit, wholeFees]);
 
-  function isBalanceEnough() {
-    return (accountBalance
-      && controllerBalance
-      && existentialDeposit
-      && wholeFees
-      && accountBalance.cmp(existentialDeposit) === 1
-      && controllerBalance.cmp(wholeFees) === 1)
-  }
+  const isBalanceEnough = useCallback((): boolean | null => {
+    return (accountBalance &&
+      controllerBalance &&
+      existentialDeposit &&
+      wholeFees &&
+      accountBalance.cmp(existentialDeposit) === 1 &&
+      controllerBalance.cmp(wholeFees) === 1);
+  }, [accountBalance, controllerBalance, existentialDeposit, wholeFees]);
 
   const _onUpdateControllerState = useCallback(
     (controllerAlreadyBonded: boolean): void => {
       setControllerAlreadyBonded(controllerAlreadyBonded);
-    },
-    [controllerAlreadyBonded]
-  );
+    }, []);
 
   const _onUpdateNominatedState = useCallback(
     (isNominated) => {
       setIsNominated(isNominated);
-    },
-    [isNominated]
-  );
+    }, []);
 
   /**
    * Set validators list.
@@ -181,13 +157,44 @@ function Nomination ({ className, isVisible, stakingOverview, next, isInElection
     if (!wholeFees) {
       return;
     }
+
     setAmountToTransfer();
     calculateMaxPreFilledBalance();
-  }, [accountBalance, controllerBalance, wholeFees]);
+  }, [calculateMaxPreFilledBalance, setAmountToTransfer, wholeFees]);
 
   useEffect(() => {
-    setStepsStateAction();
-  }, [controllerAlreadyBonded, isNominated]);
+    if (controllerAlreadyBonded && !isNominated) {
+      setStepsState((prevState): string[] => {
+        const newState = [...prevState];
+
+        newState[2] = 'completed';
+        newState[3] = '';
+
+        return newState;
+      });
+
+      // go to last tab
+      if (currentStep === steps[2]) {
+        setCurrentStep(steps[3]);
+      }
+    }
+
+    if (isNominated) {
+      setStepsState((prevState): string[] => {
+        const newState = [...prevState];
+
+        newState[2] = 'completed';
+        newState[3] = 'completed';
+
+        return newState;
+      });
+
+      // go to last tab
+      if (currentStep === steps[2]) {
+        setCurrentStep(steps[3]);
+      }
+    }
+  }, [controllerAlreadyBonded, currentStep, isNominated]);
 
   /**
    * Since we already have stashes just open the 4th screen - nomination
@@ -202,49 +209,49 @@ function Nomination ({ className, isVisible, stakingOverview, next, isInElection
   return (
     <main className={`${className} ${!isVisible ? 'staking--hidden' : ''} simple-nominatio`}>
       <TabsHeader
-        setCurrentStep={setCurrentStep}
-        stepsState={stepsState}
-        steps={steps}
         currentStep={currentStep}
+        setCurrentStep={setCurrentStep}
+        steps={steps}
+        stepsState={stepsState}
       />
-      <div className="ui attached segment">
+      <div className='ui attached segment'>
         {/* {feesLoading && (
           <Spinner />
         )} */}
         {currentStep === steps[0] &&
         <>
-            <br />
-            <h3>{t('Select your account that holds funds')}:</h3>
-            <br />
-            <Available label={balanceWrapper(t('Your account balance'))} params={senderId} />
-            <AccountSelector
-              value={senderId}
-              title={'Your account'}
-              onChange={setSenderId}
-              stepsState={stepsState}
-              setStepsState={setStepsState}
-            />
+          <br />
+          <h3>{t('Select your account that holds funds')}:</h3>
+          <br />
+          <Available label={balanceWrapper(t('Your account balance'))}
+            params={senderId} />
+          <AccountSelector
+            onChange={setSenderId}
+            setStepsState={setStepsState}
+            stepsState={stepsState}
+            title={'Your account'}
+            value={senderId}
+          />
         </>
         }
         {currentStep === steps[1] &&
         <>
-            <br />
-            <h3>{t('Now you need to select or create Controller account. This is account that will manage your funds')}:</h3>
-            <br />
-            <Available label={balanceWrapper('Controller balance')} params={controllerAccountId} />
-            <ControllerAccountSelector
-              senderId={senderId}
-              value={controllerAccountId}
-              title={t('controller account')}
-              onChange={resetControllerInfo}
-              stepsState={stepsState}
-              setStepsState={setStepsState}
-              toggleCreate={toggleCreate}
-            />
+          <br />
+          <h3>{t('Now you need to select or create Controller account. This is account that will manage your funds')}:</h3>
+          <br />
+          <Available label={balanceWrapper('Controller balance')}
+            params={controllerAccountId} />
+          <ControllerAccountSelector
+            onChange={resetControllerInfo}
+            senderId={senderId}
+            setStepsState={setStepsState}
+            stepsState={stepsState}
+            title={t('controller account')}
+            toggleCreate={toggleCreate}
+            value={controllerAccountId}
+          />
           {isCreateOpen && (
             <CreateModal
-              hideAdvanced
-              initialName={'NominationController'}
               onClose={toggleCreate}
               onStatusChange={onStatusChange}
             />
@@ -260,40 +267,40 @@ function Nomination ({ className, isVisible, stakingOverview, next, isInElection
           </h3>
           }
           { !controllerAlreadyBonded && isBalanceEnough() && (
-              <>
-                <h3>{t('Now we need to Bond funds. Bonding means that main account gives control over funds to Controller account.')}
-                  <p>{t('Once bonded, funds will be under management of your Controller.')}</p>
-                  <p>{t('Money can be unbonded, but will remain locked for a while.')}</p>
-                </h3>
-                <h4 className="ui orange header">
-                  {t('Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for')} <EraToTime showBlocks />, {t('which is approximately')} <EraToTime showDays />.
-                </h4>
-                <br />
-                <AddressInfo
-                  address={senderId}
-                  withBalance={{
-                    available: true,
-                    bonded: true,
-                    free: true,
-                    redeemable: true,
-                    unlocking: true
-                  }}
-                  withRewardDestination
-                />
-                <section>
-                  <h1>{t('Enter the amount you would like to Bond and click Next:')}</h1>
-                  <div className='ui--row'>
-                    <div className='large'>
-                      <InputBalance
-                        value={formatBalance(amountToBond, { withUnit: false })}
-                        label={t('amount to bond')}
-                        onChange={setAmount}
-                      />
-                    </div>
-                    <Summary className='small'>{t('Bond to controller account. Bond fees and per-transaction fees apply and will be calculated upon submission.')}</Summary>
+            <>
+              <h3>{t('Now we need to Bond funds. Bonding means that main account gives control over funds to Controller account.')}
+                <p>{t('Once bonded, funds will be under management of your Controller.')}</p>
+                <p>{t('Money can be unbonded, but will remain locked for a while.')}</p>
+              </h3>
+              <h4 className='ui orange header'>
+                {t('Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for')} <EraToTime showBlocks />, {t('which is approximately')} <EraToTime showDays />.
+              </h4>
+              <br />
+              <AddressInfo
+                address={senderId}
+                withBalance={{
+                  available: true,
+                  bonded: true,
+                  free: true,
+                  redeemable: true,
+                  unlocking: true
+                }}
+                withRewardDestination
+              />
+              <section>
+                <h1>{t('Enter the amount you would like to Bond and click Next:')}</h1>
+                <div className='ui--row'>
+                  <div className='large'>
+                    <InputBalance
+                      label={t('amount to bond')}
+                      onChange={setAmount}
+                      value={formatBalance(amountToBond, { withUnit: false })}
+                    />
                   </div>
-                </section>
-              </>
+                  <Summary className='small'>{t('Bond to controller account. Bond fees and per-transaction fees apply and will be calculated upon submission.')}</Summary>
+                </div>
+              </section>
+            </>
           )}
           <br />
         </>
@@ -308,18 +315,18 @@ function Nomination ({ className, isVisible, stakingOverview, next, isInElection
         }
         <Button.Group>
           <Button
-            key='Back'
-            label={t('Back')}
             icon=''
             isDisabled={steps.indexOf(currentStep) === 0 || alreadyHaveStashes}
+            key='Back'
+            label={t('Back')}
             onClick={goBack}
           />
-          <div className="or" />
+          <div className='or' />
           {currentStep === steps[2] && !isBalanceEnough() && (
             <TxButton
-              isDisabled={!wholeFees || feesLoading}
               accountId={senderId}
               icon='send'
+              isDisabled={!wholeFees || feesLoading}
               label={t('Next')}
               params={[controllerAccountId, transferableAmount]}
               tx='balances.transfer'
@@ -329,45 +336,45 @@ function Nomination ({ className, isVisible, stakingOverview, next, isInElection
           {currentStep === steps[2] && !controllerAlreadyBonded && isBalanceEnough() && (
             <TxButton
               accountId={senderId}
+              extrinsic={extrinsic}
+              icon='sign-in'
               isDisabled={controllerAlreadyBonded}
               isPrimary
               label={t('Bond')}
-              icon='sign-in'
-              extrinsic={extrinsic}
             />
           )}
           {currentStep === steps[3] && controllerAlreadyBonded && (
             <TxButton
               accountId={controllerAccountId}
+              icon='hand paper outline'
               isDisabled={!selectedValidators.length || !controllerAlreadyBonded || isNominated || validatorsLoading}
               isPrimary
-              params={[selectedValidators]}
               label={t('Nominate')}
-              icon='hand paper outline'
+              params={[selectedValidators]}
               tx='staking.nominate'
             />
           )}
           {currentStep !== steps[3] && (currentStep !== steps[2] || controllerAlreadyBonded) && (
             <Button
-              className="primary"
-              key='Next'
-              label={t('Next')}
+              className='primary'
               icon=''
               isDisabled={disableNext()}
+              key='Next'
+              label={t('Next')}
               onClick={goNext}
             />
           )}
         </Button.Group>
         {(currentStep === steps[2] || currentStep === steps[3]) && (
           <StashesTable
-            onUpdateNominatedState={_onUpdateNominatedState}
-            onUpdateControllerState={_onUpdateControllerState}
-            ownStashes={ownStashes}
             controllerAccountId={controllerAccountId}
-            stakingOverview={stakingOverview}
+            isInElection={isInElection}
             isVisible={isVisible}
             next={next}
-            isInElection={isInElection}
+            onUpdateControllerState={_onUpdateControllerState}
+            onUpdateNominatedState={_onUpdateNominatedState}
+            ownStashes={ownStashes}
+            stakingOverview={stakingOverview}
             validators={validators}
           />
         )}

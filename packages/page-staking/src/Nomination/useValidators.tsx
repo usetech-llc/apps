@@ -40,13 +40,14 @@ function useValidators (): useValidatorsInterface {
 
   const [{ validators }, setWorkable] = useState<AllInfo>({ nominators: [], validators: [] });
   const [validatorsLoading, setValidatorsLoading] = useState(false);
-  const filteredElected = useValidatorsFilter(electedInfo, setValidatorsLoading);
-
+  const filteredElected = useValidatorsFilter(electedInfo);
+  console.log('filteredElected', filteredElected);
   useEffect((): void => {
     if (filteredElected && filteredElected.info) {
       const { nominators, totalStaked, validators } = extractInfo(allAccounts, amount, filteredElected, favorites, lastReward);
       const sorted = sort(sortBy, sortFromMax, validators);
-      setWorkable({ nominators, totalStaked, sorted, validators });
+
+      setWorkable({ nominators, sorted, totalStaked, validators });
       setValidatorsLoading(false);
     }
   }, [allAccounts, amount, electedInfo, favorites, lastReward, sortBy, sortFromMax, filteredElected]);

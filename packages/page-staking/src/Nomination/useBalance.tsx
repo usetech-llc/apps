@@ -39,12 +39,8 @@ export type WholeFeesType = {
 
 export function useFees (bondedAddress?: string | null, senderAddress?: string | null, validators?: string[]): WholeFeesType {
   const [amount, setAmount] = useState<BN>(new BN(1));
-  const [paymentFees, setPaymentFees] = useState<Balance | null>(null);
-  const [bondFees, setBondFees] = useState<Balance | null>(null);
   const [feesLoading, setFeesLoading] = useState<boolean>(false);
   const [wholeFees, setWholeFees] = useState<any>(null);
-  const [startNominationFees, setStartNominationFees] = useState();
-  const [stopNominationFees, setStopNominationFees] = useState();
   const api = useApi();
   const existentialDeposit = api.api.consts.balances.existentialDeposit;
 
@@ -60,37 +56,33 @@ export function useFees (bondedAddress?: string | null, senderAddress?: string |
   }, []);
 
   useEffect(() => {
-    if (bondFees && startNominationFees && stopNominationFees && paymentFees) {
-      const whole = paymentFees
-        .add(bondFees)
-        .add(existentialDeposit)
-        .add(startNominationFees)
-        .add(stopNominationFees);
-
-      setWholeFees(whole);
-    }
-  }, [bondFees, existentialDeposit, paymentFees, startNominationFees, stopNominationFees]);
-
-  useEffect(() => {
     if (!wholeFees && bondedAddress && senderAddress && validators) {
       setFeesLoading(true);
       const fessGetter = forkJoin({
-        bondFees: api.api.tx.staking.bond(bondedAddress, amount, 2).paymentInfo(senderAddress),
-        paymentFees: api.api.tx.balances.transfer(bondedAddress, amount).paymentInfo(senderAddress),
-        startNominationFees: api.api.tx.staking.nominate(validators).paymentInfo(senderAddress),
-        stopNominationFees: api.api.tx.staking.chill().paymentInfo(senderAddress)
+        bond: api.api.tx.staking.bond(bondedAddress, amount, 2).paymentInfo(senderAddress),
+        payment: api.api.tx.balances.transfer(bondedAddress, amount).paymentInfo(senderAddress),
+        startNomination: api.api.tx.staking.nominate(validators).paymentInfo(senderAddress),
+        stopNomination: api.api.tx.staking.chill().paymentInfo(senderAddress)
       }).pipe(catchError((error) => {
         setFeesLoading(false);
 
         return of(error);
       }));
 
-      fessGetter.subscribe(({ bondFees, paymentFees, startNominationFees, stopNominationFees }) => {
+      fessGetter.subscribe(({ bond, payment, startNomination, stopNomination }) => {
         setFeesLoading(false);
-        setPaymentFees(paymentFees.partialFee);
-        setBondFees(bondFees.partialFee);
-        setStartNominationFees(startNominationFees.partialFee);
-        setStopNominationFees(stopNominationFees.partialFee);
+        const paymentFees = payment ? payment.partialFee : null;
+        const bondFees = bond ? bond.partialFee : null;
+        const startNominationFees = startNomination ? startNomination.partialFee : null;
+        const stopNominationFees = stopNomination ? stopNomination.partialFee : null;
+
+        const whole = paymentFees
+          .add(bondFees)
+          .add(existentialDeposit)
+          .add(startNominationFees)
+          .add(stopNominationFees);
+
+        setWholeFees(whole);
       });
     }
   }, [amount, api.api.tx.staking, api.api.tx.balances, bondedAddress, senderAddress, validators, wholeFees]);

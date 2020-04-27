@@ -23,7 +23,7 @@ interface Props {
   validators?: string[];
 }
 
-function StashesTable({ className, allStashes, isInElection, validators, isVisible, next, allRewards, stakingOverview, controllerAccountId, ownStashes, onUpdateControllerState, onUpdateNominatedState }: Props): React.ReactElement<Props> {
+function StashesTable ({ allRewards, allStashes, controllerAccountId, next, onUpdateControllerState, onUpdateNominatedState, ownStashes, stakingOverview, validators }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const { t } = useTranslation();
   const [foundStashes, setFoundStashes] = useState<[string, boolean][] | null>(null);
@@ -67,42 +67,23 @@ function StashesTable({ className, allStashes, isInElection, validators, isVisib
         [undefined, undefined, 2]
       ]}
     >
-      {/*<Table.Body empty={t('No funds staked yet. Bond funds to validate or nominate a validator.')}>
-
-      </Table.Body>*/}
       {foundStashes?.map(([stashId, isOwnStash]: Array<any>): React.ReactNode => (
         <NominatedAccount
-          selectedControllerId={controllerAccountId}
-          activeEra={activeEra}
           allStashes={allStashes}
-          isDisabled={isInElection}
-          isOwnStash={isOwnStash}
           key={stashId}
           next={next}
-          onUpdateType={_onUpdateType}
-          stashId={stashId}
-          validators={validators}
           onUpdateControllerState={onUpdateControllerState}
           onUpdateNominatedState={onUpdateNominatedState}
-          rewards={allRewards && allRewards[stashId]}
-          stakingOverview={stakingOverview}
-        />
-      ))}
-     {/* {foundStashes?.map(([stashId, isOwnStash]): React.ReactNode => (
-        <Account
-          activeEra={activeEra}
-          allStashes={allStashes}
-          isDisabled={isInElection}
-          isOwnStash={isOwnStash}
-          key={stashId}
-          next={next}
           onUpdateType={_onUpdateType}
+          rewards={allRewards && allRewards[stashId]}
+          selectedControllerId={controllerAccountId}
+          stakingOverview={stakingOverview}
           stashId={stashId}
           validators={validators}
         />
-      ))}*/}
+      ))}
     </Table>
-  )
+  );
 }
 
 export default React.memo(StashesTable);
