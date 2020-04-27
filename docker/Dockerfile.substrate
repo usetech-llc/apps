@@ -23,10 +23,10 @@ RUN git fetch --all
 RUN git checkout fc6e2a625d8
 
 # Compatible with API 1.10.1
-RUN git checkout 2b988996d031
+# RUN git checkout 2b988996d031
 
 # Compatible with API 1.09.1
-RUN git checkout 2e8080e29
+# RUN git checkout 2e8080e29
 
 ENV PATH="/root/.cargo/bin:${PATH}"
 
