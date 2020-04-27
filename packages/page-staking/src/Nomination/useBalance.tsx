@@ -1,4 +1,7 @@
 // Copyright 2017-2020 @polkadot/app-staking authors & contributors
+// This software may be modified and distributed under the terms
+// of the Apache-2.0 license. See the LICENSE file for details.
+
 import BN from 'bn.js';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -71,10 +74,10 @@ export function useFees (bondedAddress?: string | null, senderAddress?: string |
 
       fessGetter.subscribe(({ bond, payment, startNomination, stopNomination }) => {
         setFeesLoading(false);
-        const paymentFees = payment ? payment.partialFee : null;
-        const bondFees = bond ? bond.partialFee : null;
-        const startNominationFees = startNomination ? startNomination.partialFee : null;
-        const stopNominationFees = stopNomination ? stopNomination.partialFee : null;
+        const paymentFees = payment ? payment.partialFee : new BN(0);
+        const bondFees = bond ? bond.partialFee : new BN(0);
+        const startNominationFees = startNomination ? startNomination.partialFee : new BN(0);
+        const stopNominationFees = stopNomination ? stopNomination.partialFee : new BN(0);
 
         const whole = paymentFees
           .add(bondFees)
@@ -85,7 +88,7 @@ export function useFees (bondedAddress?: string | null, senderAddress?: string |
         setWholeFees(whole);
       });
     }
-  }, [amount, api.api.tx.staking, api.api.tx.balances, bondedAddress, senderAddress, validators, wholeFees]);
+  }, [amount, api.api.tx.staking, api.api.tx.balances, bondedAddress, existentialDeposit, senderAddress, validators, wholeFees]);
 
   useEffect(() => {
     calculateAmount();

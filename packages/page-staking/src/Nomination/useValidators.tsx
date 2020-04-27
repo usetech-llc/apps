@@ -1,3 +1,7 @@
+// Copyright 2017-2020 @polkadot/app-staking authors & contributors
+// This software may be modified and distributed under the terms
+// of the Apache-2.0 license. See the LICENSE file for details.
+
 import BN from 'bn.js';
 import { useEffect, useState } from 'react';
 import { useAccounts, useApi, useCall, useDebounce, useFavorites } from '@polkadot/react-hooks';
@@ -9,7 +13,7 @@ import { Option } from '@polkadot/types';
 import { ValidatorInfo } from '@polkadot/app-staking/Targets/types';
 import useValidatorsFilter from './useValidatorsFilter';
 
-interface useValidatorsInterface {
+interface UseValidatorsInterface {
   filteredValidators: ValidatorInfo[];
   validatorsLoading: boolean;
 }
@@ -18,7 +22,7 @@ interface useValidatorsInterface {
  * Get, sort and filter validators
  * @return {Array<ValidatorInfo>} filtered validators
  */
-function useValidators (): useValidatorsInterface {
+function useValidators (): UseValidatorsInterface {
   const { api } = useApi();
   const [_amount] = useState<BN | undefined>(new BN(1_000));
   const { allAccounts } = useAccounts();
@@ -41,7 +45,7 @@ function useValidators (): useValidatorsInterface {
   const [{ validators }, setWorkable] = useState<AllInfo>({ nominators: [], validators: [] });
   const [validatorsLoading, setValidatorsLoading] = useState(false);
   const filteredElected = useValidatorsFilter(electedInfo);
-  console.log('filteredElected', filteredElected);
+
   useEffect((): void => {
     if (filteredElected && filteredElected.info) {
       const { nominators, totalStaked, validators } = extractInfo(allAccounts, amount, filteredElected, favorites, lastReward);
@@ -54,7 +58,7 @@ function useValidators (): useValidatorsInterface {
 
   return {
     filteredValidators: validators,
-    validatorsLoading,
+    validatorsLoading
   };
 }
 

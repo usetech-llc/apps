@@ -4,9 +4,9 @@
 
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { InputAddress} from '@polkadot/react-components';
+import { InputAddress } from '@polkadot/react-components';
 import { useBalanceClear } from '@polkadot/app-staking/Nomination/useBalance';
-import { useApi} from '@polkadot/react-hooks';
+import { useApi } from '@polkadot/react-hooks';
 
 interface Props {
   value?: string | null;
@@ -17,31 +17,34 @@ interface Props {
   setStepsState: (stepsState: string[]) => void; // Dispatch<SetStateAction<string>>
 }
 
-function AccountSelector ({ className, onChange, title, stepsState, setStepsState, value }: Props): React.ReactElement<Props> {
+function AccountSelector ({ className, onChange, setStepsState, stepsState, title, value }: Props): React.ReactElement<Props> {
   const [accountId, setAccountId] = useState<string | null>(null);
   const balance = useBalanceClear(accountId);
   const api = useApi();
   const existentialDeposit = api.api.consts.balances.existentialDeposit;
 
   useEffect((): void => {
-      if (accountId) {
-        onChange(accountId)
-      }
-  },[accountId]);
+    if (accountId) {
+      onChange(accountId);
+    }
+  }, [accountId, onChange]);
 
   useEffect(() => {
     const newStepsState = [...stepsState];
+
     if (balance === null) {
       return;
     }
+
     if (balance.cmp(existentialDeposit) === 1) {
       newStepsState[0] = 'completed';
       newStepsState[1] = newStepsState[1] === 'disabled' ? '' : newStepsState[1];
     } else {
       newStepsState[0] = '';
     }
+
     setStepsState(newStepsState);
-  },[balance]);
+  }, [balance, existentialDeposit, stepsState, setStepsState]);
 
   return (
     <section className={className} >
@@ -49,12 +52,12 @@ function AccountSelector ({ className, onChange, title, stepsState, setStepsStat
       <div className='ui--row'>
         <div className='large'>
           <InputAddress
-            defaultValue={value}
-            value={value}
             className='medium'
+            defaultValue={value}
             label={`select ${title}`}
             onChange={setAccountId}
             type='account'
+            value={value}
           />
         </div>
       </div>

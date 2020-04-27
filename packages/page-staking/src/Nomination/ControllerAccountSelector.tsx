@@ -4,8 +4,8 @@
 
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import {Button, InputAddress} from '@polkadot/react-components';
-import {useTranslation} from '@polkadot/app-accounts/translate';
+import { Button, InputAddress } from '@polkadot/react-components';
+import { useTranslation } from '@polkadot/app-accounts/translate';
 
 interface Props {
   senderId?: string | null;
@@ -18,18 +18,19 @@ interface Props {
   toggleCreate: () => void;
 }
 
-function ControllerAccountSelector ({ className, onChange, title, stepsState, setStepsState, toggleCreate, value, senderId }: Props): React.ReactElement<Props> {
+function ControllerAccountSelector ({ className, onChange, senderId, setStepsState, stepsState, title, toggleCreate, value }: Props): React.ReactElement<Props> {
   const [accountId, setAccountId] = useState<string | null>(null);
   const { t } = useTranslation();
 
   useEffect((): void => {
     if (accountId) {
-      onChange(accountId)
+      onChange(accountId);
     }
-  },[accountId]);
+  }, [accountId, onChange]);
 
   useEffect(() => {
     const newStepsState = [...stepsState];
+
     if (senderId && value && senderId !== value) {
       newStepsState[1] = 'completed';
       newStepsState[2] = newStepsState[2] === 'disabled' ? '' : newStepsState[2];
@@ -37,8 +38,9 @@ function ControllerAccountSelector ({ className, onChange, title, stepsState, se
       newStepsState[1] = '';
       newStepsState[2] = 'disabled';
     }
+
     setStepsState(newStepsState);
-  },[senderId, value]);
+  }, [senderId, value, stepsState, setStepsState]);
 
   return (
     <section className={className} >
@@ -46,15 +48,15 @@ function ControllerAccountSelector ({ className, onChange, title, stepsState, se
       <div className='ui--row'>
         <div className='large'>
           <InputAddress
-            defaultValue={value}
-            value={value}
             className='medium'
+            defaultValue={value}
             label={`select ${title}`}
             onChange={setAccountId}
             type='account'
+            value={value}
           />
         </div>
-        <div className="text-block">or</div>
+        <div className='text-block'>or</div>
         <Button
           icon='add'
           label={t('Add account')}

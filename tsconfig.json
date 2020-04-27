@@ -4,7 +4,8 @@
     "build/**/*",
     "**/build/**/*",
     "docker/**/*",
-    "node_modules/**/*"
+    "node_modules/**/*",
+    "**/node_modules/**/*"
   ],
   "compilerOptions": {
     "baseUrl": ".",

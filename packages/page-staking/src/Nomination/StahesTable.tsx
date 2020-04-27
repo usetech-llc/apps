@@ -1,15 +1,14 @@
+// Copyright 2017-2020 @polkadot/app-staking authors & contributors
+// This software may be modified and distributed under the terms
+// of the Apache-2.0 license. See the LICENSE file for details.
+
 import React, { useCallback, useEffect, useState } from 'react';
 import { Table } from '@polkadot/react-components';
 import NominatedAccount from '@polkadot/app-staking/Nomination/NominatedAccount';
-import { useApi, useCall } from '@polkadot/react-hooks';
 import { useTranslation } from '@polkadot/app-staking/translate';
-import { ActiveEraInfo, EraIndex } from '@polkadot/types/interfaces';
-import { Option } from '@polkadot/types';
 import { DeriveStakingOverview, DeriveStakerReward } from '@polkadot/api-derive/types';
-// import Account from "@polkadot/app-staking/Actions/Account";
 
 interface Props {
-  allRewards?: Record<string, DeriveStakerReward[]>;
   controllerAccountId?: string | null;
   className?: string;
   allStashes?: string[];
@@ -20,20 +19,13 @@ interface Props {
   onUpdateControllerState: (controllerAlreadyBonded: boolean) => void;
   onUpdateNominatedState: (controllerAlreadyBonded: boolean) => void;
   isInElection?: boolean;
-  validators?: string[];
+  selectedValidators: string[];
 }
 
-function StashesTable ({ allRewards, allStashes, controllerAccountId, next, onUpdateControllerState, onUpdateNominatedState, ownStashes, stakingOverview, validators }: Props): React.ReactElement<Props> {
-  const { api } = useApi();
+function StashesTable ({ allStashes, controllerAccountId, next, onUpdateControllerState, onUpdateNominatedState, ownStashes, selectedValidators, stakingOverview }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const [foundStashes, setFoundStashes] = useState<[string, boolean][] | null>(null);
   const [stashTypes, setStashTypes] = useState<Record<string, number>>({});
-  const activeEra = useCall<EraIndex | undefined>(api.query.staking?.activeEra, [], {
-    transform: (activeEra: Option<ActiveEraInfo>): EraIndex | undefined =>
-      activeEra.isSome
-        ? activeEra.unwrap().index
-        : undefined
-  });
 
   const _onUpdateType = useCallback(
     (stashId: string, type: 'validator' | 'nominator' | 'started' | 'other'): void =>
@@ -75,11 +67,10 @@ function StashesTable ({ allRewards, allStashes, controllerAccountId, next, onUp
           onUpdateControllerState={onUpdateControllerState}
           onUpdateNominatedState={onUpdateNominatedState}
           onUpdateType={_onUpdateType}
-          rewards={allRewards && allRewards[stashId]}
           selectedControllerId={controllerAccountId}
+          selectedValidators={selectedValidators}
           stakingOverview={stakingOverview}
           stashId={stashId}
-          validators={validators}
         />
       ))}
     </Table>

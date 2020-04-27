@@ -85,7 +85,7 @@ function StakingApp ({ basePath, className }: Props): React.ReactElement<Props> 
     {
       name: 'nomination',
       text: t('Nomination')
-    },
+    }
   ].filter((q): q is { name: string; text: string } => !!q), [api, t]);
   const hiddenTabs = useMemo(
     (): string[] =>
@@ -141,10 +141,10 @@ function StakingApp ({ basePath, className }: Props): React.ReactElement<Props> 
         </Route>
         <Route path={`${basePath}/nomination`}>
           <Nomination
-            stakingOverview={stakingOverview}
+            isInElection={isInElection}
             isVisible={pathname === `${basePath}/nomination`}
             next={next}
-            isInElection={isInElection}
+            stakingOverview={stakingOverview}
             validators={validators}
           />
         </Route>

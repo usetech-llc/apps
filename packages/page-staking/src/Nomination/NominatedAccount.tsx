@@ -1,10 +1,11 @@
 // Copyright 2017-2020 @polkadot/app-staking authors & contributors
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
+
 import BN from 'bn.js';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { DeriveStakingAccount, DeriveStakingOverview, DeriveStakerReward } from '@polkadot/api-derive/types';
+import { DeriveStakingAccount, DeriveStakingOverview } from '@polkadot/api-derive/types';
 import { ValidatorPrefs } from '@polkadot/types/interfaces';
 import { Codec, ITuple } from '@polkadot/types/types';
 import { AddressInfo, AddressMini, AddressSmall, Expander, StakingBonded, StakingRedeemable, StakingUnbonding, TxButton } from '@polkadot/react-components';
@@ -26,19 +27,18 @@ type ValidatorInfo = ITuple<[ValidatorPrefs, Codec]> | ValidatorPrefs;
 interface Props {
   allStashes?: string[];
   className?: string;
+  key: string;
   next?: string[];
-  onUpdateType: (stashId: string, type: 'validator' | 'nominator' | 'started' | 'other') => void;
   onUpdateControllerState: (controllerAlreadyBonded: boolean) => void;
   onUpdateNominatedState: (controllerAlreadyBonded: boolean) => void;
-  rewards?: DeriveStakerReward[];
+  onUpdateType: (stashId: string, type: 'validator' | 'nominator' | 'started' | 'other') => void;
+  selectedControllerId?: string | null;
+  selectedValidators: string[];
   stakingOverview?: DeriveStakingOverview;
   stashId: string;
-  key: string;
-  selectedControllerId?: string | null;
-  validators?: string[];
 }
 
-function NominatedAccount ({ allStashes, className, next, onUpdateType, validators, stashId, selectedControllerId, onUpdateControllerState, onUpdateNominatedState }: Props): React.ReactElement<Props> {
+function NominatedAccount ({ allStashes, className, next, onUpdateControllerState, onUpdateNominatedState, onUpdateType, selectedControllerId, selectedValidators, stashId }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
   const { allAccounts } = useAccounts();
@@ -77,11 +77,12 @@ function NominatedAccount ({ allStashes, className, next, onUpdateType, validato
     // if controller already used
     if (controllerId === selectedControllerId) {
       onUpdateControllerState(true);
+
       if (isStashNominating) {
         onUpdateNominatedState(true);
       }
     }
-  }, [controllerId, onUpdateControllerState, selectedControllerId, isStashNominating]);
+  }, [controllerId, isStashNominating, onUpdateControllerState, onUpdateNominatedState, selectedControllerId]);
 
   useEffect((): void => {
     nominating && setActiveNoms(
@@ -92,8 +93,6 @@ function NominatedAccount ({ allStashes, className, next, onUpdateType, validato
   useEffect(() => {
     setMaxUnbond(stakingAccount?.stakingLedger?.active.unwrap());
   }, [stakingAccount]);
-
-  const selectedValidators = [];
 
   return (
     <tr className={className}>
@@ -111,7 +110,6 @@ function NominatedAccount ({ allStashes, className, next, onUpdateType, validato
         {isNominateOpen && controllerId && (
           <Nominate
             controllerId={controllerId}
-            isOpen={isNominateOpen}
             next={next}
             nominating={nominating}
             onClose={toggleNominate}

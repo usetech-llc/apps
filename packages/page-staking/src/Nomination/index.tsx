@@ -53,6 +53,7 @@ function Nomination ({ className, isInElection, isVisible, next, stakingOverview
   const controllerBalance: Balance | null = useBalanceClear(controllerAccountId);
   const accountBalance: Balance | null = useBalanceClear(senderId);
   const ownStashes = useOwnStashes();
+  console.log('ownStashes', ownStashes);
   const { filteredValidators, validatorsLoading } = useValidators();
   const { t } = useTranslation();
   const destination = 2; // 2 means controller account
@@ -374,8 +375,8 @@ function Nomination ({ className, isInElection, isVisible, next, stakingOverview
             onUpdateControllerState={_onUpdateControllerState}
             onUpdateNominatedState={_onUpdateNominatedState}
             ownStashes={ownStashes}
+            selectedValidators={selectedValidators}
             stakingOverview={stakingOverview}
-            validators={validators}
           />
         )}
       </div>
