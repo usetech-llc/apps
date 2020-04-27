@@ -1,7 +1,11 @@
 FROM ubuntu:latest as data
 LABEL maintainer="gz@usetech.com"
 
+<<<<<<< HEAD
 EXPOSE 9944 
+=======
+EXPOSE 9944
+>>>>>>> 600d72356694383a2ce8b27f8c1a4771f6b4fe13
 VOLUME ["/chain-data"]
 
 RUN apt-get update; apt-get install -y curl unzip

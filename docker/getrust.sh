@@ -1,6 +1,5 @@
-#!/bin/bash
+# !/bin/bash
 # Copyright 2015-2020 Parity Technologies (UK) Ltd.
-
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
 	set -e
 	if [[ $(whoami) == "root" ]]; then
@@ -14,7 +13,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 		echo "This OS is not supported with this script at present. Sorry."
 		echo "Please refer to https://github.com/paritytech/substrate for setup information."
 		exit 1
-	elif [ -f /etc/SuSE-release ]; then
+elif [ -f /etc/SuSE-release ]; then
 		echo "Suse Linux detected."
 		echo "This OS is not supported with this script at present. Sorry."
 		echo "Please refer to https://github.com/paritytech/substrate for setup information."

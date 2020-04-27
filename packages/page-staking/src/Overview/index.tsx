@@ -8,7 +8,6 @@ import { BareProps } from '@polkadot/react-components/types';
 import React from 'react';
 
 import CurrentList from './CurrentList';
-import Actions from "@polkadot/app-staking/Actions";
 
 interface Props extends BareProps {
   hasQueries: boolean;
