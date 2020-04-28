@@ -56,7 +56,7 @@ function Nomination ({ className, isInElection, isVisible, next, ownStashes, sta
   const [amount, setAmount] = useState<BN | undefined | null>(null);
   const controllerBalance: Balance | null = useBalanceClear(controllerAccountId);
   const accountBalance: Balance | null = useBalanceClear(senderId);
-  const { filteredValidators, validatorsLoading } = useValidators();
+  const { filteredValidators } = useValidators();
   const { t } = useTranslation();
   const destination = 2; // 2 means controller account
   const extrinsic = (amount && controllerAccountId)
