@@ -13,7 +13,7 @@ import CreateModal from '@polkadot/app-accounts/Accounts/modals/Create';
 import { useApi, useToggle } from '@polkadot/react-hooks';
 import { useTranslation } from '@polkadot/app-accounts/translate';
 import { Available } from '@polkadot/react-query';
-import { AddressInfo, Button, InputBalance, TxButton /*, Spinner */ } from '@polkadot/react-components';
+import { AddressInfo, Button, InputBalance, TxButton } from '@polkadot/react-components';
 import TabsHeader from '@polkadot/app-staking/Nomination/TabsHeader';
 import { useBalanceClear, useFees, WholeFeesType } from '@polkadot/app-staking/Nomination/useBalance';
 import Summary from '@polkadot/app-staking/Nomination/Summary';
@@ -25,7 +25,7 @@ import useValidators from './useValidators';
 import AccountSelector from './AccountSelector';
 import ControllerAccountSelector from './ControllerAccountSelector';
 
-const steps = ['choose', 'create', 'bond', 'nominate'];
+const steps = ['Choose', 'Create', 'Bond', 'Nominate'];
 const stepInitialState = ['', 'disabled', 'disabled', 'disabled'];
 
 interface Props {
@@ -95,7 +95,6 @@ function Nomination ({ className, isInElection, isVisible, next, ownStashes, sta
   }, [currentStep, stepsState]);
 
   const resetControllerInfo = useCallback((accountId: string | null): void => {
-    console.log('resetControllerInfo');
     setControllerAlreadyBonded(false);
     setControllerAccountId(accountId);
   }, []);
@@ -336,6 +335,7 @@ function Nomination ({ className, isInElection, isVisible, next, ownStashes, sta
         </>
         }
         <Button.Group>
+          {!isNominated &&
           <Button
             icon=''
             isDisabled={steps.indexOf(currentStep) === 0 || alreadyHaveStashes}
@@ -343,7 +343,10 @@ function Nomination ({ className, isInElection, isVisible, next, ownStashes, sta
             label={t('Back')}
             onClick={goBack}
           />
-          <div className='or' />
+          }
+          {!isNominated &&
+          <div className='or'/>
+          }
           {currentStep === steps[2] && !isBalanceEnough() && (
             <TxButton
               accountId={senderId}
@@ -365,7 +368,7 @@ function Nomination ({ className, isInElection, isVisible, next, ownStashes, sta
               label={t('Bond')}
             />
           )}
-          {currentStep === steps[3] && controllerAlreadyBonded && (
+          {/* {currentStep === steps[3] && controllerAlreadyBonded && (
             <TxButton
               accountId={controllerAccountId}
               icon='hand paper outline'
@@ -375,7 +378,7 @@ function Nomination ({ className, isInElection, isVisible, next, ownStashes, sta
               params={[selectedValidators]}
               tx='staking.nominate'
             />
-          )}
+          )} */}
           {currentStep !== steps[3] && (currentStep !== steps[2] || controllerAlreadyBonded) && (
             <Button
               className='primary'
@@ -387,6 +390,7 @@ function Nomination ({ className, isInElection, isVisible, next, ownStashes, sta
             />
           )}
         </Button.Group>
+        {/* it is great to be reused here to show nomination status */}
         <Actions
           hideNewStake
           isInElection={isInElection}
@@ -394,20 +398,6 @@ function Nomination ({ className, isInElection, isVisible, next, ownStashes, sta
           ownStashes={ownStashes}
           validators={validators}
         />
-        {/* {(currentStep === steps[2] || currentStep === steps[3]) && (
-          <StashesTable
-            allStashes={allStashes}
-            controllerAccountId={controllerAccountId}
-            isInElection={isInElection}
-            isVisible={isVisible}
-            next={next}
-            onUpdateControllerState={_onUpdateControllerState}
-            onUpdateNominatedState={_onUpdateNominatedState}
-            ownStashes={ownStashes}
-            selectedValidators={selectedValidators}
-            stakingOverview={stakingOverview}
-          />
-        )} */}
       </div>
     </main>
   );

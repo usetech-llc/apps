@@ -3,6 +3,7 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import React, { useCallback } from 'react';
+import { useTranslation } from '@polkadot/app-accounts/translate';
 
 interface Props {
   currentStep: string;
@@ -12,6 +13,7 @@ interface Props {
 }
 
 function TabsHeader ({ currentStep, setCurrentStep, steps, stepsState }: Props): React.ReactElement<Props> {
+  const { t } = useTranslation();
   const setCurrentValue = useCallback((event: React.MouseEvent, id: string): void => {
     event.preventDefault();
     setCurrentStep(id);
@@ -25,7 +27,7 @@ function TabsHeader ({ currentStep, setCurrentStep, steps, stepsState }: Props):
           key={step}
           onClick={(event): void => setCurrentValue(event, step)}>
           <div className='content'>
-            <div className='title'>Account</div>
+            <div className='title'>{t(step).toUpperCase()}</div>
           </div>
         </a>
       ))
