@@ -20,7 +20,7 @@ WORKDIR /substrate/substrate
 RUN git fetch --all
 
 # Compatible with API 1.11.1
-RUN git checkout fc6e2a625d8
+# RUN git checkout fc6e2a625d8
 
 # Compatible with API 1.10.1
 # RUN git checkout 2b988996d031

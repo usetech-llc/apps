@@ -139,10 +139,10 @@ function StakingApp ({ basePath, className }: Props): React.ReactElement<Props> 
         </Route>
         <Route path={`${basePath}/nomination`}>
           <Nomination
-            allStashes={allStashes}
             isInElection={isInElection}
             isVisible={pathname === `${basePath}/nomination`}
             next={next}
+            ownStashes={ownStashes}
             stakingOverview={stakingOverview}
             validators={validators}
           />

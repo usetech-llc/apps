@@ -23,7 +23,6 @@ export function useBalance (address?: string | null): string | null {
 export function useBalanceClear (address?: string | null): Balance | null {
   const api = useApi();
   const balancesAll = useCall<DeriveBalancesAll>(api.api.derive.balances.all as any, [address]);
-
   return balancesAll ? balancesAll.availableBalance : null;
 }
 

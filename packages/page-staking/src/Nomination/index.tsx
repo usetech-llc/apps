@@ -2,21 +2,24 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import { DeriveStakingOverview } from '@polkadot/api-derive/types';
-import { Balance } from '@polkadot/types/interfaces/runtime';
 import BN from 'bn.js';
 import React, { useState, useEffect, useCallback } from 'react';
+
+import { DeriveStakingOverview } from '@polkadot/api-derive/types';
+import { StakerState } from '@polkadot/react-hooks/types';
+import { Balance } from '@polkadot/types/interfaces/runtime';
 import styled from 'styled-components';
 import CreateModal from '@polkadot/app-accounts/Accounts/modals/Create';
-import { useApi, useOwnStashes, useToggle } from '@polkadot/react-hooks';
+import { useApi, useToggle } from '@polkadot/react-hooks';
 import { useTranslation } from '@polkadot/app-accounts/translate';
 import { Available } from '@polkadot/react-query';
 import { AddressInfo, Button, InputBalance, TxButton /*, Spinner */ } from '@polkadot/react-components';
 import TabsHeader from '@polkadot/app-staking/Nomination/TabsHeader';
-import StashesTable from '@polkadot/app-staking/Nomination/StahesTable';
 import { useBalanceClear, useFees, WholeFeesType } from '@polkadot/app-staking/Nomination/useBalance';
 import Summary from '@polkadot/app-staking/Nomination/Summary';
 import { formatBalance } from '@polkadot/util';
+import Actions from '@polkadot/app-staking/Actions';
+
 import EraToTime from './EraToTime';
 import useValidators from './useValidators';
 import AccountSelector from './AccountSelector';
@@ -26,16 +29,16 @@ const steps = ['choose', 'create', 'bond', 'nominate'];
 const stepInitialState = ['', 'disabled', 'disabled', 'disabled'];
 
 interface Props {
-  allStashes?: string[];
   className?: string;
-  isVisible: boolean;
-  stakingOverview?: DeriveStakingOverview;
-  next?: string[];
   isInElection?: boolean;
+  isVisible: boolean;
+  next?: string[];
+  ownStashes?: StakerState[];
+  stakingOverview?: DeriveStakingOverview;
   validators?: string[];
 }
 
-function Nomination ({ allStashes, className, isInElection, isVisible, next, stakingOverview }: Props): React.ReactElement<Props> {
+function Nomination ({ className, isInElection, isVisible, next, ownStashes, stakingOverview, validators }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const [currentStep, setCurrentStep] = useState<string>(steps[0]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -53,8 +56,6 @@ function Nomination ({ allStashes, className, isInElection, isVisible, next, sta
   const [amount, setAmount] = useState<BN | undefined | null>(null);
   const controllerBalance: Balance | null = useBalanceClear(controllerAccountId);
   const accountBalance: Balance | null = useBalanceClear(senderId);
-  const ownStashes = useOwnStashes();
-  // console.log('ownStashes', ownStashes);
   const { filteredValidators, validatorsLoading } = useValidators();
   const { t } = useTranslation();
   const destination = 2; // 2 means controller account
@@ -94,6 +95,7 @@ function Nomination ({ allStashes, className, isInElection, isVisible, next, sta
   }, [currentStep, stepsState]);
 
   const resetControllerInfo = useCallback((accountId: string | null): void => {
+    console.log('resetControllerInfo');
     setControllerAlreadyBonded(false);
     setControllerAccountId(accountId);
   }, []);
@@ -116,7 +118,7 @@ function Nomination ({ allStashes, className, isInElection, isVisible, next, sta
   const calculateMaxPreFilledBalance = useCallback((): void => {
     if (accountBalance && wholeFees && !amountToBond) {
       // double wholeFees
-      setAmountToBond(accountBalance.isub(wholeFees).isub(wholeFees).isub(existentialDeposit));
+      setAmountToBond(accountBalance.toBn().isub(wholeFees).isub(wholeFees).isub(existentialDeposit));
     }
   }, [accountBalance, amountToBond, existentialDeposit, wholeFees]);
 
@@ -125,8 +127,8 @@ function Nomination ({ allStashes, className, isInElection, isVisible, next, sta
       controllerBalance &&
       existentialDeposit &&
       wholeFees &&
-      accountBalance.cmp(existentialDeposit) === 1 &&
-      controllerBalance.cmp(wholeFees) === 1);
+      accountBalance.toBn().cmp(existentialDeposit) === 1 &&
+      controllerBalance.toBn().cmp(wholeFees) === 1);
   }, [accountBalance, controllerBalance, existentialDeposit, wholeFees]);
 
   const _onUpdateControllerState = useCallback(
@@ -200,15 +202,30 @@ function Nomination ({ allStashes, className, isInElection, isVisible, next, sta
 
   /**
    * Since we already have stashes just open the 4th screen - nomination
-   * and mark all steps as completed
+   * set controllerAlreadyBonded true
+   * and mark all steps as completed.
+   * If we have stash nominated, set sender and controller from this stash
+   * or set sender and controller from first stash
    */
-  /* useEffect(() => {
-    setCurrentStep(steps[3]);
-    setAlreadyHaveStashes(true);
-    setStepsState(['completed', 'completed', 'completed', 'completed']);
-  }, [ownStashes]); */
+  useEffect(() => {
+    if (ownStashes && ownStashes.length) {
+      setCurrentStep(steps[3]);
+      setAlreadyHaveStashes(true);
+      setStepsState(['completed', 'completed', 'completed', 'completed']);
+      _onUpdateControllerState(true);
+      const stashesInProgress: StakerState = ownStashes.find((stash) => stash.isStashNominating);
 
-  // console.log('ownStashes', ownStashes);
+      if (stashesInProgress) {
+        _onUpdateNominatedState(true);
+        setSenderId(stashesInProgress.stashId);
+        setControllerAccountId(stashesInProgress.controllerId);
+      } else {
+        setSenderId(ownStashes[0].stashId);
+        setControllerAccountId(ownStashes[0].controllerId);
+      }
+    }
+  }, [ownStashes, _onUpdateControllerState, _onUpdateNominatedState]);
+
   return (
     <main className={`${className} ${!isVisible ? 'staking--hidden' : ''} simple-nominatio`}>
       <TabsHeader
@@ -352,9 +369,9 @@ function Nomination ({ allStashes, className, isInElection, isVisible, next, sta
             <TxButton
               accountId={controllerAccountId}
               icon='hand paper outline'
-              isDisabled={!selectedValidators.length || !controllerAlreadyBonded || isNominated || validatorsLoading}
+              isDisabled={!selectedValidators.length || !controllerAlreadyBonded || validatorsLoading}
               isPrimary
-              label={t('Nominate')}
+              label={!isNominated ? t('Nominate') : t('Update Nomination')}
               params={[selectedValidators]}
               tx='staking.nominate'
             />
@@ -370,7 +387,14 @@ function Nomination ({ allStashes, className, isInElection, isVisible, next, sta
             />
           )}
         </Button.Group>
-        {(currentStep === steps[2] || currentStep === steps[3]) && (
+        <Actions
+          hideNewStake
+          isInElection={isInElection}
+          next={next}
+          ownStashes={ownStashes}
+          validators={validators}
+        />
+        {/* {(currentStep === steps[2] || currentStep === steps[3]) && (
           <StashesTable
             allStashes={allStashes}
             controllerAccountId={controllerAccountId}
@@ -383,7 +407,7 @@ function Nomination ({ allStashes, className, isInElection, isVisible, next, sta
             selectedValidators={selectedValidators}
             stakingOverview={stakingOverview}
           />
-        )}
+        )} */}
       </div>
     </main>
   );
