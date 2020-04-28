@@ -233,6 +233,9 @@ function Nomination ({ className, isInElection, isVisible, next, ownStashes, sta
         steps={steps}
         stepsState={stepsState}
       />
+      <h4 className='ui orange header'>
+        {t('Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for')} <EraToTime showBlocks />, {t('which is approximately')} <EraToTime showDays />.
+      </h4>
       <div className='ui attached segment'>
         {/* {feesLoading && (
           <Spinner />

@@ -3,6 +3,8 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import React from 'react';
+import styled from 'styled-components';
+
 import { useApi, useCall } from '@polkadot/react-hooks';
 import { useTranslation } from '@polkadot/app-accounts/translate';
 import { BareProps } from '@polkadot/react-api/types';
@@ -37,11 +39,15 @@ function EraToTime ({ className, showBlocks, showDays, style }: EraToTimeInterfa
     >
       <BlockToTime
         blocks={showDays ? eraLength : undefined}
+        className='text-inline'
         label={`${showBlocks ? t('{{blocks}} blocks', { replace: { blocks: formatNumber(eraLength) } }) : ''}${showBlocks && showDays ? ', ' : ''}`}
-        style={{ display: 'inline' }}
       />
     </span>
   );
 }
 
-export default React.memo(EraToTime);
+export default React.memo(styled(EraToTime)`
+  .text-inline {
+    display: inline;
+  }
+`);
