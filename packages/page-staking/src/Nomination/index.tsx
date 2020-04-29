@@ -182,7 +182,7 @@ function Nomination ({ className, isInElection, isVisible, next, ownStashes, sta
       }
     }
 
-    if (isNominated) {
+    /* if (isNominated) {
       setStepsState((prevState): string[] => {
         const newState = [...prevState];
 
@@ -196,7 +196,7 @@ function Nomination ({ className, isInElection, isVisible, next, ownStashes, sta
       if (currentStep === steps[2]) {
         setCurrentStep(steps[3]);
       }
-    }
+    } */
   }, [controllerAlreadyBonded, currentStep, isNominated]);
 
   /**
@@ -210,9 +210,9 @@ function Nomination ({ className, isInElection, isVisible, next, ownStashes, sta
     if (ownStashes && ownStashes.length) {
       setCurrentStep(steps[3]);
       setAlreadyHaveStashes(true);
-      setStepsState(['completed', 'completed', 'completed', 'completed']);
+      setStepsState(['disabled completed', 'disabled completed', 'disabled completed', 'disabled completed']);
       _onUpdateControllerState(true);
-      const stashesInProgress: StakerState = ownStashes.find((stash) => stash.isStashNominating);
+      const stashesInProgress: StakerState | undefined = ownStashes.find((stash) => stash.isStashNominating);
 
       if (stashesInProgress) {
         _onUpdateNominatedState(true);
