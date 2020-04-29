@@ -150,7 +150,7 @@
   "{{currency}} total": "{{currency}} total",
   "Select your account that holds funds": "Select your account that holds funds",
   "Now you need to select or create Controller account. This is account that will manage your funds": "Now you need to select or create Controller account. This is account that will manage your funds",
-  "Now we will transfer some small amount from your account that holds funds to Controller so that it can pay transaction fees. Just click Next to proceed.": "Now we will transfer some small amount from your account that holds funds to Controller so that it can pay transaction fees. Just click Next to proceed.",
+  "NNow we will transfer some small amount from your account that holds funds to Controller so that it can pay transaction fees {{ transactionFees }}. Just click Next to proceed.": "Now we will transfer some small amount from your account that holds funds to Controller so that it can pay transaction fees {{ transactionFees }}. Just click Next to proceed.",
   "Now we need to Bond funds. Bonding means that main account gives control over funds to Controller account.": "Now we need to Bond funds. Bonding means that main account gives control over funds to Controller account.",
   "Once bonded, funds will be under management of your Controller.": "Once bonded, funds will be under management of your Controller.",
   "Money can be unbonded, but will remain locked for a while.": "Money can be unbonded, but will remain locked for a while.",

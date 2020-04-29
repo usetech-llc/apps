@@ -13,11 +13,12 @@ interface Props {
   className?: string;
   title?: string;
   onChange: (accountId: string | null) => void;
-  stepsState: string[];
+  setControllerAccountId: (controllerId: string | null) => void;
   setStepsState: (stepsState: string[]) => void; // Dispatch<SetStateAction<string>>
+  stepsState: string[];
 }
 
-function AccountSelector ({ className, onChange, setStepsState, stepsState, title, value }: Props): React.ReactElement<Props> {
+function AccountSelector ({ className, onChange, setControllerAccountId, setStepsState, stepsState, title, value }: Props): React.ReactElement<Props> {
   const [accountId, setAccountId] = useState<string | null>(null);
   const balance = useBalanceClear(accountId);
   const api = useApi();
@@ -25,9 +26,13 @@ function AccountSelector ({ className, onChange, setStepsState, stepsState, titl
 
   useEffect((): void => {
     if (accountId) {
+      if (value !== accountId) {
+        setControllerAccountId(null);
+      }
+
       onChange(accountId);
     }
-  }, [accountId, onChange]);
+  }, [accountId, onChange, setControllerAccountId, value]);
 
   useEffect(() => {
     const newStepsState = [...stepsState];
@@ -41,6 +46,9 @@ function AccountSelector ({ className, onChange, setStepsState, stepsState, titl
       newStepsState[1] = newStepsState[1] === 'disabled' ? '' : newStepsState[1];
     } else {
       newStepsState[0] = '';
+      newStepsState[1] = 'disabled';
+      newStepsState[2] = 'disabled';
+      newStepsState[3] = 'disabled';
     }
 
     setStepsState(newStepsState);

@@ -149,6 +149,7 @@ function StakingApp ({ basePath, className }: Props): React.ReactElement<Props> 
             next={next}
             ownStashes={ownStashes}
             stakingOverview={stakingOverview}
+            targets={targets}
             validators={validators}
           />
         </Route>

@@ -20,6 +20,7 @@ import NewStake from './NewStake';
 
 interface Props {
   className?: string;
+  hideNewStake?: boolean;
   isInElection?: boolean;
   ownStashes?: StakerState[];
   next?: string[];
@@ -32,7 +33,7 @@ interface State {
   foundStashes?: StakerState[];
 }
 
-function Actions ({ className, isInElection, next, ownStashes, targets, validators }: Props): React.ReactElement<Props> {
+function Actions ({ className, hideNewStake, isInElection, next, ownStashes, targets, validators }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
   const activeEra = useCall<EraIndex | undefined>(api.query.staking?.activeEra, [], {
@@ -73,7 +74,9 @@ function Actions ({ className, isInElection, next, ownStashes, targets, validato
 
   return (
     <div className={className}>
-      <NewStake />
+      {!hideNewStake &&
+      <NewStake/>
+      }
       <ElectionBanner isInElection={isInElection} />
       <Table
         empty={foundStashes && t('No funds staked yet. Bond funds to validate or nominate a validator')}

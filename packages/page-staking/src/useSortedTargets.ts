@@ -63,7 +63,7 @@ function sortValidators (list: ValidatorInfo[]): ValidatorInfo[] {
     );
 }
 
-function extractInfo (allAccounts: string[], amount: BN = baseBalance(), electedInfo: DeriveStakingElected, favorites: string[], lastReward = new BN(1)): Partial<SortedTargets> {
+export function extractInfo (allAccounts: string[], amount: BN = baseBalance(), electedInfo: DeriveStakingElected, favorites: string[], lastReward = new BN(1)): Partial<SortedTargets> {
   const nominators: string[] = [];
   let totalStaked = new BN(0);
   const perValidatorReward = lastReward.divn(electedInfo.info.length);
