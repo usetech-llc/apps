@@ -23,6 +23,7 @@ import Summary from './Overview/Summary';
 import Targets from './Targets';
 import Nomination from './Nomination';
 import { useTranslation } from './translate';
+import useSortedTargets from './useSortedTargets';
 
 interface Validators {
   next?: string[];
@@ -41,6 +42,7 @@ function StakingApp ({ basePath, className }: Props): React.ReactElement<Props> 
   const [{ next, validators }, setValidators] = useState<Validators>({});
   const allStashes = useStashIds();
   const ownStashes = useOwnStashInfos();
+  const targets = useSortedTargets();
   const stakingOverview = useCall<DeriveStakingOverview>(api.derive.staking.overview, []);
   const isInElection = useCall<boolean>(api.query.staking?.eraElectionStatus, [], {
     transform: (status: ElectionStatus) => status.isOpen
@@ -126,7 +128,10 @@ function StakingApp ({ basePath, className }: Props): React.ReactElement<Props> 
           <Query />
         </Route>
         <Route path={`${basePath}/targets`}>
-          <Targets ownStashes={ownStashes} />
+          <Targets
+            ownStashes={ownStashes}
+            targets={targets}
+          />
         </Route>
         <Route path={`${basePath}/waiting`}>
           <Overview
@@ -153,6 +158,7 @@ function StakingApp ({ basePath, className }: Props): React.ReactElement<Props> 
         isInElection={isInElection}
         next={next}
         ownStashes={ownStashes}
+        targets={targets}
         validators={validators}
       />
       <Overview

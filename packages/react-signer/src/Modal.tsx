@@ -40,8 +40,8 @@ interface Props extends I18nProps, ApiProps, BaseProps {
 }
 
 interface State {
-  accountNonce?: string;
-  blocks: string;
+  accountNonce?: BN;
+  blocks: BN;
   currentItem?: QueueTx;
   isQrScanning: boolean;
   isQrVisible: boolean;
@@ -49,7 +49,7 @@ interface State {
   isSendable: boolean;
   isSubmit: boolean;
   multiApproval: boolean;
-  nonce?: string;
+  nonce?: BN;
   password: string;
   qrAddress: string;
   qrPayload: Uint8Array;
@@ -117,7 +117,7 @@ async function makeExtrinsicSignature (
 
 const initialState: State = {
   accountNonce: undefined,
-  blocks: '50',
+  blocks: new BN(50),
   isQrScanning: false,
   isQrVisible: false,
   isRenderError: false,
@@ -215,7 +215,7 @@ class Signer extends React.PureComponent<Props, State> {
               ? this.onCancelSign
               : this.onCancel
         }
-        withOr={!signedTx}
+        withOr={!signedTx && !isQrVisible}
       >
         {!isRenderError && (!isQrVisible || !isQrScanning) && !signedTx && (
           <>
@@ -429,11 +429,11 @@ class Signer extends React.PureComponent<Props, State> {
   }
 
   private onChangeNonce = (value?: BN): void => {
-    this.setState({ nonce: value ? value.toString() : '0' });
+    this.setState({ nonce: value || new BN(0) });
   }
 
   private onChangeBlocks = (value?: BN): void => {
-    this.setState({ blocks: value ? value.toString() : '0' });
+    this.setState({ blocks: value || new BN(0) });
   }
 
   private onChangeSignatory = (signatory?: string | null): void => {
@@ -563,10 +563,10 @@ class Signer extends React.PureComponent<Props, State> {
 
   private updateNonce = async (): Promise<void> => {
     const { currentItem } = this.state;
-    let accountNonce: string | undefined;
+    let accountNonce: BN | undefined;
 
     if (currentItem?.accountId) {
-      accountNonce = (await this.props.api.rpc.account.nextIndex(currentItem.accountId)).toString();
+      accountNonce = await this.props.api.rpc.account.nextIndex(currentItem.accountId);
     } else {
       accountNonce = undefined;
     }
@@ -753,8 +753,6 @@ class Signer extends React.PureComponent<Props, State> {
       txStartCb();
     }
 
-    queueSetTxStatus(id, 'sending');
-
     try {
       const unsubscribe = await extrinsicCall.apply(extrinsic, [
         ...params,
@@ -790,6 +788,8 @@ class Signer extends React.PureComponent<Props, State> {
           }
         }
       ]);
+
+      queueSetTxStatus(id, 'sending');
     } catch (error) {
       console.error('makeExtrinsicCall: error:', error);
       queueSetTxStatus(id, 'error', {}, error);

@@ -4,6 +4,7 @@
 
 import { ActiveEraInfo, EraIndex } from '@polkadot/types/interfaces';
 import { StakerState } from '@polkadot/react-hooks/types';
+import { SortedTargets } from '../types';
 
 import BN from 'bn.js';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -19,11 +20,11 @@ import NewStake from './NewStake';
 
 interface Props {
   className?: string;
-  hideNewStake?: boolean;
   isInElection?: boolean;
   ownStashes?: StakerState[];
   next?: string[];
   validators?: string[];
+  targets: SortedTargets;
 }
 
 interface State {
@@ -31,7 +32,7 @@ interface State {
   foundStashes?: StakerState[];
 }
 
-function Actions ({ className, hideNewStake, isInElection, next, ownStashes, validators }: Props): React.ReactElement<Props> {
+function Actions ({ className, isInElection, next, ownStashes, targets, validators }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
   const activeEra = useCall<EraIndex | undefined>(api.query.staking?.activeEra, [], {
@@ -72,9 +73,7 @@ function Actions ({ className, hideNewStake, isInElection, next, ownStashes, val
 
   return (
     <div className={className}>
-      {!hideNewStake &&
-      <NewStake/>
-      }
+      <NewStake />
       <ElectionBanner isInElection={isInElection} />
       <Table
         empty={foundStashes && t('No funds staked yet. Bond funds to validate or nominate a validator')}
@@ -88,6 +87,7 @@ function Actions ({ className, hideNewStake, isInElection, next, ownStashes, val
             isDisabled={isInElection}
             key={info.stashId}
             next={next}
+            targets={targets}
             validators={validators}
           />
         ))}

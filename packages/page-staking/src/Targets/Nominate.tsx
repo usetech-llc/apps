@@ -5,6 +5,7 @@
 import { StakerState } from '@polkadot/react-hooks/types';
 
 import React, { useCallback, useEffect, useState } from 'react';
+import styled from 'styled-components';
 import { AddressMini, Button, InputAddress, Modal, Static, TxButton } from '@polkadot/react-components';
 import { useToggle } from '@polkadot/react-hooks';
 
@@ -16,7 +17,7 @@ interface Props {
   targets: string[];
 }
 
-function Nominate ({ ownNominators, targets }: Props): React.ReactElement<Props> {
+function Nominate ({ className, ownNominators, targets }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const [ids, setIds] = useState<{ controllerId?: string | null; stashId: string } | null>(null);
   const [filter, setFilter] = useState<string[]>([]);
@@ -50,32 +51,50 @@ function Nominate ({ ownNominators, targets }: Props): React.ReactElement<Props>
         onClick={toggleOpen}
       />
       {isOpen && (
-        <Modal header={t('Nominate validators')}>
+        <Modal
+          className={className}
+          header={t('Nominate validators')}
+          size='large'
+        >
           <Modal.Content>
-            <Static
-              label={t('selected validators')}
-              value={
-                targets.map((validatorId) => (
-                  <AddressMini
-                    key={validatorId}
-                    value={validatorId}
-                  />
-                ))
-              }
-            />
-            <InputAddress
-              filter={filter}
-              help={t('Your stash account. The transaction will be sent from the associated controller.')}
-              label={t('the stash account to nominate with')}
-              onChange={_onChangeStash}
-              value={ids?.stashId}
-            />
-            <InputAddress
-              isDisabled
-              label={t('the associated controller')}
-              onChange={_onChangeStash}
-              value={ids?.controllerId}
-            />
+            <Modal.Columns>
+              <Modal.Column>
+                <InputAddress
+                  filter={filter}
+                  help={t('Your stash account. The transaction will be sent from the associated controller.')}
+                  label={t('the stash account to nominate with')}
+                  onChange={_onChangeStash}
+                  value={ids?.stashId}
+                />
+                <InputAddress
+                  isDisabled
+                  label={t('the associated controller')}
+                  value={ids?.controllerId}
+                />
+              </Modal.Column>
+              <Modal.Column>
+                <p>{t('One of your available nomination accounts, keyed by the stash. The transaction will be sent from the controller.')}</p>
+              </Modal.Column>
+            </Modal.Columns>
+            <Modal.Columns>
+              <Modal.Column>
+                <Static
+                  label={t('selected validators')}
+                  value={
+                    targets.map((validatorId) => (
+                      <AddressMini
+                        key={validatorId}
+                        value={validatorId}
+                      />
+                    ))
+                  }
+                />
+              </Modal.Column>
+              <Modal.Column>
+                <p>{t('The selected validators to nominate, either via the "currently best algorithm" or via a manual selection.')}</p>
+                <p>{t('Once transmitted the new selection will only take effect in 2 eras since the selection criteria for the next era was done at the end of the previous era. Until then, the nominations will show as inactive.')}</p>
+              </Modal.Column>
+            </Modal.Columns>
           </Modal.Content>
           <Modal.Actions onCancel={toggleOpen}>
             <TxButton
@@ -92,4 +111,8 @@ function Nominate ({ ownNominators, targets }: Props): React.ReactElement<Props>
   );
 }
 
-export default React.memo(Nominate);
+export default React.memo(styled(Nominate)`
+  .ui--AddressMini.padded {
+    padding-top: 0.5rem;
+  }
+`);
