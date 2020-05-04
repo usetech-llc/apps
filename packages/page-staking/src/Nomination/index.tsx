@@ -229,6 +229,7 @@ function Nomination ({ className, isInElection, isVisible, next, ownStashes, sta
       { validatorsLoading && (
         <Spinner />
       )}
+      <br />
       {!validatorsLoading && (
         <>
           <TabsHeader

@@ -17,6 +17,7 @@ import i18n from './i18n';
 import settings from './settings';
 import staking from './staking';
 import sudo from './sudo';
+import nomination from './nomination';
 
 export default function create (t: (key: string, text: string, options: { ns: string }) => string): Routes {
   return appSettings.uiMode === 'light'
@@ -27,6 +28,7 @@ export default function create (t: (key: string, text: string, options: { ns: st
       genericAsset(t),
       null,
       staking(t),
+      nomination(t),
       // TODO Not sure about the inclusion of treasury, parachains & society here
       null,
       settings(t)
@@ -38,6 +40,7 @@ export default function create (t: (key: string, text: string, options: { ns: st
       genericAsset(t),
       null,
       staking(t),
+      nomination(t),
       null,
       contracts(t),
       sudo(t),

@@ -160,6 +160,8 @@ class InputAddress extends React.PureComponent<Props, State> {
 
     return (
       <Dropdown
+        allowAdd
+        onAdd={() => {}}
         className={classes('ui--InputAddress', hideAddress && 'hideAddress', className)}
         defaultValue={_defaultValue}
         help={help}
