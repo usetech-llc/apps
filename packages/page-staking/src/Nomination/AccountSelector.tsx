@@ -5,22 +5,55 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { InputAddress } from '@polkadot/react-components';
+import { useBalanceClear } from '@polkadot/app-staking/Nomination/useBalance';
+import { useApi } from '@polkadot/react-hooks';
 
 interface Props {
   value?: string | null;
   className?: string;
   title?: string;
   onChange: (accountId: string | null) => void;
+  setControllerAccountId: (controllerId: string | null) => void;
+  setStepsState: (stepsState: string[]) => void; // Dispatch<SetStateAction<string>>
+  stepsState: string[];
 }
 
-function AccountSelector ({ className, onChange, title, value }: Props): React.ReactElement<Props> {
+function AccountSelector ({ className, onChange, setControllerAccountId, setStepsState, stepsState, title, value }: Props): React.ReactElement<Props> {
   const [accountId, setAccountId] = useState<string | null>(null);
+  const balance = useBalanceClear(accountId);
+  const api = useApi();
+  const existentialDeposit = api.api.consts.balances.existentialDeposit;
 
   useEffect((): void => {
     if (accountId) {
+      if (value !== accountId) {
+        setControllerAccountId(null);
+      }
+
       onChange(accountId);
     }
-  }, [accountId, onChange, value]);
+  }, [accountId, onChange, setControllerAccountId, value]);
+
+  useEffect(() => {
+    const newStepsState = [...stepsState];
+
+    if (balance === null) {
+      return;
+    }
+
+    if (balance.cmp(existentialDeposit) === 1) {
+      newStepsState[0] = 'completed';
+      newStepsState[1] = newStepsState[1] === 'disabled' ? '' : newStepsState[1];
+    } else {
+      newStepsState[0] = '';
+      newStepsState[1] = 'disabled';
+      newStepsState[2] = 'disabled';
+      newStepsState[3] = 'disabled';
+    }
+
+    setStepsState(newStepsState);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [balance, existentialDeposit]);
 
   return (
     <section className={className} >

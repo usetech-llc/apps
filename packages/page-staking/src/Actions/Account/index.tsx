@@ -26,6 +26,7 @@ import Validate from './Validate';
 interface Props {
   activeEra?: EraIndex;
   className?: string;
+  hideNominationButtons?: boolean;
   isDisabled?: boolean;
   info: StakerState;
   next?: string[];
@@ -34,7 +35,7 @@ interface Props {
   validators?: string[];
 }
 
-function Account ({ className, info: { controllerId, destination, destinationId, hexSessionIdNext, hexSessionIdQueue, isLoading, isOwnController, isOwnStash, isStashNominating, isStashValidating, nominating, sessionIds, stakingLedger, stashId }, isDisabled, next, targets, validators }: Props): React.ReactElement<Props> {
+function Account ({ className, hideNominationButtons, info: { controllerId, destination, destinationId, hexSessionIdNext, hexSessionIdQueue, isLoading, isOwnController, isOwnStash, isStashNominating, isStashValidating, nominating, sessionIds, stakingLedger, stashId }, isDisabled, next, targets, validators }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
   const balancesAll = useCall<DeriveBalancesAll>(api.derive.balances.all, [stashId]);
@@ -146,49 +147,53 @@ function Account ({ className, info: { controllerId, destination, destinationId,
           ? null
           : (
             <>
-              {(isStashNominating || isStashValidating)
-                ? (
-                  <TxButton
-                    accountId={controllerId}
-                    icon='stop'
-                    isDisabled={!isOwnController || isDisabled}
-                    isPrimary={false}
-                    key='stop'
-                    label={t('Stop')}
-                    tx='staking.chill'
-                  />
-                )
-                : (
-                  <Button.Group>
-                    {(!sessionIds.length || hexSessionIdNext === '0x')
-                      ? (
+              {!hideNominationButtons &&
+                <>
+                  {(isStashNominating || isStashValidating)
+                    ? (
+                      <TxButton
+                        accountId={controllerId}
+                        icon='stop'
+                        isDisabled={!isOwnController || isDisabled}
+                        isPrimary={false}
+                        key='stop'
+                        label={t('Stop')}
+                        tx='staking.chill'
+                      />
+                    )
+                    : (
+                      <Button.Group>
+                        {(!sessionIds.length || hexSessionIdNext === '0x')
+                          ? (
+                            <Button
+                              icon='sign-in'
+                              isDisabled={!isOwnController || isDisabled}
+                              key='set'
+                              label={t('Session Key')}
+                              onClick={toggleSetSession}
+                            />
+                          )
+                          : (
+                            <Button
+                              icon='check circle outline'
+                              isDisabled={!isOwnController || isDisabled}
+                              key='validate'
+                              label={t('Validate')}
+                              onClick={toggleValidate}
+                            />
+                          )
+                        }
                         <Button
-                          icon='sign-in'
+                          icon='hand paper outline'
                           isDisabled={!isOwnController || isDisabled}
-                          key='set'
-                          label={t('Session Key')}
-                          onClick={toggleSetSession}
+                          key='nominate'
+                          label={t('Nominate')}
+                          onClick={toggleNominate}
                         />
-                      )
-                      : (
-                        <Button
-                          icon='check circle outline'
-                          isDisabled={!isOwnController || isDisabled}
-                          key='validate'
-                          label={t('Validate')}
-                          onClick={toggleValidate}
-                        />
-                      )
-                    }
-                    <Button
-                      icon='hand paper outline'
-                      isDisabled={!isOwnController || isDisabled}
-                      key='nominate'
-                      label={t('Nominate')}
-                      onClick={toggleNominate}
-                    />
-                  </Button.Group>
-                )
+                      </Button.Group>
+                    )
+                  }
+                </>
               }
               <Popup
                 isOpen={isSettingsOpen}

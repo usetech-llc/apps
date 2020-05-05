@@ -57,7 +57,6 @@ function Actions ({ className, hideNewStake, isInElection, next, ownStashes, tar
   const header = useMemo(() => [
     [t('stashes'), 'start'],
     [t('controller'), 'address'],
-    [t('rewards'), 'number'],
     [t('bonded'), 'number'],
     [undefined, undefined, 2]
   ], [t]);
@@ -86,6 +85,7 @@ function Actions ({ className, hideNewStake, isInElection, next, ownStashes, tar
         {foundStashes?.map((info): React.ReactNode => (
           <Account
             activeEra={activeEra}
+            hideNominationButtons={hideNewStake}
             info={info}
             isDisabled={isInElection}
             key={info.stashId}

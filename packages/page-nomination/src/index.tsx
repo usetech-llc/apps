@@ -2,40 +2,54 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import React, { useState, useCallback } from 'react';
-import BN from 'bn.js';
-import { Progress } from 'semantic-ui-react';
 // global app props
 import { AppProps as Props } from '@polkadot/react-components/types';
+import { DeriveStakingOverview } from '@polkadot/api-derive/types';
+import { ElectionStatus } from '@polkadot/types/interfaces';
 
 // external imports (including those found in the packages/*
 // of this repo)
+import React, {useState, useCallback, useEffect} from 'react';
+import BN from 'bn.js';
+import styled from 'styled-components';
 import { Button, HelpOverlay, InputBalance } from '@polkadot/react-components';
 import basicMd from '@polkadot/app-staking/md/basic.md';
-import AccountSelector from '@polkadot/app-staking/Nomination/AccountSelector';
-import { useApi } from '@polkadot/react-hooks';
+import {useApi, useCall, useOwnStashInfos, useStashIds} from '@polkadot/react-hooks';
 import useValidators from '@polkadot/app-staking/Nomination/useValidators';
-import Summary from '@polkadot/app-staking/Nomination/Summary';
 import { useTranslation } from '@polkadot/app-accounts/translate';
-import { Available } from '@polkadot/react-query/index';
+import { assert } from '@polkadot/util';
+import { QrDisplayAddress } from '@polkadot/react-qr';
+import Actions from '@polkadot/app-staking/Actions';
+import useSortedTargets from '@polkadot/app-staking/useSortedTargets';
 
 // local imports and components
+import AccountSelector from './AccountSelector';
+import WalletSelector from './WalletSelector';
+import Available from './Available';
+
+interface Validators {
+  next?: string[];
+  validators?: string[];
+}
 
 function Nomination ({ className }: Props): React.ReactElement<Props> {
+  const { t } = useTranslation();
+  const { api } = useApi();
+  const ownStashes = useOwnStashInfos();
+  const targets = useSortedTargets();
+  const allStashes = useStashIds();
+  const stakingOverview = useCall<DeriveStakingOverview>(api.derive.staking.overview, []);
+  const isInElection = useCall<boolean>(api.query.staking?.eraElectionStatus, [], {
+    transform: (status: ElectionStatus) => status.isOpen
+  });
+  const { filteredValidators, validatorsLoading } = useValidators();
+  const [{ next, validators }, setValidators] = useState<Validators>({});
   const [accountId, setAccountId] = useState<string | null>(null);
+  const [wallet, setWallet] = useState<string | null>(null);
   const [percent, setPercent] = useState(33);
   const [amount, setAmount] = useState<BN | undefined | null>(null);
-  const api = useApi();
-  const { filteredValidators, validatorsLoading } = useValidators();
-  const { t } = useTranslation();
 
-  function balanceWrapper (text: string): React.ReactNode {
-    return (
-      <strong className='label'>{text}</strong>
-    );
-  }
-
-  const nominate = useCallback(() => {
+  /* const nominate = useCallback(() => {
     api.api.tx.staking.nominate(filteredValidators).signAndSend(accountId, ({ events = [], status }) => {
       console.log('nominate Transaction status:', status.type);
 
@@ -69,44 +83,84 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
         nominate();
       }
     });
-  }, [accountId, amount, api.api.tx.staking]);
+  }, [accountId, amount, api.api.tx.staking]); */
 
   const startNomination = useCallback(() => {
-    bond();
-  }, [bond]);
+    // bond();
+    assert(false, 'Unable to find api.tx.');
+  }, []);
+
+  useEffect((): void => {
+    allStashes && stakingOverview && setValidators({
+      next: allStashes.filter((address) => !stakingOverview.validators.includes(address as any)),
+      validators: stakingOverview.validators.map((a) => a.toString())
+    });
+  }, [allStashes, stakingOverview]);
 
   return (
     // in all apps, the main wrapper is setup to allow the padding
     // and margins inside the application. (Just from a consistent pov)
     <main className={`nomination-app ${className}`}>
       <HelpOverlay md={basicMd} />
-      <AccountSelector
-        onChange={setAccountId}
-        title={'Your account'}
-        value={accountId}
-      />
-      <Available
-        label={balanceWrapper(t('Your account balance'))}
-        params={accountId}
-      />
-      <section>
-        <h1>{t('Enter the amount you would like to Bond and click Next:')}</h1>
-        <div className='ui--row'>
-          <div className='large'>
-            <InputBalance
-              label={t('amount to bond')}
-              onChange={setAmount}
-            />
-          </div>
-          <Summary className='small'>{t('Bond to controller account. Bond fees and per-transaction fees apply and will be calculated upon submission.')}</Summary>
-        </div>
-      </section>
-      <Button
-        icon='add'
-        label={'Just click to Nominate'}
-        onClick={startNomination}
-      />
       <div className='ui placeholder segment'>
+        <WalletSelector
+          onChange={setWallet}
+          title={'Connect to a wallet'}
+          value={wallet}
+        />
+      </div>
+      <div className='ui placeholder segment'>
+        <AccountSelector
+          onChange={setAccountId}
+          title={'Your account'}
+          value={accountId}
+        />
+        {accountId && (
+          <Available
+            params={accountId}
+          />
+        )}
+        {accountId &&
+        <QrDisplayAddress
+          address={accountId}
+          className={'qr-center'}
+          genesisHash={api.genesisHash.toHex()}
+          size={200}
+        />
+        }
+      </div>
+      <div className='ui placeholder segment'>
+        <h2>{t('Enter the amount you would like to Bond and click Start:')}</h2>
+        <InputBalance
+          isFull
+          label={t('amount to bond')}
+          onChange={setAmount}
+        />
+        <Button.Group>
+          <Button
+            icon='play'
+            isDisabled
+            label={'Start'}
+            onClick={startNomination}
+          />
+        </Button.Group>
+      </div>
+      <div className='ui placeholder segment'>
+        <Actions
+          hideNewStake
+          isInElection={isInElection}
+          next={next}
+          ownStashes={ownStashes}
+          targets={targets}
+          validators={validators}
+        />
+      </div>
+      {/* <div className='ui placeholder segment'>
+        <Button
+          icon='add'
+          label={'Just click to Nominate'}
+          onClick={startNomination}
+        />
         <Progress
           indicating
           percent={percent}
@@ -125,9 +179,15 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </main>
   );
 }
 
-export default React.memo(Nomination);
+export default React.memo(styled(Nomination)`
+   max-width: 800px;
+   
+   .qr-center {
+     margin: 0 auto;
+   }
+`);

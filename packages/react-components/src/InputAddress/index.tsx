@@ -161,7 +161,6 @@ class InputAddress extends React.PureComponent<Props, State> {
     return (
       <Dropdown
         allowAdd
-        onAdd={() => {}}
         className={classes('ui--InputAddress', hideAddress && 'hideAddress', className)}
         defaultValue={_defaultValue}
         help={help}
@@ -170,6 +169,7 @@ class InputAddress extends React.PureComponent<Props, State> {
         isMultiple={isMultiple}
         label={label}
         labelExtra={labelExtra}
+        onAdd={() => {}}
         onChange={
           isMultiple
             ? this.onChangeMulti
