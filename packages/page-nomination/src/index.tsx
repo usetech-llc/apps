@@ -9,23 +9,23 @@ import { ElectionStatus } from '@polkadot/types/interfaces';
 
 // external imports (including those found in the packages/*
 // of this repo)
-import React, {useState, useCallback, useEffect} from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import BN from 'bn.js';
 import styled from 'styled-components';
 import { Button, HelpOverlay, InputBalance } from '@polkadot/react-components';
 import basicMd from '@polkadot/app-staking/md/basic.md';
-import {useApi, useCall, useOwnStashInfos, useStashIds} from '@polkadot/react-hooks';
+import { useApi, useCall, useOwnStashInfos, useStashIds } from '@polkadot/react-hooks';
 import useValidators from '@polkadot/app-staking/Nomination/useValidators';
 import { useTranslation } from '@polkadot/app-accounts/translate';
 import { assert } from '@polkadot/util';
 import { QrDisplayAddress } from '@polkadot/react-qr';
-import Actions from '@polkadot/app-staking/Actions';
 import useSortedTargets from '@polkadot/app-staking/useSortedTargets';
 
 // local imports and components
 import AccountSelector from './AccountSelector';
 import WalletSelector from './WalletSelector';
 import Available from './Available';
+import Actions from './Actions';
 
 interface Validators {
   next?: string[];
@@ -48,6 +48,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
   const [wallet, setWallet] = useState<string | null>(null);
   const [percent, setPercent] = useState(33);
   const [amount, setAmount] = useState<BN | undefined | null>(null);
+  const accountSegment: any = useRef(null);
 
   /* const nominate = useCallback(() => {
     api.api.tx.staking.nominate(filteredValidators).signAndSend(accountId, ({ events = [], status }) => {
@@ -97,6 +98,12 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
     });
   }, [allStashes, stakingOverview]);
 
+  useEffect(() => {
+    if (accountSegment && accountSegment.current) {
+      window.scrollTo(0, accountSegment.current.offsetTop);
+    }
+  }, []);
+
   return (
     // in all apps, the main wrapper is setup to allow the padding
     // and margins inside the application. (Just from a consistent pov)
@@ -109,7 +116,10 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
           value={wallet}
         />
       </div>
-      <div className='ui placeholder segment'>
+      <div
+        className='ui placeholder segment'
+        ref={accountSegment}
+      >
         <AccountSelector
           onChange={setAccountId}
           title={'Your account'}

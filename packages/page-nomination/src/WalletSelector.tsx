@@ -5,6 +5,11 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Dropdown } from '@polkadot/react-components';
+import polkadot from './assets/img/polkadot.png';
+import enzyme from './assets/img/enzyme.png';
+import math from './assets/img/math.png';
+import ledger from './assets/img/ledger.png';
+import speckle from './assets/img/speckle.png';
 
 interface Props {
   value?: string | null;
@@ -15,34 +20,34 @@ interface Props {
 
 const wallets = [
   {
-    image: { avatar: true, src: '/' },
+    image: { avatar: true, src: polkadot },
     key: 'PolkadotJS',
     text: 'PolkadotJS',
-    value: 'PolkadotJS',
+    value: 'PolkadotJS'
   },
   {
     disabled: true,
-    image: { avatar: true, src: '/' },
+    image: { avatar: true, src: speckle },
     key: 'Speckle OS',
     text: 'Speckle OS',
     value: 'Speckle OS'
   },
   {
     disabled: true,
-    image: { avatar: true, src: '/' },
+    image: { avatar: true, src: enzyme },
     key: 'Enzyme',
     text: 'Enzyme',
     value: 'Enzyme'
   },
   {
-    image: { avatar: true, src: '/' },
+    disabled: true,
+    image: { avatar: true, src: math },
     key: 'Math Wallet',
     text: 'Math Wallet',
-    value: 'Math Wallet'
   },
   {
     disabled: true,
-    image: { avatar: true, src: '/' },
+    image: { avatar: true, src: ledger },
     key: 'Ledger Nano',
     text: 'Ledger Nano',
     value: 'Ledger Nano'
@@ -62,6 +67,7 @@ function WalletSelector ({ className, onChange, title, value }: Props): React.Re
     <section className={className} >
       <h2>{title}</h2>
       <Dropdown
+        defaultValue={wallets[0].value}
         help={'Some wallets will be enabled later'}
         isFull
         label={'Connect to a wallet'}
