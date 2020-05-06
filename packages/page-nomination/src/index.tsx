@@ -9,23 +9,25 @@ import { ElectionStatus } from '@polkadot/types/interfaces';
 
 // external imports (including those found in the packages/*
 // of this repo)
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useRef, useContext } from 'react';
 import BN from 'bn.js';
 import styled from 'styled-components';
-import { Button, HelpOverlay, InputBalance } from '@polkadot/react-components';
+import { Button, HelpOverlay, InputBalance, StatusContext } from '@polkadot/react-components';
 import basicMd from '@polkadot/app-staking/md/basic.md';
 import { useApi, useCall, useOwnStashInfos, useStashIds } from '@polkadot/react-hooks';
 import useValidators from '@polkadot/app-staking/Nomination/useValidators';
 import { useTranslation } from '@polkadot/app-accounts/translate';
-import { assert } from '@polkadot/util';
 import { QrDisplayAddress } from '@polkadot/react-qr';
 import useSortedTargets from '@polkadot/app-staking/useSortedTargets';
+import keyring from '@polkadot/ui-keyring';
+import { web3FromSource } from '@polkadot/extension-dapp';
 
 // local imports and components
 import AccountSelector from './AccountSelector';
 import WalletSelector from './WalletSelector';
 import Available from './Available';
 import Actions from './Actions';
+import { useFees, WholeFeesType } from './useBalance';
 
 interface Validators {
   next?: string[];
@@ -42,6 +44,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
   const isInElection = useCall<boolean>(api.query.staking?.eraElectionStatus, [], {
     transform: (status: ElectionStatus) => status.isOpen
   });
+  const [selectedValidators, setSelectedValidators] = useState<string[]>([]);
   const { filteredValidators, validatorsLoading } = useValidators();
   const [{ next, validators }, setValidators] = useState<Validators>({});
   const [accountId, setAccountId] = useState<string | null>(null);
@@ -49,47 +52,108 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
   const [percent, setPercent] = useState(33);
   const [amount, setAmount] = useState<BN | undefined | null>(null);
   const accountSegment: any = useRef(null);
-
-  /* const nominate = useCallback(() => {
-    api.api.tx.staking.nominate(filteredValidators).signAndSend(accountId, ({ events = [], status }) => {
-      console.log('nominate Transaction status:', status.type);
-
-      if (status.isInBlock) {
-        console.log('nominate Included at block hash', status.asInBlock.toHex());
-        console.log('nominate Events:');
-
-        events.forEach(({ event: { data, method, section }, phase }) => {
-          console.log('\t', phase.toString(), `: ${section}.${method}`, data.toString());
-        });
-      } else if (status.isFinalized) {
-        console.log('Finalized nominate', status.asFinalized.toHex());
-        nominate();
-      }
-    });
-  }, [accountId, amount, api.api.tx.staking]);
-
-  const bond = useCallback(() => {
-    api.api.tx.staking.bond(accountId, amount, 2).signAndSend(accountId, ({ events = [], status }) => {
-      console.log('bond Transaction status:', status.type);
-
-      if (status.isInBlock) {
-        console.log('bond Included at block hash', status.asInBlock.toHex());
-        console.log('bond Events:');
-
-        events.forEach(({ event: { data, method, section }, phase }) => {
-          console.log('\t', phase.toString(), `: ${section}.${method}`, data.toString());
-        });
-      } else if (status.isFinalized) {
-        console.log('Finalized bond', status.asFinalized.toHex());
-        nominate();
-      }
-    });
-  }, [accountId, amount, api.api.tx.staking]); */
+  const { feesLoading, wholeFees }: WholeFeesType = useFees(accountId, selectedValidators);
+  const { queueExtrinsic } = useContext(StatusContext);
+  const extrinsicBond = (amount && accountId)
+    ? api.tx.staking.bond(accountId, amount, 2)
+    : null;
+  const extrinsicNominate = (amount && accountId)
+    ? api.tx.staking.nominate(selectedValidators)
+    : null;
 
   const startNomination = useCallback(() => {
-    // bond();
+    if (!extrinsicBond || !extrinsicNominate || !accountId) {
+      return;
+    }
+
+    const txs = [extrinsicBond, extrinsicNominate];
+
+    api.tx.utility
+      .batch(txs)
+      .signAndSend(accountId, ({ status }) => {
+        if (status.isInBlock) {
+          console.log(`included in ${status.asInBlock}`);
+        }
+      });
+  }, [accountId, api.tx.utility, extrinsicBond, extrinsicNominate]);
+
+  /* const startNomination = useCallback(() => {
+    const extrinsicNominate = (amount && accountId)
+      ? api.tx.staking.nominate(selectedValidators)
+      : null;
+
+    if (!extrinsicNominate) {
+      return;
+    }
+
+    queueExtrinsic({
+      accountId: accountId && accountId.toString(),
+      extrinsicNominate,
+      isUnsigned: undefined,
+      txFailedCb: () => { console.log('failed'); },
+      txStartCb: () => { console.log('start'); },
+      txSuccessCb: () => { console.log('success'); },
+      txUpdateCb: () => { console.log('update'); }
+    });
     assert(false, 'Unable to find api.tx.');
-  }, []);
+  }, [accountId, amount]);
+
+  const startBond = useCallback(() => {
+    // bond();
+    const extrinsicBond = (amount && accountId)
+      ? api.tx.staking.bond(accountId, amount, 2)
+      : null;
+
+    if (!extrinsicBond) {
+      return;
+    }
+
+    queueExtrinsic({
+      accountId: accountId && accountId.toString(),
+      extrinsicBond,
+      isUnsigned: undefined,
+      txFailedCb: () => { console.log('failed'); },
+      txStartCb: () => { console.log('start'); },
+      txSuccessCb: () => { startNomination(); },
+      txUpdateCb: () => { console.log('update'); }
+    });
+  }, [accountId, amount]); */
+
+  const setSigner = useCallback(async () => {
+    if (!accountId) {
+      return;
+    }
+
+    const pair = keyring.getAddress(accountId, null);
+    const { meta: { source } } = pair;
+    const injected = await web3FromSource(source);
+
+    api.setSigner(injected.signer);
+  }, [accountId, api]);
+
+  /**
+   * Set validators list.
+   * If filtered validators
+   */
+  useEffect(() => {
+    if (filteredValidators && filteredValidators.length) {
+      setSelectedValidators(
+        filteredValidators.map((validator): string => validator.key).slice(0, 16)
+      );
+    } else {
+      stakingOverview && setSelectedValidators(
+        stakingOverview.validators.map((acc): string => acc.toString()).slice(0, 16)
+      );
+    }
+  }, [filteredValidators, stakingOverview]);
+
+  useEffect(() => {
+    if (!accountId) {
+      return;
+    }
+
+    setSigner().then();
+  }, [accountId, setSigner]);
 
   useEffect((): void => {
     allStashes && stakingOverview && setValidators({
@@ -140,7 +204,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
         }
       </div>
       <div className='ui placeholder segment'>
-        <h2>{t('Enter the amount you would like to Bond and click Start:')}</h2>
+        <h2>{t('Enter the amount you would like to Nominate and click Start:')}</h2>
         <InputBalance
           isFull
           label={t('amount to bond')}
@@ -149,10 +213,24 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
         <Button.Group>
           <Button
             icon='play'
-            isDisabled
             label={'Start'}
             onClick={startNomination}
           />
+          {/*<DoubleTxButton
+            accountId={accountId}
+            extrinsics={[extrinsicBond, extrinsicNominate]}
+            icon='play'
+            isPrimary
+            label={'Start'}
+          />*/}
+          {/* <TxButton
+            accountId={accountId}
+            extrinsic={extrinsicBond}
+            icon='sign-in'
+            isPrimary
+            label={t('Start')}
+            onSuccess={nominate}
+          /> */}
         </Button.Group>
       </div>
       <div className='ui placeholder segment'>
