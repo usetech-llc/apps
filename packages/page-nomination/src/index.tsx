@@ -7,6 +7,7 @@ import { AppProps as Props } from '@polkadot/react-components/types';
 import { DeriveStakingOverview } from '@polkadot/api-derive/types';
 import { ElectionStatus } from '@polkadot/types/interfaces';
 import { ActionStatus } from '@polkadot/react-components/Status/types';
+import { Balance } from '@polkadot/types/interfaces/runtime';
 
 // external imports (including those found in the packages/*
 // of this repo)
@@ -17,19 +18,19 @@ import { Button, HelpOverlay, InputBalance, StatusContext } from '@polkadot/reac
 import basicMd from '@polkadot/app-staking/md/basic.md';
 import { useApi, useCall, useOwnStashInfos, useStashIds } from '@polkadot/react-hooks';
 import useValidators from '@polkadot/app-staking/Nomination/useValidators';
-import { useTranslation } from '@polkadot/app-accounts/translate';
 import { QrDisplayAddress } from '@polkadot/react-qr';
 import useSortedTargets from '@polkadot/app-staking/useSortedTargets';
 import keyring from '@polkadot/ui-keyring';
 import { web3FromSource } from '@polkadot/extension-dapp';
-import EraToTime from '@polkadot/app-staking/Nomination/EraToTime';
 
 // local imports and components
 import AccountSelector from './AccountSelector';
-import WalletSelector from './WalletSelector';
+import EraToTime from './EraToTime';
 import Available from './Available';
 import Actions from './Actions';
-import { useFees, WholeFeesType } from './useBalance';
+import WalletSelector from './WalletSelector';
+import { useFees, WholeFeesType, useBalanceClear } from './useBalance';
+import { useTranslation } from './translate';
 
 interface Validators {
   next?: string[];
@@ -47,21 +48,33 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
     transform: (status: ElectionStatus) => status.isOpen
   });
   const [selectedValidators, setSelectedValidators] = useState<string[]>([]);
-  const { filteredValidators, validatorsLoading } = useValidators();
+  const { filteredValidators } = useValidators();
   const [{ next, validators }, setValidators] = useState<Validators>({});
   const [accountId, setAccountId] = useState<string | null>(null);
   const [wallet, setWallet] = useState<string | null>(null);
-  const [percent, setPercent] = useState(33);
-  const [amount, setAmount] = useState<BN | undefined | null>(null);
+  const [amount, setAmount] = useState<BN | undefined>(new BN(0));
+  const [amountToNominate, setAmountToNominate] = useState<BN | undefined>(new BN(0));
   const accountSegment: any = useRef(null);
-  const { feesLoading, wholeFees }: WholeFeesType = useFees(accountId, selectedValidators);
+  const accountBalance: Balance | null = useBalanceClear(accountId);
+  const { wholeFees }: WholeFeesType = useFees(accountId, selectedValidators);
   const { queueAction } = useContext(StatusContext);
-  const extrinsicBond = (amount && accountId)
-    ? api.tx.staking.bond(accountId, amount, 2)
+  const extrinsicBond = (amountToNominate && accountId)
+    ? api.tx.staking.bond(accountId, amountToNominate, 2)
     : null;
-  const extrinsicNominate = (amount && accountId)
+  const extrinsicNominate = (amountToNominate && accountId)
     ? api.tx.staking.nominate(selectedValidators)
     : null;
+
+  const calculateMaxPreFilledBalance = useCallback((): void => {
+    if (!wholeFees || (!amount || amount.gtn(0)) || !accountBalance) {
+      return;
+    }
+
+    if (accountBalance.toNumber() && !amount.toNumber()) {
+      // double wholeFees
+      setAmount(accountBalance.sub(wholeFees).sub(wholeFees));
+    }
+  }, [accountBalance, amount, wholeFees]);
 
   const startNomination = useCallback(() => {
     if (!extrinsicBond || !extrinsicNominate || !accountId) {
@@ -91,6 +104,11 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
     }
 
     const pair = keyring.getAddress(accountId, null);
+
+    if (!pair) {
+      return;
+    }
+
     const { meta: { source } } = pair;
 
     if (!source) {
@@ -98,6 +116,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
     }
 
     const injected = await web3FromSource(source);
+
     api.setSigner(injected.signer);
   }, [accountId, api]);
 
@@ -133,6 +152,10 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
   }, [allStashes, stakingOverview]);
 
   useEffect(() => {
+    calculateMaxPreFilledBalance();
+  }, [calculateMaxPreFilledBalance, wholeFees]);
+
+  useEffect(() => {
     if (accountSegment && accountSegment.current) {
       window.scrollTo(0, accountSegment.current.offsetTop);
     }
@@ -146,7 +169,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
       <div className='ui placeholder segment'>
         <WalletSelector
           onChange={setWallet}
-          title={'Connect to a wallet'}
+          title={t('Connect to a wallet')}
           value={wallet}
         />
       </div>
@@ -156,7 +179,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
       >
         <AccountSelector
           onChange={setAccountId}
-          title={'Your account'}
+          title={t('Your account')}
           value={accountId}
         />
         {accountId && (
@@ -173,15 +196,21 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
         />
         }
       </div>
+      {amount && accountBalance && amount.gtn(0) && accountBalance.gtn(0) &&
       <div className='ui placeholder segment'>
         <h2>{t('Enter the amount you would like to Nominate and click Start:')}</h2>
         <InputBalance
+          defaultValue={amount}
           isFull
+          isZeroable
           label={t('amount to bond')}
-          onChange={setAmount}
+          maxValue={accountBalance}
+          onChange={setAmountToNominate}
+          withMax
         />
         <h4 className='ui orange header'>
-          {t('Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for')} <EraToTime showBlocks />, {t('which is approximately')} <EraToTime showDays />.
+          {t('Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for')}
+          <EraToTime showBlocks/>, {t('which is approximately')} <EraToTime showDays/>.
         </h4>
         <Button.Group>
           <Button
@@ -191,6 +220,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
           />
         </Button.Group>
       </div>
+      }
       <div className='ui placeholder segment'>
         <Actions
           hideNewStake
@@ -201,31 +231,6 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
           validators={validators}
         />
       </div>
-      {/* <div className='ui placeholder segment'>
-        <Button
-          icon='add'
-          label={'Just click to Nominate'}
-          onClick={startNomination}
-        />
-        <Progress
-          indicating
-          percent={percent}
-        />
-        <div className='ui list'>
-          <div className='item'>
-            <div className='header'>Bond</div>
-            <div className='description'>
-              Bonding funds...
-            </div>
-          </div>
-          <div className='item'>
-            <div className='header'>Nominate</div>
-            <div className='description'>
-              Nominating...
-            </div>
-          </div>
-        </div>
-      </div> */}
     </main>
   );
 }

@@ -10,39 +10,32 @@ import React from 'react';
 import { useApi, useCall } from '@polkadot/react-hooks';
 import { FormatBalance } from '@polkadot/react-query';
 import { Spinner } from '@polkadot/react-components';
-import {useTranslation} from "@polkadot/app-accounts/translate";
+
+import { useTranslation } from './translate';
 
 interface Props extends BareProps {
-  children?: React.ReactNode;
   label?: React.ReactNode;
   params?: AccountId | AccountIndex | Address | string | Uint8Array | null;
 }
 
-function AvailableDisplay ({ children, className, label, params }: Props): React.ReactElement<Props> {
+function AvailableDisplay ({ className, label, params }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const { t } = useTranslation();
   const allBalances = useCall<DeriveBalancesAll>(api.derive.balances.all, [params]);
 
-  if (!allBalances || !allBalances.availableBalance) {
-    return (
-      <div className='ui statistic'>
-        <Spinner />
-        <div className='label'>
-          {t('Your account balance')}
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className='ui statistic'>
-      <div className='value'>
-        <FormatBalance
-          className={className}
-          label={label}
-          value={allBalances?.availableBalance}
-        />
-      </div>
+      {(!allBalances || !allBalances.availableBalance)
+        ? <Spinner /> : (
+          <div className='value'>
+            <FormatBalance
+              className={className}
+              label={label}
+              value={allBalances?.availableBalance}
+            />
+          </div>
+        )
+      }
       <div className='label'>
         {t('Your account balance')}
       </div>

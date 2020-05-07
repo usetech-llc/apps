@@ -196,7 +196,7 @@ function Queue ({ children }: Props): React.ReactElement<Props> {
           : item
       )]);
       const act = extractEvents(result);
-      console.log('act', act);
+
       queueAction(
         act
       );

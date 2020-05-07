@@ -87,12 +87,14 @@ function Account ({ className, hideNominationButtons, info: { controllerId, dest
             controllerId={controllerId}
             defaultDestination={destinationId}
             onClose={toggleRewardDestination}
+            stashId={stashId}
           />
         )}
         {isSetSessionOpen && controllerId && (
           <SetSessionKey
             controllerId={controllerId}
             onClose={toggleSetSession}
+            stashId={stashId}
           />
         )}
         {isUnbondOpen && (
@@ -201,7 +203,7 @@ function Account ({ className, hideNominationButtons, info: { controllerId, dest
                 onClose={toggleSettings}
                 trigger={
                   <Button
-                    icon='setting'
+                    icon='ellipsis vertical'
                     isDisabled={isDisabled}
                     onClick={toggleSettings}
                   />

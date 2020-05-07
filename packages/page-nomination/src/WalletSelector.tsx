@@ -5,6 +5,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Dropdown } from '@polkadot/react-components';
+
+import { useTranslation } from './translate';
 import polkadot from './assets/img/polkadot.png';
 import enzyme from './assets/img/enzyme.png';
 import math from './assets/img/math.png';
@@ -43,7 +45,7 @@ const wallets = [
     disabled: true,
     image: { avatar: true, src: math },
     key: 'Math Wallet',
-    text: 'Math Wallet',
+    text: 'Math Wallet'
   },
   {
     disabled: true,
@@ -54,8 +56,9 @@ const wallets = [
   }
 ];
 
-function WalletSelector ({ className, onChange, title, value }: Props): React.ReactElement<Props> {
+function WalletSelector ({ className, onChange, title }: Props): React.ReactElement<Props> {
   const [wallet, setWallet] = useState<any>(wallets[0]);
+  const { t } = useTranslation();
 
   useEffect((): void => {
     if (wallet) {
@@ -68,9 +71,9 @@ function WalletSelector ({ className, onChange, title, value }: Props): React.Re
       <h2>{title}</h2>
       <Dropdown
         defaultValue={wallets[0].value}
-        help={'Some wallets will be enabled later'}
+        help={t('Some wallets will be enabled later')}
         isFull
-        label={'Connect to a wallet'}
+        label={t('Connect to a wallet')}
         onChange={setWallet}
         options={wallets}
       />

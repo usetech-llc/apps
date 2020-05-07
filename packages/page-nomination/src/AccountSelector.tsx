@@ -6,6 +6,8 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Button, InputAddress } from '@polkadot/react-components';
 
+import { useTranslation } from './translate';
+
 interface Props {
   value?: string | null;
   className?: string;
@@ -15,6 +17,7 @@ interface Props {
 
 function AccountSelector ({ className, onChange, title, value }: Props): React.ReactElement<Props> {
   const [accountId, setAccountId] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   useEffect((): void => {
     if (accountId) {
@@ -28,7 +31,7 @@ function AccountSelector ({ className, onChange, title, value }: Props): React.R
       <InputAddress
         className='medium'
         defaultValue={value}
-        label={`select ${title}`}
+        label={t('select {{title}}', { replace: { title: title } })}
         onChange={setAccountId}
         type='account'
         value={value}
@@ -37,13 +40,13 @@ function AccountSelector ({ className, onChange, title, value }: Props): React.R
         <Button
           icon='arrow up'
           isDisabled
-          label={'Import'}
+          label={t('Import')}
         />
         <div className='or'/>
         <Button
           icon='add'
           isDisabled
-          label={'Create New'}
+          label={t('Create New')}
         />
       </Button.Group>
     </section>

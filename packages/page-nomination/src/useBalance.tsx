@@ -70,7 +70,7 @@ export function useFees (accountId?: string | null, validators?: string[]): Whol
         return of(error);
       }));
 
-      fessGetter.subscribe(({ bond, payment, startNomination, stopNomination }) => {
+      fessGetter.subscribe(({ payment, startNomination, stopNomination }) => {
         setFeesLoading(false);
         const paymentFees = payment ? payment.partialFee : new BN(0);
         const startNominationFees = startNomination ? startNomination.partialFee : new BN(0);

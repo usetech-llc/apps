@@ -1,3 +1,15 @@
 {
-  "Enter the amount you would like to Nominate and click Start:": "Enter the amount you would like to Nominate and click Start:"
+  "{{blocks}} blocks": "{{blocks}} blocks",
+  "Connect to a wallet": "Connect to a wallet",
+  "Create New": "Create New",
+  "Enter the amount you would like to Nominate and click Start:": "Enter the amount you would like to Nominate and click Start:",
+  "Funds nominated successfully!": "Funds nominated successfully!",
+  "Import": "Import",
+  "select {{title}}": "select {{title}}",
+  "Some wallets will be enabled later": "Some wallets will be enabled later",
+  "There is currently an ongoing election for new validator candidates. As such staking operations are not permitted.": "There is currently an ongoing election for new validator candidates. As such staking operations are not permitted.",
+  "Your account": "Your account",
+  "Your account balance": "Your account balance",
+  "Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for": "Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for",
+  "which is approximately": "which is approximately"
 }
