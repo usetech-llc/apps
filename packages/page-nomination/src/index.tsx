@@ -6,6 +6,7 @@
 import { AppProps as Props } from '@polkadot/react-components/types';
 import { DeriveStakingOverview } from '@polkadot/api-derive/types';
 import { ElectionStatus } from '@polkadot/types/interfaces';
+import { ActionStatus } from '@polkadot/react-components/Status/types';
 
 // external imports (including those found in the packages/*
 // of this repo)
@@ -54,7 +55,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
   const [amount, setAmount] = useState<BN | undefined | null>(null);
   const accountSegment: any = useRef(null);
   const { feesLoading, wholeFees }: WholeFeesType = useFees(accountId, selectedValidators);
-  const { queueExtrinsic } = useContext(StatusContext);
+  const { queueAction } = useContext(StatusContext);
   const extrinsicBond = (amount && accountId)
     ? api.tx.staking.bond(accountId, amount, 2)
     : null;
@@ -73,54 +74,16 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
       .batch(txs)
       .signAndSend(accountId, ({ status }) => {
         if (status.isInBlock) {
-          console.log(`included in ${status.asInBlock}`);
-          // @todo - сообщить пользователю
-          // @todo - unbond warning!!!
+          const message: ActionStatus = {
+            action: `included in ${status.asInBlock}`,
+            message: t('Funds nominated successfully!'),
+            status: 'success'
+          };
+
+          queueAction([message]);
         }
       });
-  }, [accountId, api.tx.utility, extrinsicBond, extrinsicNominate]);
-
-  /* const startNomination = useCallback(() => {
-    const extrinsicNominate = (amount && accountId)
-      ? api.tx.staking.nominate(selectedValidators)
-      : null;
-
-    if (!extrinsicNominate) {
-      return;
-    }
-
-    queueExtrinsic({
-      accountId: accountId && accountId.toString(),
-      extrinsicNominate,
-      isUnsigned: undefined,
-      txFailedCb: () => { console.log('failed'); },
-      txStartCb: () => { console.log('start'); },
-      txSuccessCb: () => { console.log('success'); },
-      txUpdateCb: () => { console.log('update'); }
-    });
-    assert(false, 'Unable to find api.tx.');
-  }, [accountId, amount]);
-
-  const startBond = useCallback(() => {
-    // bond();
-    const extrinsicBond = (amount && accountId)
-      ? api.tx.staking.bond(accountId, amount, 2)
-      : null;
-
-    if (!extrinsicBond) {
-      return;
-    }
-
-    queueExtrinsic({
-      accountId: accountId && accountId.toString(),
-      extrinsicBond,
-      isUnsigned: undefined,
-      txFailedCb: () => { console.log('failed'); },
-      txStartCb: () => { console.log('start'); },
-      txSuccessCb: () => { startNomination(); },
-      txUpdateCb: () => { console.log('update'); }
-    });
-  }, [accountId, amount]); */
+  }, [accountId, api.tx.utility, extrinsicBond, extrinsicNominate, t, queueAction]);
 
   const setSigner = useCallback(async () => {
     if (!accountId) {
@@ -129,8 +92,12 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
 
     const pair = keyring.getAddress(accountId, null);
     const { meta: { source } } = pair;
-    const injected = await web3FromSource(source);
 
+    if (!source) {
+      return;
+    }
+
+    const injected = await web3FromSource(source);
     api.setSigner(injected.signer);
   }, [accountId, api]);
 
@@ -222,21 +189,6 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
             label={'Start'}
             onClick={startNomination}
           />
-          {/*<DoubleTxButton
-            accountId={accountId}
-            extrinsics={[extrinsicBond, extrinsicNominate]}
-            icon='play'
-            isPrimary
-            label={'Start'}
-          />*/}
-          {/* <TxButton
-            accountId={accountId}
-            extrinsic={extrinsicBond}
-            icon='sign-in'
-            isPrimary
-            label={t('Start')}
-            onSuccess={nominate}
-          /> */}
         </Button.Group>
       </div>
       <div className='ui placeholder segment'>
