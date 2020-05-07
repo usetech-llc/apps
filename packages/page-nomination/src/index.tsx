@@ -21,6 +21,7 @@ import { QrDisplayAddress } from '@polkadot/react-qr';
 import useSortedTargets from '@polkadot/app-staking/useSortedTargets';
 import keyring from '@polkadot/ui-keyring';
 import { web3FromSource } from '@polkadot/extension-dapp';
+import EraToTime from '@polkadot/app-staking/Nomination/EraToTime';
 
 // local imports and components
 import AccountSelector from './AccountSelector';
@@ -73,6 +74,8 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
       .signAndSend(accountId, ({ status }) => {
         if (status.isInBlock) {
           console.log(`included in ${status.asInBlock}`);
+          // @todo - сообщить пользователю
+          // @todo - unbond warning!!!
         }
       });
   }, [accountId, api.tx.utility, extrinsicBond, extrinsicNominate]);
@@ -210,6 +213,9 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
           label={t('amount to bond')}
           onChange={setAmount}
         />
+        <h4 className='ui orange header'>
+          {t('Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for')} <EraToTime showBlocks />, {t('which is approximately')} <EraToTime showDays />.
+        </h4>
         <Button.Group>
           <Button
             icon='play'
@@ -277,5 +283,9 @@ export default React.memo(styled(Nomination)`
    
    .qr-center {
      margin: 0 auto;
+   }
+   
+   .ui.header:before {
+      display: none !important;
    }
 `);
