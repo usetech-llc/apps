@@ -63,7 +63,7 @@ function Account ({ className, hideNominationButtons, info: { controllerId, dest
         {isInjectOpen && (
           <InjectKeys onClose={toggleInject} />
         )}
-        {isNominateOpen && controllerId && (
+        {isNominateOpen && controllerId && validators && (
           <Nominate
             controllerId={controllerId}
             isOpen={isNominateOpen}
@@ -87,7 +87,6 @@ function Account ({ className, hideNominationButtons, info: { controllerId, dest
             controllerId={controllerId}
             defaultDestination={destinationId}
             onClose={toggleRewardDestination}
-            stashId={stashId}
           />
         )}
         {isSetSessionOpen && controllerId && (

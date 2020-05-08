@@ -8,7 +8,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { Responsive } from 'semantic-ui-react';
 import createRoutes from '@polkadot/apps-routing';
-import { Button, ChainImg, Icon, Menu, media } from '@polkadot/react-components';
+import { Button, ChainImg, Menu, media } from '@polkadot/react-components';
 import { classes } from '@polkadot/react-components/util';
 
 import { SIDEBAR_MENU_THRESHOLD } from '../constants';
