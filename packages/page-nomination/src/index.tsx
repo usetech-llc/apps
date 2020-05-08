@@ -53,11 +53,15 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
   const [accountId, setAccountId] = useState<string | null>(null);
   const [wallet, setWallet] = useState<string | null>(null);
   const [amount, setAmount] = useState<BN | undefined>(new BN(0));
+  const [startButtonDisabled, setStartButtonDisabled] = useState<boolean>(false);
+  const [isNominating, setIsNominating] = useState<boolean>(false);
   const [amountToNominate, setAmountToNominate] = useState<BN | undefined>(new BN(0));
+  const [balanceInitialized, setBalanceInitialized] = useState<boolean>(false);
   const accountSegment: any = useRef(null);
   const accountBalance: Balance | null = useBalanceClear(accountId);
   const { wholeFees }: WholeFeesType = useFees(accountId, selectedValidators);
   const { queueAction } = useContext(StatusContext);
+  const currentAccountRef = useRef<string | null>();
   const extrinsicBond = (amountToNominate && accountId)
     ? api.tx.staking.bond(accountId, amountToNominate, 2)
     : null;
@@ -66,15 +70,16 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
     : null;
 
   const calculateMaxPreFilledBalance = useCallback((): void => {
-    if (!wholeFees || (!amount || amount.gtn(0)) || !accountBalance) {
+    if (!wholeFees || !accountBalance) {
       return;
     }
 
-    if (accountBalance.toNumber() && !amount.toNumber()) {
+    if (accountBalance.gtn(0)) {
       // double wholeFees
+      setBalanceInitialized(false);
       setAmount(accountBalance.sub(wholeFees).sub(wholeFees));
     }
-  }, [accountBalance, amount, wholeFees]);
+  }, [accountBalance, wholeFees]);
 
   const startNomination = useCallback(() => {
     if (!extrinsicBond || !extrinsicNominate || !accountId) {
@@ -86,6 +91,8 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
     api.tx.utility
       .batch(txs)
       .signAndSend(accountId, ({ status }) => {
+        setIsNominating(true);
+
         if (status.isInBlock) {
           const message: ActionStatus = {
             action: `included in ${status.asInBlock}`,
@@ -94,6 +101,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
           };
 
           queueAction([message]);
+          setIsNominating(false);
         }
       });
   }, [accountId, api.tx.utility, extrinsicBond, extrinsicNominate, t, queueAction]);
@@ -119,6 +127,16 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
 
     api.setSigner(injected.signer);
   }, [accountId, api]);
+
+  const disableStartButton = useCallback(() => {
+    if (!ownStashes) {
+      return;
+    }
+
+    const currentStash = ownStashes.find((stash) => stash.stashId === accountId);
+
+    setStartButtonDisabled(!!currentStash);
+  }, [accountId, ownStashes]);
 
   /**
    * Set validators list.
@@ -153,7 +171,31 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
 
   useEffect(() => {
     calculateMaxPreFilledBalance();
-  }, [calculateMaxPreFilledBalance, wholeFees]);
+  }, [calculateMaxPreFilledBalance]);
+
+  useEffect(() => {
+    disableStartButton();
+  }, [disableStartButton]);
+
+  // nominate amount initialization
+  useEffect(() => {
+    setBalanceInitialized(true);
+  }, [amount]);
+
+  // show notification when change account
+  useEffect(() => {
+    if (currentAccountRef.current && currentAccountRef.current !== accountId) {
+      const message: ActionStatus = {
+        action: 'account changed',
+        message: t('Account was changed!'),
+        status: 'success'
+      };
+
+      queueAction([message]);
+    }
+
+    currentAccountRef.current = accountId;
+  }, [accountId, t, queueAction]);
 
   useEffect(() => {
     if (accountSegment && accountSegment.current) {
@@ -167,6 +209,8 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
     <main className={`nomination-app ${className}`}>
       <HelpOverlay md={basicMd} />
       <div className='ui placeholder segment'>
+        <h2>{t('Step {{stepNumber}}', { replace: { stepNumber: 1 } })}</h2>
+        <br />
         <WalletSelector
           onChange={setWallet}
           title={t('Connect to a wallet')}
@@ -177,6 +221,8 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
         className='ui placeholder segment'
         ref={accountSegment}
       >
+        <h2>{t('Step {{stepNumber}}', { replace: { stepNumber: 2 } })}</h2>
+        <br />
         <AccountSelector
           onChange={setAccountId}
           title={t('Your account')}
@@ -195,19 +241,26 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
           size={200}
         />
         }
+        {amount && !amount.gtn(0) &&
+        <h4 className='ui red header text-center'>{t('Error: Your account does not have enough balance')}</h4>
+        }
       </div>
       {amount && accountBalance && amount.gtn(0) && accountBalance.gtn(0) &&
       <div className='ui placeholder segment'>
+        <h2>{t('Step {{stepNumber}}', { replace: { stepNumber: 3 } })}</h2>
+        <br />
         <h2>{t('Enter the amount you would like to Nominate and click Start:')}</h2>
-        <InputBalance
-          defaultValue={amount}
-          isFull
-          isZeroable
-          label={t('amount to bond')}
-          maxValue={accountBalance}
-          onChange={setAmountToNominate}
-          withMax
-        />
+        { balanceInitialized && (
+          <InputBalance
+            defaultValue={amount}
+            isFull
+            isZeroable
+            label={t('amount to bond')}
+            maxValue={accountBalance}
+            onChange={setAmountToNominate}
+            withMax
+          />
+        )}
         <h4 className='ui orange header'>
           {t('Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for')}
           <EraToTime showBlocks/>, {t('which is approximately')} <EraToTime showDays/>.
@@ -215,6 +268,8 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
         <Button.Group>
           <Button
             icon='play'
+            isDisabled={startButtonDisabled}
+            isLoading={isNominating}
             label={'Start'}
             onClick={startNomination}
           />
@@ -222,6 +277,8 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
       </div>
       }
       <div className='ui placeholder segment'>
+        <h2>{t('Step {{stepNumber}}', { replace: { stepNumber: 4 } })}</h2>
+        <br />
         <Actions
           hideNewStake
           isInElection={isInElection}
@@ -244,5 +301,9 @@ export default React.memo(styled(Nomination)`
    
    .ui.header:before {
       display: none !important;
+   }
+   
+   .text-center {
+      text-align: center;
    }
 `);

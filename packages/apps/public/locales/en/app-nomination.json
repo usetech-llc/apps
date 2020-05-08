@@ -1,4 +1,5 @@
 {
+  "Account was changed!": "Account was changed!",
   "{{blocks}} blocks": "{{blocks}} blocks",
   "Connect to a wallet": "Connect to a wallet",
   "Create New": "Create New",
@@ -7,9 +8,11 @@
   "Import": "Import",
   "select {{title}}": "select {{title}}",
   "Some wallets will be enabled later": "Some wallets will be enabled later",
+  "Step {{stepNumber}}": "Step {{stepNumber}}",
   "There is currently an ongoing election for new validator candidates. As such staking operations are not permitted.": "There is currently an ongoing election for new validator candidates. As such staking operations are not permitted.",
   "Your account": "Your account",
-  "Your account balance": "Your account balance",
+  "Your available balance": "Your available balance",
+  "Error: Your account does not have enough balance": "Error: Your account does not have enough balance",
   "Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for": "Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for",
   "which is approximately": "which is approximately"
 }

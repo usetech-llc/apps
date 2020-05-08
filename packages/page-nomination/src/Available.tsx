@@ -37,7 +37,7 @@ function AvailableDisplay ({ className, label, params }: Props): React.ReactElem
         )
       }
       <div className='label'>
-        {t('Your account balance')}
+        {t('Your available balance')}
       </div>
     </div>
   );
