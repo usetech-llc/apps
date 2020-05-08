@@ -87,6 +87,7 @@ function Account ({ className, hideNominationButtons, info: { controllerId, dest
             controllerId={controllerId}
             defaultDestination={destinationId}
             onClose={toggleRewardDestination}
+            stashId={stashId}
           />
         )}
         {isSetSessionOpen && controllerId && (
