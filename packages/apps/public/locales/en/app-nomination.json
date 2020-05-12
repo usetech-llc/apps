@@ -12,7 +12,7 @@
   "There is currently an ongoing election for new validator candidates. As such staking operations are not permitted.": "There is currently an ongoing election for new validator candidates. As such staking operations are not permitted.",
   "Your account": "Your account",
   "Your available balance": "Your available balance",
-  "Error: Your account does not have enough balance": "Error: Your account does not have enough balance",
+  "Your account`s balance is insufficient for nomination": "Your account`s balance is insufficient for nomination",
   "Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for": "Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for",
   "which is approximately": "which is approximately"
 }

@@ -242,7 +242,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
         />
         }
         {amount && !amount.gtn(0) &&
-        <h4 className='ui red header text-center'>{t('Error: Your account does not have enough balance')}</h4>
+        <h4 className='ui red header text-center'>{t('Your account`s balance is insufficient for nomination')}</h4>
         }
       </div>
       {amount && accountBalance && amount.gtn(0) && accountBalance.gtn(0) &&
