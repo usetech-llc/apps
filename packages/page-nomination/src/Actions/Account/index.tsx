@@ -111,7 +111,6 @@ function Account ({ className, hideNominationButtons, info: { controllerId, dest
           />
         )}
       </td>
-      <td className='number'>{destination}</td>
       <td className='number'>
         <StakingBonded stakingInfo={stakingAccount} />
         <StakingUnbonding stakingInfo={stakingAccount} />
