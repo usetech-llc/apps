@@ -55,8 +55,8 @@ function Actions ({ className, hideNewStake, isInElection, next, ownStashes, tar
   }, [ownStashes]);
 
   const header = useMemo(() => [
-    [t('stashes'), 'start'],
-    [t('bonded'), 'number'],
+    [t('Accounts'), 'start'],
+    [t('nominated'), 'number'],
     [undefined, undefined, 2]
   ], [t]);
 
