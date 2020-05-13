@@ -22,7 +22,6 @@ import { useApi, useCall, useToggle } from '@polkadot/react-hooks';
 
 import { useTranslation } from '../../translate';
 import BondExtra from './BondExtra';
-import InjectKeys from './InjectKeys';
 import ListNominees from './ListNominees';
 import Nominate from './Nominate';
 import Unbond from './Unbond';
@@ -44,7 +43,6 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
   const balancesAll = useCall<DeriveBalancesAll>(api.derive.balances.all, [stashId]);
   const stakingAccount = useCall<DeriveStakingAccount>(api.derive.staking.account, [stashId]);
   const [isBondExtraOpen, toggleBondExtra] = useToggle();
-  const [isInjectOpen, toggleInject] = useToggle();
   const [isNominateOpen, toggleNominate] = useToggle();
   const [isSettingsOpen, toggleSettings] = useToggle();
   const [isUnbondOpen, toggleUnbond] = useToggle();
@@ -74,9 +72,6 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
             onClose={toggleBondExtra}
             stashId={stashId}
           />
-        )}
-        {isInjectOpen && (
-          <InjectKeys onClose={toggleInject} />
         )}
         {isNominateOpen && controllerId && (
           <Nominate
@@ -173,11 +168,6 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
                   >
                     {t('Stop nomination')}
                   </Menu.Item>
-                  }
-                  {!isStashNominating &&
-                    <Menu.Item onClick={toggleInject}>
-                      {t('Inject session keys (advanced)')}
-                    </Menu.Item>
                   }
                 </Menu>
               </Popup>
