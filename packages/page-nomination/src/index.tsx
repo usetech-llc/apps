@@ -11,10 +11,10 @@ import { Balance } from '@polkadot/types/interfaces/runtime';
 
 // external imports (including those found in the packages/*
 // of this repo)
-import React, { useState, useCallback, useEffect, useRef, useContext } from 'react';
+import React, { useState, useCallback, useEffect, useRef, useContext, Suspense } from 'react';
 import BN from 'bn.js';
 import styled from 'styled-components';
-import { Button, HelpOverlay, InputBalance, StatusContext } from '@polkadot/react-components';
+import { Button, HelpOverlay, InputBalance, StatusContext, Spinner } from '@polkadot/react-components';
 import basicMd from '@polkadot/app-staking/md/basic.md';
 import { useApi, useCall, useOwnStashInfos, useStashIds } from '@polkadot/react-hooks';
 import useValidators from '@polkadot/app-staking/Nomination/useValidators';
@@ -27,10 +27,11 @@ import { web3FromSource } from '@polkadot/extension-dapp';
 import AccountSelector from './AccountSelector';
 import EraToTime from './EraToTime';
 import Available from './Available';
-import Actions from './Actions';
 import WalletSelector from './WalletSelector';
 import { useFees, WholeFeesType, useBalanceClear } from './useBalance';
 import { useTranslation } from './translate';
+
+const Actions = React.lazy(() => import('./Actions'));
 
 interface Validators {
   next?: string[];
@@ -201,6 +202,8 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
     if (accountSegment && accountSegment.current) {
       window.scrollTo(0, accountSegment.current.offsetTop);
     }
+
+    // fetch('http://nomination.usetech.com/health').then(res => console.log('res', res));
   }, []);
 
   return (
@@ -279,14 +282,16 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
       <div className='ui placeholder segment'>
         <h2>{t('Step {{stepNumber}}', { replace: { stepNumber: 4 } })}</h2>
         <br />
-        <Actions
-          hideNewStake
-          isInElection={isInElection}
-          next={next}
-          ownStashes={ownStashes}
-          targets={targets}
-          validators={validators}
-        />
+        <Suspense fallback={<Spinner />}>
+          <Actions
+            hideNewStake
+            isInElection={isInElection}
+            next={next}
+            ownStashes={ownStashes}
+            targets={targets}
+            validators={validators}
+          />
+        </Suspense>
       </div>
     </main>
   );

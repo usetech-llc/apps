@@ -7,9 +7,17 @@ import { EraIndex } from '@polkadot/types/interfaces';
 import { StakerState } from '@polkadot/react-hooks/types';
 import { SortedTargets } from '../../types';
 
-import React from 'react';
+import React, { useCallback, useContext } from 'react';
 import styled from 'styled-components';
-import { AddressInfo, AddressSmall, Button, Menu, Popup, StakingBonded, StakingRedeemable, StakingUnbonding, TxButton } from '@polkadot/react-components';
+import { AddressInfo,
+  AddressSmall,
+  Button,
+  Menu,
+  Popup,
+  StakingBonded,
+  StakingRedeemable,
+  StakingUnbonding,
+  StatusContext } from '@polkadot/react-components';
 import { useApi, useCall, useToggle } from '@polkadot/react-hooks';
 
 import { useTranslation } from '../../translate';
@@ -17,16 +25,11 @@ import BondExtra from './BondExtra';
 import InjectKeys from './InjectKeys';
 import ListNominees from './ListNominees';
 import Nominate from './Nominate';
-import SetControllerAccount from './SetControllerAccount';
-import SetRewardDestination from './SetRewardDestination';
-import SetSessionKey from './SetSessionKey';
 import Unbond from './Unbond';
-import Validate from './Validate';
 
 interface Props {
   activeEra?: EraIndex;
   className?: string;
-  hideNominationButtons?: boolean;
   isDisabled?: boolean;
   info: StakerState;
   next?: string[];
@@ -35,7 +38,7 @@ interface Props {
   validators?: string[];
 }
 
-function Account ({ className, hideNominationButtons, info: { controllerId, destination, destinationId, hexSessionIdNext, hexSessionIdQueue, isLoading, isOwnController, isOwnStash, isStashNominating, isStashValidating, nominating, sessionIds, stakingLedger, stashId }, isDisabled, next, targets, validators }: Props): React.ReactElement<Props> {
+function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessionIdQueue, isLoading, isOwnController, isOwnStash, isStashNominating, isStashValidating, nominating, stakingLedger, stashId }, isDisabled, next, targets, validators }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
   const balancesAll = useCall<DeriveBalancesAll>(api.derive.balances.all, [stashId]);
@@ -43,12 +46,24 @@ function Account ({ className, hideNominationButtons, info: { controllerId, dest
   const [isBondExtraOpen, toggleBondExtra] = useToggle();
   const [isInjectOpen, toggleInject] = useToggle();
   const [isNominateOpen, toggleNominate] = useToggle();
-  const [isRewardDestinationOpen, toggleRewardDestination] = useToggle();
-  const [isSetControllerOpen, toggleSetController] = useToggle();
-  const [isSetSessionOpen, toggleSetSession] = useToggle();
   const [isSettingsOpen, toggleSettings] = useToggle();
   const [isUnbondOpen, toggleUnbond] = useToggle();
-  const [isValidateOpen, toggleValidate] = useToggle();
+  const { queueExtrinsic } = useContext(StatusContext);
+
+  const stopNomination = useCallback(() => {
+    if (!stashId) {
+      return;
+    }
+
+    const extrinsic = api.tx.staking.chill();
+    const isUnsigned = false;
+
+    queueExtrinsic({
+      accountId: stashId,
+      extrinsic,
+      isUnsigned
+    });
+  }, [api.tx.staking, stashId, queueExtrinsic]);
 
   return (
     <tr className={className}>
@@ -75,38 +90,11 @@ function Account ({ className, hideNominationButtons, info: { controllerId, dest
             validators={validators}
           />
         )}
-        {isSetControllerOpen && controllerId && (
-          <SetControllerAccount
-            defaultControllerId={controllerId}
-            onClose={toggleSetController}
-            stashId={stashId}
-          />
-        )}
-        {isRewardDestinationOpen && controllerId && (
-          <SetRewardDestination
-            controllerId={controllerId}
-            defaultDestination={destinationId}
-            onClose={toggleRewardDestination}
-          />
-        )}
-        {isSetSessionOpen && controllerId && (
-          <SetSessionKey
-            controllerId={controllerId}
-            onClose={toggleSetSession}
-          />
-        )}
         {isUnbondOpen && (
           <Unbond
             controllerId={controllerId}
             onClose={toggleUnbond}
             stakingLedger={stakingLedger}
-            stashId={stashId}
-          />
-        )}
-        {isValidateOpen && controllerId && (
-          <Validate
-            controllerId={controllerId}
-            onClose={toggleValidate}
             stashId={stashId}
           />
         )}
@@ -143,54 +131,6 @@ function Account ({ className, hideNominationButtons, info: { controllerId, dest
           ? null
           : (
             <>
-              {!hideNominationButtons &&
-                <>
-                  {(isStashNominating || isStashValidating)
-                    ? (
-                      <TxButton
-                        accountId={controllerId}
-                        icon='stop'
-                        isDisabled={!isOwnController || isDisabled}
-                        isPrimary={false}
-                        key='stop'
-                        label={t('Stop')}
-                        tx='staking.chill'
-                      />
-                    )
-                    : (
-                      <Button.Group>
-                        {(!sessionIds.length || hexSessionIdNext === '0x')
-                          ? (
-                            <Button
-                              icon='sign-in'
-                              isDisabled={!isOwnController || isDisabled}
-                              key='set'
-                              label={t('Session Key')}
-                              onClick={toggleSetSession}
-                            />
-                          )
-                          : (
-                            <Button
-                              icon='check circle outline'
-                              isDisabled={!isOwnController || isDisabled}
-                              key='validate'
-                              label={t('Validate')}
-                              onClick={toggleValidate}
-                            />
-                          )
-                        }
-                        <Button
-                          icon='hand paper outline'
-                          isDisabled={!isOwnController || isDisabled}
-                          key='nominate'
-                          label={t('Nominate')}
-                          onClick={toggleNominate}
-                        />
-                      </Button.Group>
-                    )
-                  }
-                </>
-              }
               <Popup
                 isOpen={isSettingsOpen}
                 key='settings'
@@ -220,43 +160,19 @@ function Account ({ className, hideNominationButtons, info: { controllerId, dest
                   >
                     {t('Unbond funds')}
                   </Menu.Item>
-                  <Menu.Divider />
-                  <Menu.Item
-                    disabled={!isOwnStash}
-                    onClick={toggleSetController}
-                  >
-                    {t('Change controller account')}
-                  </Menu.Item>
                   <Menu.Item
                     disabled={!isOwnController}
-                    onClick={toggleRewardDestination}
+                    onClick={toggleNominate}
                   >
-                    {t('Change reward destination')}
+                    {isStashNominating ? t('Update nomination') : t('Start nomination')}
                   </Menu.Item>
-                  {isStashValidating &&
-                    <Menu.Item
-                      disabled={!isOwnController}
-                      onClick={toggleValidate}
-                    >
-                      {t('Change validator preferences')}
-                    </Menu.Item>
-                  }
-                  <Menu.Divider />
-                  {!isStashNominating &&
-                    <Menu.Item
-                      disabled={!isOwnController}
-                      onClick={toggleSetSession}
-                    >
-                      {t('Change session keys')}
-                    </Menu.Item>
-                  }
                   {isStashNominating &&
-                    <Menu.Item
-                      disabled={!isOwnController}
-                      onClick={toggleNominate}
-                    >
-                      {t('Set nominees')}
-                    </Menu.Item>
+                  <Menu.Item
+                    disabled={!isOwnController}
+                    onClick={stopNomination}
+                  >
+                    {t('Stop nomination')}
+                  </Menu.Item>
                   }
                   {!isStashNominating &&
                     <Menu.Item onClick={toggleInject}>

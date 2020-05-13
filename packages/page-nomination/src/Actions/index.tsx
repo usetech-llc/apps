@@ -84,7 +84,6 @@ function Actions ({ className, hideNewStake, isInElection, next, ownStashes, tar
         {foundStashes?.map((info): React.ReactNode => (
           <Account
             activeEra={activeEra}
-            hideNominationButtons={hideNewStake}
             info={info}
             isDisabled={isInElection}
             key={info.stashId}
