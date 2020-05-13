@@ -203,7 +203,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
       window.scrollTo(0, accountSegment.current.offsetTop);
     }
 
-    // fetch('http://nomination.usetech.com/health').then(res => console.log('res', res));
+    fetch('/api/health').then(res => console.log('res', res));
   }, []);
 
   return (
