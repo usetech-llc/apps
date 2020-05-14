@@ -57,6 +57,7 @@ export default React.memo(styled(Application)`
   flex-direction: row;
   min-height: 100vh;
   padding: 10px;
+  justify-content: center;
   
   .connecting {
     width: 800px;
