@@ -33,7 +33,6 @@ interface Props {
   info: StakerState;
   next?: string[];
   stashId: string;
-  targets: SortedTargets;
   validators?: string[];
 }
 
@@ -81,7 +80,6 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
             nominating={nominating}
             onClose={toggleNominate}
             stashId={stashId}
-            targets={targets}
             validators={validators}
           />
         )}

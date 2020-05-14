@@ -4,7 +4,6 @@
 
 import { ActiveEraInfo, EraIndex } from '@polkadot/types/interfaces';
 import { StakerState } from '@polkadot/react-hooks/types';
-import { SortedTargets } from '../types';
 
 import BN from 'bn.js';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -25,7 +24,6 @@ interface Props {
   ownStashes?: StakerState[];
   next?: string[];
   validators?: string[];
-  targets: SortedTargets;
 }
 
 interface State {
@@ -33,7 +31,7 @@ interface State {
   foundStashes?: StakerState[];
 }
 
-function Actions ({ className, hideNewStake, isInElection, next, ownStashes, targets, validators }: Props): React.ReactElement<Props> {
+function Actions ({ className, hideNewStake, isInElection, next, ownStashes, validators }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
   const activeEra = useCall<EraIndex | undefined>(api.query.staking?.activeEra, [], {
@@ -88,7 +86,6 @@ function Actions ({ className, hideNewStake, isInElection, next, ownStashes, tar
             isDisabled={isInElection}
             key={info.stashId}
             next={next}
-            targets={targets}
             validators={validators}
           />
         ))}

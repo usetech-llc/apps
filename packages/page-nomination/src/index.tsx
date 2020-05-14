@@ -42,7 +42,6 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
   const ownStashes = useOwnStashInfos();
-  const targets = useSortedTargets();
   const allStashes = useStashIds();
   const stakingOverview = useCall<DeriveStakingOverview>(api.derive.staking.overview, []);
   const isInElection = useCall<boolean>(api.query.staking?.eraElectionStatus, [], {
@@ -278,20 +277,21 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
         </Button.Group>
       </div>
       }
-      <div className='ui placeholder segment'>
-        <h2>{t('Step {{stepNumber}}', { replace: { stepNumber: 4 } })}</h2>
-        <br />
-        <Suspense fallback={<Spinner />}>
-          <Actions
-            hideNewStake
-            isInElection={isInElection}
-            next={next}
-            ownStashes={ownStashes}
-            targets={targets}
-            validators={validators}
-          />
-        </Suspense>
-      </div>
+      { accountId && (
+        <div className='ui placeholder segment'>
+          <h2>{t('Step {{stepNumber}}', { replace: { stepNumber: 4 } })}</h2>
+          <br />
+          <Suspense fallback={<Spinner />}>
+            <Actions
+              hideNewStake
+              isInElection={isInElection}
+              next={next}
+              ownStashes={ownStashes}
+              validators={validators}
+            />
+          </Suspense>
+        </div>
+      )}
     </main>
   );
 }
