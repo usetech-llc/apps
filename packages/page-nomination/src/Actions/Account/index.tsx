@@ -5,7 +5,6 @@
 import { DeriveBalancesAll, DeriveStakingAccount } from '@polkadot/api-derive/types';
 import { EraIndex } from '@polkadot/types/interfaces';
 import { StakerState } from '@polkadot/react-hooks/types';
-import { SortedTargets } from '../../types';
 
 import React, { useCallback, useContext } from 'react';
 import styled from 'styled-components';
@@ -36,7 +35,7 @@ interface Props {
   validators?: string[];
 }
 
-function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessionIdQueue, isLoading, isOwnController, isOwnStash, isStashNominating, isStashValidating, nominating, stakingLedger, stashId }, isDisabled, next, targets, validators }: Props): React.ReactElement<Props> {
+function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessionIdQueue, isLoading, isOwnController, isOwnStash, isStashNominating, isStashValidating, nominating, stakingLedger, stashId }, isDisabled, next, validators }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
   const balancesAll = useCall<DeriveBalancesAll>(api.derive.balances.all, [stashId]);

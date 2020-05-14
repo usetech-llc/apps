@@ -18,7 +18,6 @@ import { Button, HelpOverlay, InputBalance, StatusContext, Spinner } from '@polk
 import basicMd from '@polkadot/app-staking/md/basic.md';
 import { useApi, useCall, useOwnStashInfos, useStashIds } from '@polkadot/react-hooks';
 import { QrDisplayAddress } from '@polkadot/react-qr';
-import useSortedTargets from '@polkadot/app-staking/useSortedTargets';
 import keyring from '@polkadot/ui-keyring';
 import { web3FromSource } from '@polkadot/extension-dapp';
 
