@@ -4,26 +4,24 @@
 
 import { BareProps as Props } from '@polkadot/react-components/types';
 
-import React, { useCallback } from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import AppNomination from '@polkadot/app-nomination';
 import { useApi } from '@polkadot/react-hooks';
-import { Spinner } from '@polkadot/react-components';
+import { Spinner, StatusContext } from '@polkadot/react-components';
 import { defaultColor } from '@polkadot/apps-config/ui/general';
 import GlobalStyle from '@polkadot/react-components/styles';
 import Signer from '@polkadot/react-signer';
 
 import { useTranslation } from './translate';
+import Status from './Content/Status';
 
 export const PORTAL_ID = 'portals';
 
 function Application ({ className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { isApiConnected, isApiReady } = useApi();
-
-  const _onStatusChange = useCallback(() => {
-    console.log('onStatusChange');
-  }, []);
+  const { queueAction, stqueue, txqueue } = useContext(StatusContext);
 
   return (
     <div className={className}>
@@ -38,11 +36,16 @@ function Application ({ className }: Props): React.ReactElement<Props> {
           <Signer>
             <AppNomination
               basePath=''
-              onStatusChange={_onStatusChange}
+              onStatusChange={queueAction}
             />
           </Signer>
         )
       }
+      <Status
+        queueAction={queueAction}
+        stqueue={stqueue}
+        txqueue={txqueue}
+      />
     </div>
   );
 }
@@ -56,6 +59,7 @@ export default React.memo(styled(Application)`
   padding: 10px;
   
   .connecting {
+    width: 800px;
     display: flex;
     justify-content: center;
   }
