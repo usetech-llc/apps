@@ -24,7 +24,7 @@ function Application ({ className }: Props): React.ReactElement<Props> {
   const { queueAction, stqueue, txqueue } = useContext(StatusContext);
 
   return (
-    <div className={className}>
+    <div className={`nomination-stand-alone ${className}`}>
       <GlobalStyle uiHighlight={defaultColor} />
       {(!isApiReady || !isApiConnected)
         ? (
