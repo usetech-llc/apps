@@ -21,8 +21,9 @@ interface Props {
   className?: string;
   hideNewStake?: boolean;
   isInElection?: boolean;
-  ownStashes?: StakerState[];
   next?: string[];
+  ownStashes?: StakerState[];
+  selectedValidators?: string[];
   validators?: string[];
 }
 
@@ -31,7 +32,7 @@ interface State {
   foundStashes?: StakerState[];
 }
 
-function Actions ({ className, hideNewStake, isInElection, next, ownStashes, validators }: Props): React.ReactElement<Props> {
+function Actions ({ className, hideNewStake, isInElection, next, ownStashes, selectedValidators, validators }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
   const activeEra = useCall<EraIndex | undefined>(api.query.staking?.activeEra, [], {
@@ -86,6 +87,7 @@ function Actions ({ className, hideNewStake, isInElection, next, ownStashes, val
             isDisabled={isInElection}
             key={info.stashId}
             next={next}
+            selectedValidators={selectedValidators}
             validators={validators}
           />
         ))}

@@ -33,9 +33,10 @@ interface Props {
   next?: string[];
   stashId: string;
   validators?: string[];
+  selectedValidators?: string[];
 }
 
-function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessionIdQueue, isLoading, isOwnController, isOwnStash, isStashNominating, isStashValidating, nominating, stakingLedger, stashId }, isDisabled, next, validators }: Props): React.ReactElement<Props> {
+function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessionIdQueue, isLoading, isOwnController, isOwnStash, isStashNominating, isStashValidating, nominating, stakingLedger, stashId }, isDisabled, next, selectedValidators, validators }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
   const balancesAll = useCall<DeriveBalancesAll>(api.derive.balances.all, [stashId]);
@@ -78,6 +79,7 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
             next={next}
             nominating={nominating}
             onClose={toggleNominate}
+            selectedValidators={selectedValidators}
             stashId={stashId}
             validators={validators}
           />

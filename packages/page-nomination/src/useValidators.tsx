@@ -81,6 +81,10 @@ function useValidators (): UseValidatorsInterface {
       getLastEra();
       getElectedInfo();
     }
+
+    if (validatorsFromServer && validatorsFromServer.length) {
+      setWorkable(validatorsFromServer);
+    }
   }, [getElectedInfo, getLastEra, validatorsFromServer, validatorsFromServerLoading]);
 
   return {

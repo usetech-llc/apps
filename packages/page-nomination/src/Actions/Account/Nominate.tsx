@@ -18,22 +18,19 @@ interface Props {
   next?: string[];
   nominees?: string[];
   onClose: () => void;
+  selectedValidators?: string[];
   stakingOverview?: DeriveStakingOverview;
   stashId: string;
 }
 
 const MAX_NOMINEES = 16;
 
-function Nominate ({ className, controllerId, next, nominees, onClose, stakingOverview, stashId }: Props): React.ReactElement<Props> | null {
+function Nominate ({ className, controllerId, next, nominees, onClose, selectedValidators, stakingOverview, stashId }: Props): React.ReactElement<Props> | null {
   const { t } = useTranslation();
   const [favorites] = useFavorites(STORE_FAVS_BASE);
   const [validators, setValidators] = useState<string[]>([]);
   const [selection, setSelection] = useState<string[] | undefined>();
   const [available, setAvailable] = useState<string[]>([]);
-
-  useEffect((): void => {
-    !selection && nominees && setSelection(nominees);
-  }, [selection, nominees]);
 
   useEffect((): void => {
     stakingOverview && setValidators(
@@ -78,10 +75,10 @@ function Nominate ({ className, controllerId, next, nominees, onClose, stakingOv
           available={available}
           availableLabel={t('candidate accounts')}
           className='medium'
+          defaultValue={selectedValidators || []}
           help={t('Filter available candidates based on name, address or short account index.')}
           maxCount={MAX_NOMINEES}
           onChange={setSelection}
-          value={selection || []}
           valueLabel={t('nominated accounts')}
         />
       </Modal.Content>

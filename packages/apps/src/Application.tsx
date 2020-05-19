@@ -28,8 +28,10 @@ function Application ({ className }: Props): React.ReactElement<Props> {
       <GlobalStyle uiHighlight={defaultColor} />
       {(!isApiReady || !isApiConnected)
         ? (
-          <div className='connecting'>
-            <Spinner label={t('Initializing connection')}/>
+          <div className='ui placeholder segment'>
+            <div className='connecting'>
+              <Spinner label={t('Initializing connection')}/>
+            </div>
           </div>
         )
         : (

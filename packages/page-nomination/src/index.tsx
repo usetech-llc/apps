@@ -19,7 +19,7 @@ import basicMd from '@polkadot/app-staking/md/basic.md';
 import { useApi, useCall, useOwnStashInfos, useStashIds } from '@polkadot/react-hooks';
 import { QrDisplayAddress } from '@polkadot/react-qr';
 import keyring from '@polkadot/ui-keyring';
-import { web3FromSource } from '@polkadot/extension-dapp';
+import { web3FromSource, web3Accounts } from '@polkadot/extension-dapp';
 
 // local imports and components
 import AccountSelector from './AccountSelector';
@@ -53,6 +53,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
   const [accountId, setAccountId] = useState<string | null>(null);
   const [wallet, setWallet] = useState<string | null>(null);
   const [amount, setAmount] = useState<BN | undefined>(new BN(0));
+  const [web3Anabled, setWeb3Anabled] = useState<boolean>(false);
   const [startButtonDisabled, setStartButtonDisabled] = useState<boolean>(false);
   const [isNominating, setIsNominating] = useState<boolean>(false);
   const [amountToNominate, setAmountToNominate] = useState<BN | undefined>(new BN(0));
@@ -201,6 +202,8 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
     if (accountSegment && accountSegment.current) {
       window.scrollTo(0, accountSegment.current.offsetTop);
     }
+
+    web3Accounts().then((res) => setWeb3Anabled(!!res.length));
   }, []);
 
   return (
@@ -216,35 +219,40 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
           title={t('Connect to a wallet')}
           value={wallet}
         />
+        {!web3Anabled &&
+        <h4 className='ui orange header'>{t('Please enable the polkadot.js extension!')}</h4>
+        }
       </div>
-      <div
-        className='ui placeholder segment'
-        ref={accountSegment}
-      >
-        <h2>{t('Step {{stepNumber}}', { replace: { stepNumber: 2 } })}</h2>
-        <br />
-        <AccountSelector
-          onChange={setAccountId}
-          title={t('Your account')}
-          value={accountId}
-        />
-        {accountId && (
-          <Available
-            params={accountId}
+      { web3Anabled && (
+        <div
+          className='ui placeholder segment'
+          ref={accountSegment}
+        >
+          <h2>{t('Step {{stepNumber}}', { replace: { stepNumber: 2 } })}</h2>
+          <br />
+          <AccountSelector
+            onChange={setAccountId}
+            title={t('Your account')}
+            value={accountId}
           />
-        )}
-        {accountId &&
-        <QrDisplayAddress
-          address={accountId}
-          className={'qr-center'}
-          genesisHash={api.genesisHash.toHex()}
-          size={200}
-        />
-        }
-        {amount && !amount.gtn(0) &&
-        <h4 className='ui red header text-center'>{t('Your account`s balance is insufficient for nomination')}</h4>
-        }
-      </div>
+          {accountId && (
+            <Available
+              params={accountId}
+            />
+          )}
+          {accountId &&
+          <QrDisplayAddress
+            address={accountId}
+            className={'qr-center'}
+            genesisHash={api.genesisHash.toHex()}
+            size={200}
+          />
+          }
+          {amount && !amount.gtn(0) &&
+          <h4 className='ui red header text-center'>{t('Your account`s balance is insufficient for nomination')}</h4>
+          }
+        </div>
+      )}
       {amount && accountBalance && amount.gtn(0) && accountBalance.gtn(0) &&
       <div className='ui placeholder segment'>
         <h2>{t('Step {{stepNumber}}', { replace: { stepNumber: 3 } })}</h2>
@@ -286,6 +294,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
               isInElection={isInElection}
               next={next}
               ownStashes={ownStashes}
+              selectedValidators={selectedValidators}
               validators={validators}
             />
           </Suspense>
