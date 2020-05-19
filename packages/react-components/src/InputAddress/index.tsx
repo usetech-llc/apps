@@ -307,7 +307,7 @@ const ExportedComponent = withMulti(
   withObservable(keyringOption.optionsSubject, {
     propName: 'optionsAll',
     transform: (optionsAll: KeyringOptions): Record<string, (Option | React.ReactNode)[]> => {
-      console.log('optionsAll', optionsAll);
+
       return Object.entries(optionsAll).reduce((result: Record<string, (Option | React.ReactNode)[]>, [type, options]): Record<string, (Option | React.ReactNode)[]> => {
         result[type] = options.map((option): Option | React.ReactNode =>
           option.value === null
@@ -316,7 +316,7 @@ const ExportedComponent = withMulti(
         );
 
         return result;
-      }, {})
+      }, {});
     }
   })
 ) as ExportedType;

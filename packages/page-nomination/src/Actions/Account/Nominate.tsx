@@ -16,7 +16,7 @@ interface Props {
   className?: string;
   controllerId: string;
   next?: string[];
-  nominees?: string[];
+  nominating?: string[];
   onClose: () => void;
   selectedValidators?: string[];
   stakingOverview?: DeriveStakingOverview;
@@ -25,13 +25,14 @@ interface Props {
 
 const MAX_NOMINEES = 16;
 
-function Nominate ({ className, controllerId, next, nominees, onClose, selectedValidators, stakingOverview, stashId }: Props): React.ReactElement<Props> | null {
+function Nominate ({ className, controllerId, next, nominating, onClose, selectedValidators, stakingOverview, stashId }: Props): React.ReactElement<Props> | null {
   const { t } = useTranslation();
   const [favorites] = useFavorites(STORE_FAVS_BASE);
   const [validators, setValidators] = useState<string[]>([]);
   const [selection, setSelection] = useState<string[] | undefined>();
   const [available, setAvailable] = useState<string[]>([]);
-
+  const [defaultValidators, setDefaultValidators] = useState<string[]>([]);
+  console.log('nominating', nominating, 'selectedValidators', selectedValidators);
   useEffect((): void => {
     stakingOverview && setValidators(
       stakingOverview.validators.map((acc): string => acc.toString())
@@ -39,11 +40,35 @@ function Nominate ({ className, controllerId, next, nominees, onClose, selectedV
   }, [stakingOverview]);
 
   useEffect((): void => {
+    if (selectedValidators && selectedValidators.length) {
+      setDefaultValidators(selectedValidators);
+    } else if (nominating && nominating.length) {
+      setDefaultValidators(nominating);
+    }
+
+    // case if current validators are not optimal
+    if (selectedValidators && selectedValidators.length && nominating && nominating.length) {
+      let count = 0;
+
+      nominating.forEach((validator): void => {
+        if (!selectedValidators.includes(validator)) {
+          count++;
+        }
+      });
+
+      // there are 16 nominators, if we have half not optimal, set warning
+      if (count >= 8) {
+        setNotOptimal(true);
+      }
+    }
+  }, [nominating, selectedValidators]);
+
+  useEffect((): void => {
     const shortlist = [
       // ensure that the favorite is included in the list of stashes
       ...favorites.filter((acc): boolean => validators.includes(acc) || (next || []).includes(acc)),
       // make sure the nominee is not in our favorites already
-      ...(nominees || []).filter((acc): boolean => !favorites.includes(acc))
+      ...(nominating || []).filter((acc): boolean => !favorites.includes(acc))
     ];
 
     setAvailable([
@@ -51,7 +76,7 @@ function Nominate ({ className, controllerId, next, nominees, onClose, selectedV
       ...validators.filter((acc): boolean => !shortlist.includes(acc)),
       ...(next || []).filter((acc): boolean => !shortlist.includes(acc))
     ]);
-  }, [favorites, next, nominees, validators]);
+  }, [favorites, next, nominating, validators]);
 
   return (
     <Modal
@@ -75,7 +100,7 @@ function Nominate ({ className, controllerId, next, nominees, onClose, selectedV
           available={available}
           availableLabel={t('candidate accounts')}
           className='medium'
-          defaultValue={selectedValidators || []}
+          defaultValue={defaultValidators || []}
           help={t('Filter available candidates based on name, address or short account index.')}
           maxCount={MAX_NOMINEES}
           onChange={setSelection}

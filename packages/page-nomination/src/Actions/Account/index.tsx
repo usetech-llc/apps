@@ -6,13 +6,15 @@ import { DeriveBalancesAll, DeriveStakingAccount } from '@polkadot/api-derive/ty
 import { EraIndex } from '@polkadot/types/interfaces';
 import { StakerState } from '@polkadot/react-hooks/types';
 
-import React, { useCallback, useContext } from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import styled from 'styled-components';
+import { Popup as SemanticPopup } from 'semantic-ui-react';
 import { AddressInfo,
   AddressSmall,
   Button,
   Menu,
   Popup,
+  Icon,
   StakingBonded,
   StakingRedeemable,
   StakingUnbonding,
@@ -45,6 +47,7 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
   const [isNominateOpen, toggleNominate] = useToggle();
   const [isSettingsOpen, toggleSettings] = useToggle();
   const [isUnbondOpen, toggleUnbond] = useToggle();
+  const [notOptimal, setNotOptimal] = useState<boolean>(false);
   const { queueExtrinsic } = useContext(StatusContext);
 
   const stopNomination = useCallback(() => {
@@ -61,6 +64,24 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
       isUnsigned
     });
   }, [api.tx.staking, stashId, queueExtrinsic]);
+
+  useEffect((): void => {
+    // case if current validators are not optimal
+    if (selectedValidators && selectedValidators.length && nominating && nominating.length) {
+      let count = 0;
+
+      nominating.forEach((validator): void => {
+        if (!selectedValidators.includes(validator)) {
+          count++;
+        }
+      });
+
+      // there are 16 nominators, if we have half not optimal, set warning
+      if (count >= 8) {
+        setNotOptimal(true);
+      }
+    }
+  }, [nominating, selectedValidators]);
 
   return (
     <tr className={className}>
@@ -97,6 +118,14 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
         <StakingBonded stakingInfo={stakingAccount} />
         <StakingUnbonding stakingInfo={stakingAccount} />
         <StakingRedeemable stakingInfo={stakingAccount} />
+        { notOptimal && (
+          <SemanticPopup
+            content={t('Your nomination is not optimal. Update please!')}
+            trigger={
+              <Icon name='warning sign' />
+            }
+          />
+        )}
       </td>
       {isStashValidating
         ? (

@@ -19,7 +19,7 @@ import basicMd from '@polkadot/app-staking/md/basic.md';
 import { useApi, useCall, useOwnStashInfos, useStashIds } from '@polkadot/react-hooks';
 import { QrDisplayAddress } from '@polkadot/react-qr';
 import keyring from '@polkadot/ui-keyring';
-import { web3FromSource, web3Accounts } from '@polkadot/extension-dapp';
+import { web3FromSource, web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 
 // local imports and components
 import AccountSelector from './AccountSelector';
@@ -53,7 +53,8 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
   const [accountId, setAccountId] = useState<string | null>(null);
   const [wallet, setWallet] = useState<string | null>(null);
   const [amount, setAmount] = useState<BN | undefined>(new BN(0));
-  const [web3Anabled, setWeb3Anabled] = useState<boolean>(false);
+  const [web3Enabled, setWeb3Enabled] = useState<boolean>(false);
+  const [accountsAvailable, setAccountsAvailable] = useState<boolean>(false);
   const [startButtonDisabled, setStartButtonDisabled] = useState<boolean>(false);
   const [isNominating, setIsNominating] = useState<boolean>(false);
   const [amountToNominate, setAmountToNominate] = useState<BN | undefined>(new BN(0));
@@ -203,7 +204,13 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
       window.scrollTo(0, accountSegment.current.offsetTop);
     }
 
-    web3Accounts().then((res) => setWeb3Anabled(!!res.length));
+    web3Enable('').then((res) => {
+      setWeb3Enabled(!!res.length);
+    });
+
+    web3Accounts().then((res) => {
+      setAccountsAvailable(!!res.length);
+    });
   }, []);
 
   return (
@@ -219,11 +226,14 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
           title={t('Connect to a wallet')}
           value={wallet}
         />
-        {!web3Anabled &&
+        {!web3Enabled &&
         <h4 className='ui orange header'>{t('Please enable the polkadot.js extension!')}</h4>
         }
+        {(web3Enabled && !accountsAvailable) &&
+        <h4 className='ui orange header'>{t('You have no accounts in polkadot.js extension. Please create account and send funds to it.')}</h4>
+        }
       </div>
-      { web3Anabled && (
+      { web3Enabled && (
         <div
           className='ui placeholder segment'
           ref={accountSegment}

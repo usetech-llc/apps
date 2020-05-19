@@ -16,6 +16,8 @@
   "Your account": "Your account",
   "Your available balance": "Your available balance",
   "Your account`s balance is insufficient for nomination": "Your account`s balance is insufficient for nomination",
+  "You have no accounts in polkadot.js extension. Please create account and send funds to it.": "You have no accounts in polkadot.js extension. Please create account and send funds to it.",
+  "Your nomination is not optimal. Update please!": "Your nomination is not optimal. Update please!",
   "Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for": "Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for",
   "which is approximately": "which is approximately"
 }
