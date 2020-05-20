@@ -32,7 +32,7 @@ function Nominate ({ className, controllerId, next, nominating, onClose, selecte
   const [selection, setSelection] = useState<string[] | undefined>();
   const [available, setAvailable] = useState<string[]>([]);
   const [defaultValidators, setDefaultValidators] = useState<string[]>([]);
-  console.log('nominating', nominating, 'selectedValidators', selectedValidators);
+
   useEffect((): void => {
     stakingOverview && setValidators(
       stakingOverview.validators.map((acc): string => acc.toString())
@@ -44,22 +44,6 @@ function Nominate ({ className, controllerId, next, nominating, onClose, selecte
       setDefaultValidators(selectedValidators);
     } else if (nominating && nominating.length) {
       setDefaultValidators(nominating);
-    }
-
-    // case if current validators are not optimal
-    if (selectedValidators && selectedValidators.length && nominating && nominating.length) {
-      let count = 0;
-
-      nominating.forEach((validator): void => {
-        if (!selectedValidators.includes(validator)) {
-          count++;
-        }
-      });
-
-      // there are 16 nominators, if we have half not optimal, set warning
-      if (count >= 8) {
-        setNotOptimal(true);
-      }
     }
   }, [nominating, selectedValidators]);
 
