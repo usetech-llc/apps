@@ -132,7 +132,8 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
           <td className='all'>
             <AddressInfo
               address={stashId}
-              withBalance={false}
+              withBalance
+              withBalanceToggle
               withHexSessionId={hexSessionIdNext !== '0x' && [hexSessionIdQueue, hexSessionIdNext]}
               withValidatorPrefs
             />
@@ -140,6 +141,13 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
         )
         : (
           <td className='all'>
+            <AddressInfo
+              address={stashId}
+              withBalance
+              withBalanceToggle
+              withHexSessionId={hexSessionIdNext !== '0x' && [hexSessionIdQueue, hexSessionIdNext]}
+              withValidatorPrefs
+            />
             {isStashNominating && (
               <ListNominees
                 nominating={nominating}
