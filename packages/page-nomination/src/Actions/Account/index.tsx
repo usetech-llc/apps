@@ -38,14 +38,13 @@ interface Props {
   selectedValidators?: string[];
 }
 
-function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessionIdQueue, isLoading, isOwnController, isOwnStash, isStashNominating, isStashValidating, nominating, stakingLedger, stashId }, isDisabled, next, selectedValidators, validators }: Props): React.ReactElement<Props> {
+function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessionIdQueue, isOwnController, isOwnStash, isStashNominating, isStashValidating, nominating, stakingLedger, stashId }, next, selectedValidators, validators }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
   const balancesAll = useCall<DeriveBalancesAll>(api.derive.balances.all, [stashId]);
   const stakingAccount = useCall<DeriveStakingAccount>(api.derive.staking.account, [stashId]);
   const [isBondExtraOpen, toggleBondExtra] = useToggle();
   const [isNominateOpen, toggleNominate] = useToggle();
-  const [isSettingsOpen, toggleSettings] = useToggle();
   const [isUnbondOpen, toggleUnbond] = useToggle();
   const [notOptimal, setNotOptimal] = useState<boolean>(false);
   const { queueExtrinsic } = useContext(StatusContext);
@@ -64,6 +63,10 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
       isUnsigned
     });
   }, [api.tx.staking, stashId, queueExtrinsic]);
+
+  const openRewards = useCallback(() => {
+    window.open(`https://kusama.subscan.io/account/${stashId}?tab=reward`, '_blank');
+  }, [stashId]);
 
   useEffect((): void => {
     // case if current validators are not optimal
@@ -84,134 +87,123 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
   }, [nominating, selectedValidators]);
 
   return (
-    <tr className={className}>
-      <td className='address'>
-        <AddressSmall value={stashId} />
-        {isBondExtraOpen && (
-          <BondExtra
-            onClose={toggleBondExtra}
-            stashId={stashId}
-          />
-        )}
-        {isNominateOpen && controllerId && (
-          <Nominate
-            controllerId={controllerId}
-            isOpen={isNominateOpen}
-            next={next}
-            nominating={nominating}
-            onClose={toggleNominate}
-            selectedValidators={selectedValidators}
-            stashId={stashId}
-            validators={validators}
-          />
-        )}
-        {isUnbondOpen && (
-          <Unbond
-            controllerId={controllerId}
-            onClose={toggleUnbond}
-            stakingLedger={stakingLedger}
-            stashId={stashId}
-          />
-        )}
-      </td>
-      <td className='number'>
-        <StakingBonded stakingInfo={stakingAccount} />
-        <StakingUnbonding stakingInfo={stakingAccount} />
-        <StakingRedeemable stakingInfo={stakingAccount} />
-        { notOptimal && (
-          <SemanticPopup
-            content={t('Your nomination is not optimal. Update please!')}
-            trigger={
-              <Icon name='warning sign' />
-            }
-          />
-        )}
-      </td>
-      {isStashValidating
-        ? (
-          <td className='all'>
-            <AddressInfo
-              address={stashId}
-              withBalance
-              withBalanceToggle
-              withHexSessionId={hexSessionIdNext !== '0x' && [hexSessionIdQueue, hexSessionIdNext]}
-              withValidatorPrefs
+    <>
+      <tr className={className}>
+        <td className='address'>
+          <AddressSmall value={stashId} />
+          {isBondExtraOpen && (
+            <BondExtra
+              onClose={toggleBondExtra}
+              stashId={stashId}
             />
-          </td>
-        )
-        : (
-          <td className='all'>
-            <AddressInfo
-              address={stashId}
-              withBalance
-              withBalanceToggle
-              withHexSessionId={hexSessionIdNext !== '0x' && [hexSessionIdQueue, hexSessionIdNext]}
-              withValidatorPrefs
+          )}
+          {isNominateOpen && controllerId && (
+            <Nominate
+              controllerId={controllerId}
+              isOpen={isNominateOpen}
+              next={next}
+              nominating={nominating}
+              onClose={toggleNominate}
+              selectedValidators={selectedValidators}
+              stashId={stashId}
+              validators={validators}
             />
-            {isStashNominating && (
-              <ListNominees
-                nominating={nominating}
-                stashId={stashId}
+          )}
+          {isUnbondOpen && (
+            <Unbond
+              controllerId={controllerId}
+              onClose={toggleUnbond}
+              stakingLedger={stakingLedger}
+              stashId={stashId}
+            />
+          )}
+        </td>
+        <td className='number'>
+          <StakingBonded stakingInfo={stakingAccount} />
+          <StakingUnbonding stakingInfo={stakingAccount} />
+          <StakingRedeemable stakingInfo={stakingAccount} />
+          { notOptimal && (
+            <SemanticPopup
+              content={t('Your nomination is not optimal. Update please!')}
+              trigger={
+                <Icon name='warning sign' />
+              }
+            />
+          )}
+        </td>
+        {isStashValidating
+          ? (
+            <td className='all'>
+              <AddressInfo
+                address={stashId}
+                withBalance
+                withBalanceToggle
+                withHexSessionId={hexSessionIdNext !== '0x' && [hexSessionIdQueue, hexSessionIdNext]}
+                withValidatorPrefs
               />
-            )}
-          </td>
-        )
-      }
-      <td className='button'>
-        {isLoading
-          ? null
+            </td>
+          )
           : (
-            <>
-              <Popup
-                isOpen={isSettingsOpen}
-                key='settings'
-                onClose={toggleSettings}
-                trigger={
-                  <Button
-                    icon='setting'
-                    isDisabled={isDisabled}
-                    onClick={toggleSettings}
-                  />
-                }
-              >
-                <Menu
-                  onClick={toggleSettings}
-                  text
-                  vertical
-                >
-                  <Menu.Item
-                    disabled={!isOwnStash && !balancesAll?.freeBalance.gtn(0)}
-                    onClick={toggleBondExtra}
-                  >
-                    {t('Bond more funds')}
-                  </Menu.Item>
-                  <Menu.Item
-                    disabled={!isOwnController}
-                    onClick={toggleUnbond}
-                  >
-                    {t('Unbond funds')}
-                  </Menu.Item>
-                  <Menu.Item
-                    disabled={!isOwnController}
-                    onClick={toggleNominate}
-                  >
-                    {isStashNominating ? t('Update nomination') : t('Start nomination')}
-                  </Menu.Item>
-                  {isStashNominating &&
-                  <Menu.Item
-                    disabled={!isOwnController}
-                    onClick={stopNomination}
-                  >
-                    {t('Stop nomination')}
-                  </Menu.Item>
-                  }
-                </Menu>
-              </Popup>
-            </>
+            <td className='all'>
+              <AddressInfo
+                address={stashId}
+                withBalance
+                withBalanceToggle
+                withHexSessionId={hexSessionIdNext !== '0x' && [hexSessionIdQueue, hexSessionIdNext]}
+                withValidatorPrefs
+              />
+              {isStashNominating && (
+                <ListNominees
+                  nominating={nominating}
+                  stashId={stashId}
+                />
+              )}
+            </td>
           )
         }
-      </td>
-    </tr>
+      </tr>
+      <tr>
+        <td colSpan={3}>
+          <Button.Group>
+            <Button
+              icon=''
+              isDisabled={!isOwnStash && !balancesAll?.freeBalance.gtn(0)}
+              key='unbond'
+              label={t('Rewards')}
+              onClick={openRewards}
+            />
+            <Button
+              icon=''
+              isDisabled={!isOwnController}
+              key='bondMore'
+              label={t('Bond more funds')}
+              onClick={toggleBondExtra}
+            />
+            <Button
+              icon=''
+              isDisabled={!isOwnController}
+              key='update'
+              label={t('Update nomination')}
+              onClick={toggleNominate}
+            />
+            <Button
+              icon=''
+              isDisabled={!isStashNominating}
+              key='stop'
+              label={t('Stop nomination')}
+              onClick={stopNomination}
+            />
+            <Button
+              icon=''
+              isDisabled={!isOwnStash && !balancesAll?.freeBalance.gtn(0)}
+              key='unbond'
+              label={t('Unbond funds')}
+              onClick={toggleUnbond}
+            />
+          </Button.Group>
+        </td>
+      </tr>
+    </>
   );
 }
 
