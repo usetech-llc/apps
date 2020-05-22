@@ -8,13 +8,10 @@ import { StakerState } from '@polkadot/react-hooks/types';
 
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Popup as SemanticPopup } from 'semantic-ui-react';
+import SemanticPopup from 'semantic-ui-react/dist/commonjs/modules/Popup/Popup';
 import { AddressInfo,
   AddressSmall,
   Button,
-  Menu,
-  Popup,
-  Icon,
   StakingBonded,
   StakingRedeemable,
   StakingUnbonding,
@@ -122,14 +119,6 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
           <StakingBonded stakingInfo={stakingAccount} />
           <StakingUnbonding stakingInfo={stakingAccount} />
           <StakingRedeemable stakingInfo={stakingAccount} />
-          { notOptimal && (
-            <SemanticPopup
-              content={t('Your nomination is not optimal. Update please!')}
-              trigger={
-                <Icon name='warning sign' />
-              }
-            />
-          )}
         </td>
         {isStashValidating
           ? (
@@ -168,7 +157,7 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
             <Button
               icon=''
               isDisabled={!isOwnStash && !balancesAll?.freeBalance.gtn(0)}
-              key='unbond'
+              key='rewards'
               label={t('Rewards')}
               onClick={openRewards}
             />
@@ -176,16 +165,33 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
               icon=''
               isDisabled={!isOwnController}
               key='bondMore'
-              label={t('Bond more funds')}
+              label={t('Bond more')}
               onClick={toggleBondExtra}
             />
-            <Button
-              icon=''
-              isDisabled={!isOwnController}
-              key='update'
-              label={t('Update nomination')}
-              onClick={toggleNominate}
-            />
+            { notOptimal && (
+              <SemanticPopup
+                content={t('Your nomination is not optimal. Update please!')}
+                trigger={
+                  <Button
+                    className={'warning'}
+                    icon='warning sign'
+                    isDisabled={!isOwnController}
+                    key='update'
+                    label={t('Update nomination')}
+                    onClick={toggleNominate}
+                  />
+                }
+              />
+            )}
+            {!notOptimal && (
+              <Button
+                icon=''
+                isDisabled={!isOwnController}
+                key='update'
+                label={t('Update nomination')}
+                onClick={toggleNominate}
+              />
+            )}
             <Button
               icon=''
               isDisabled={!isStashNominating}
@@ -197,7 +203,7 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
               icon=''
               isDisabled={!isOwnStash && !balancesAll?.freeBalance.gtn(0)}
               key='unbond'
-              label={t('Unbond funds')}
+              label={t('Unbond')}
               onClick={toggleUnbond}
             />
           </Button.Group>

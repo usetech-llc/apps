@@ -75,11 +75,19 @@ export default React.memo(styled(Button)`
   &:not(.isIcon) > i.icon {
     margin-left: 0.25rem;
   }
+  
+  &.warning {
+    background-color: #f2711c !important;
+  }
 
   &.isIcon {
     background: white !important;
     margin: 0 !important;
     padding: 0 !important;
+    
+    &.warning {
+      background-color: #f2711c !important;
+    } 
 
     i.icon {
       margin: 0 0 0 0.25rem !important;
