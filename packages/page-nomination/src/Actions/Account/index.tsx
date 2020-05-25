@@ -9,13 +9,15 @@ import { StakerState } from '@polkadot/react-hooks/types';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import SemanticPopup from 'semantic-ui-react/dist/commonjs/modules/Popup/Popup';
-import { AddressInfo,
+import {
+  AddressInfo,
   AddressSmall,
   Button,
   StakingBonded,
   StakingRedeemable,
   StakingUnbonding,
-  StatusContext } from '@polkadot/react-components';
+  StatusContext, TxButton
+} from '@polkadot/react-components';
 import { useApi, useCall, useToggle } from '@polkadot/react-hooks';
 
 import { useTranslation } from '../../translate';
@@ -168,7 +170,7 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
               label={t('Bond more')}
               onClick={toggleBondExtra}
             />
-            { notOptimal && (
+            {/* { notOptimal && (
               <SemanticPopup
                 content={t('Your nomination is not optimal. Update please!')}
                 trigger={
@@ -182,14 +184,42 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
                   />
                 }
               />
-            )}
-            {!notOptimal && (
+            )} */}
+            {/* {!notOptimal && (
               <Button
                 icon=''
                 isDisabled={!isOwnController}
                 key='update'
                 label={t('Update nomination')}
                 onClick={toggleNominate}
+              />
+            )} */}
+            { notOptimal && (
+              <SemanticPopup
+                content={t('Your nomination is not optimal. Update please!')}
+                trigger={
+                  <TxButton
+                    accountId={controllerId}
+                    className='warning'
+                    icon='warning sign'
+                    isDisabled={!selectedValidators?.length}
+                    isPrimary
+                    label={t('Update nomination')}
+                    params={[selectedValidators]}
+                    tx='staking.nominate'
+                  />
+                }
+              />
+            )}
+            { !notOptimal && (
+              <TxButton
+                accountId={controllerId}
+                icon='hand paper outline'
+                isDisabled={!selectedValidators?.length}
+                isPrimary
+                label={isStashNominating ? t('Update nomination') : t('Nominate')}
+                params={[selectedValidators]}
+                tx='staking.nominate'
               />
             )}
             <Button
