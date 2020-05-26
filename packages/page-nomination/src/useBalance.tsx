@@ -63,23 +63,26 @@ export function useFees (accountId?: string | null, validators?: string[]): Whol
       const fessGetter = forkJoin({
         payment: api.api.tx.balances.transfer(accountId, amount).paymentInfo(accountId),
         startNomination: api.api.tx.staking.nominate(validators).paymentInfo(accountId),
-        stopNomination: api.api.tx.staking.chill().paymentInfo(accountId)
+        stopNomination: api.api.tx.staking.chill().paymentInfo(accountId),
+        unbond: api.api.tx.staking.unbond(amount).paymentInfo(accountId)
       }).pipe(catchError((error) => {
         setFeesLoading(false);
 
         return of(error);
       }));
 
-      fessGetter.subscribe(({ payment, startNomination, stopNomination }) => {
+      fessGetter.subscribe(({ payment, startNomination, stopNomination, unbond }) => {
         setFeesLoading(false);
         const paymentFees = payment ? payment.partialFee : new BN(0);
         const startNominationFees = startNomination ? startNomination.partialFee : new BN(0);
         const stopNominationFees = stopNomination ? stopNomination.partialFee : new BN(0);
+        const unbondFees = unbond ? unbond.partialFee : new BN(0);
 
         const whole = paymentFees
           .add(existentialDeposit)
           .add(startNominationFees)
-          .add(stopNominationFees);
+          .add(stopNominationFees)
+          .add(unbondFees);
 
         setWholeFees(whole);
       });

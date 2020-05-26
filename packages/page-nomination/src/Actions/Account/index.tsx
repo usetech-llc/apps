@@ -170,30 +170,6 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
               label={t('Bond more')}
               onClick={toggleBondExtra}
             />
-            {/* { notOptimal && (
-              <SemanticPopup
-                content={t('Your nomination is not optimal. Update please!')}
-                trigger={
-                  <Button
-                    className={'warning'}
-                    icon='warning sign'
-                    isDisabled={!isOwnController}
-                    key='update'
-                    label={t('Update nomination')}
-                    onClick={toggleNominate}
-                  />
-                }
-              />
-            )} */}
-            {/* {!notOptimal && (
-              <Button
-                icon=''
-                isDisabled={!isOwnController}
-                key='update'
-                label={t('Update nomination')}
-                onClick={toggleNominate}
-              />
-            )} */}
             { notOptimal && (
               <SemanticPopup
                 content={t('Your nomination is not optimal. Update please!')}

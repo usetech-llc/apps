@@ -140,6 +140,23 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
     setStartButtonDisabled(!!currentStash);
   }, [accountId, ownStashes]);
 
+  /* const checkMaximumAmount = useCallback(() => {
+    console.log('onEscape', amount, 'amountToNominate', amountToNominate);
+    if (!amount || !amountToNominate) {
+      return;
+    }
+
+    if (amountToNominate.gt(amount)) {
+      const message: ActionStatus = {
+        action: 'Error',
+        message: t('You need to leave enough free balance for payment of fees.'),
+        status: 'error'
+      };
+
+      queueAction([message]);
+    }
+  }, [amount, amountToNominate, t, queueAction]); */
+
   /**
    * Set validators list.
    * If filtered validators
@@ -274,7 +291,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
             isFull
             isZeroable
             label={t('amount to bond')}
-            maxValue={accountBalance}
+            maxValue={amount}
             onChange={setAmountToNominate}
             withMax
           />
