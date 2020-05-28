@@ -9,15 +9,14 @@ import { StakerState } from '@polkadot/react-hooks/types';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import SemanticPopup from 'semantic-ui-react/dist/commonjs/modules/Popup/Popup';
-import {
-  AddressInfo,
+import { AddressInfo,
   AddressSmall,
   Button,
   StakingBonded,
   StakingRedeemable,
   StakingUnbonding,
-  StatusContext, TxButton
-} from '@polkadot/react-components';
+  StatusContext,
+  TxButton } from '@polkadot/react-components';
 import { useApi, useCall, useToggle } from '@polkadot/react-hooks';
 
 import { useTranslation } from '../../translate';
@@ -172,7 +171,7 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
             />
             { notOptimal && (
               <SemanticPopup
-                content={t('Your nomination is not optimal. Update please!')}
+                content='Your nomination is not optimal. Update please!'
                 trigger={
                   <TxButton
                     accountId={controllerId}

@@ -50,9 +50,9 @@ interface Props extends BareProps {
 }
 
 // Find decimal separator used in current locale
-const getDecimalSeparator = (): string => 1.1
+const getDecimalSeparator = (): string => '.'; /* 1.1
   .toLocaleString()
-  .replace(/\d/g, '');
+  .replace(/\d/g, ''); */
 
 // note: KeyboardEvent.keyCode and KeyboardEvent.which are deprecated
 const KEYS = {

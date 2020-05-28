@@ -14,7 +14,7 @@ import { Balance } from '@polkadot/types/interfaces/runtime';
 import React, { useState, useCallback, useEffect, useRef, useContext, Suspense } from 'react';
 import BN from 'bn.js';
 import styled from 'styled-components';
-import { Button, HelpOverlay, InputBalance, StatusContext, Spinner } from '@polkadot/react-components';
+import { Button, HelpOverlay, StatusContext, Spinner } from '@polkadot/react-components';
 import basicMd from '@polkadot/app-staking/md/basic.md';
 import { useApi, useCall, useOwnStashInfos, useStashIds } from '@polkadot/react-hooks';
 import { QrDisplayAddress } from '@polkadot/react-qr';
@@ -27,6 +27,7 @@ import EraToTime from './EraToTime';
 import Available from './Available';
 import useValidators from './useValidators';
 import WalletSelector from './WalletSelector';
+import InputBalance from './InputBalance';
 import { useFees, WholeFeesType, useBalanceClear } from './useBalance';
 import { useTranslation } from './translate';
 
@@ -90,11 +91,10 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
 
     const txs = [extrinsicBond, extrinsicNominate];
 
+    setIsNominating(true);
     api.tx.utility
       .batch(txs)
       .signAndSend(accountId, ({ status }) => {
-        setIsNominating(true);
-
         if (status.isInBlock) {
           const message: ActionStatus = {
             action: `included in ${status.asInBlock}`,
@@ -139,23 +139,6 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
 
     setStartButtonDisabled(!!currentStash);
   }, [accountId, ownStashes]);
-
-  /* const checkMaximumAmount = useCallback(() => {
-    console.log('onEscape', amount, 'amountToNominate', amountToNominate);
-    if (!amount || !amountToNominate) {
-      return;
-    }
-
-    if (amountToNominate.gt(amount)) {
-      const message: ActionStatus = {
-        action: 'Error',
-        message: t('You need to leave enough free balance for payment of fees.'),
-        status: 'error'
-      };
-
-      queueAction([message]);
-    }
-  }, [amount, amountToNominate, t, queueAction]); */
 
   /**
    * Set validators list.
@@ -288,6 +271,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
         { balanceInitialized && (
           <InputBalance
             defaultValue={amount}
+            isDecimal
             isFull
             isZeroable
             label={t('amount to bond')}
@@ -333,15 +317,15 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
 
 export default React.memo(styled(Nomination)`
    max-width: 800px;
-   
+
    .qr-center {
      margin: 0 auto;
    }
-   
+
    .ui.header:before {
       display: none !important;
    }
-   
+
    .text-center {
       text-align: center;
    }
