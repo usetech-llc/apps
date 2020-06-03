@@ -26,6 +26,7 @@ import AccountSelector from './AccountSelector';
 import EraToTime from './EraToTime';
 import Available from './Available';
 import useValidators from './useValidators';
+import { useSlashes } from './useShalses';
 import WalletSelector from './WalletSelector';
 import InputBalance from './InputBalance';
 import { useFees, WholeFeesType, useBalanceClear } from './useBalance';
@@ -49,7 +50,6 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
   });
   const [selectedValidators, setSelectedValidators] = useState<string[]>([]);
   const { filteredValidators } = useValidators();
-
   const [{ next, validators }, setValidators] = useState<Validators>({});
   const [accountId, setAccountId] = useState<string | null>(null);
   const [wallet, setWallet] = useState<string | null>(null);
@@ -65,6 +65,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
   const { wholeFees }: WholeFeesType = useFees(accountId, selectedValidators);
   const { queueAction } = useContext(StatusContext);
   const currentAccountRef = useRef<string | null>();
+  const slashes = useSlashes(accountId);
   const extrinsicBond = (amountToNominate && accountId)
     ? api.tx.staking.bond(accountId, amountToNominate, 2)
     : null;
@@ -284,6 +285,11 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
           {t('Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for')}
           <EraToTime showBlocks/>, {t('which is approximately')} <EraToTime showDays/>.
         </h4>
+        { slashes > 0 &&
+        <h4 className='ui orange header'>
+          {t('Warning: You have been slashed. You need to update your nomination.')}
+        </h4>
+        }
         <Button.Group>
           <Button
             icon='play'

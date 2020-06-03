@@ -1,4 +1,4 @@
-// Copyright 2017-2020 @polkadot/app-staking authors & contributors
+// Copyright 2017-2020 UseTech @polkadot/app-staking authors & contributors
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
@@ -24,6 +24,7 @@ import BondExtra from './BondExtra';
 import ListNominees from './ListNominees';
 import Nominate from './Nominate';
 import Unbond from './Unbond';
+import SubscribeForm from './SubscribeForm';
 
 interface Props {
   activeEra?: EraIndex;
@@ -45,6 +46,8 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
   const [isNominateOpen, toggleNominate] = useToggle();
   const [isUnbondOpen, toggleUnbond] = useToggle();
   const [notOptimal, setNotOptimal] = useState<boolean>(false);
+  const [openConfirmation, setOpenConfirmation] = useState<boolean>(false);
+  const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
   const { queueExtrinsic } = useContext(StatusContext);
 
   const stopNomination = useCallback(() => {
@@ -65,6 +68,11 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
   const openRewards = useCallback(() => {
     window.open(`https://kusama.subscan.io/account/${stashId}?tab=reward`, '_blank');
   }, [stashId]);
+
+  const toggleSubscribe = useCallback((email) => {
+    console.log('toggleSubscribe', email);
+    setOpenConfirmation(false);
+  }, []);
 
   useEffect((): void => {
     // case if current validators are not optimal
@@ -115,6 +123,18 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
               stashId={stashId}
             />
           )}
+          {/* <Confirm
+            content={isSubscribed ? 'Are you sure you want to unsubscribe from updates?' : <SubscribeForm />}
+            onCancel={setOpenConfirmation.bind(null, false)}
+            onConfirm={toggleSubscribe}
+            open={openConfirmation}
+          /> */}
+          {openConfirmation && (
+            <SubscribeForm
+              onClose={setOpenConfirmation.bind(null, false)}
+              onConfirm={toggleSubscribe}
+            />
+          )}
         </td>
         <td className='number'>
           <StakingBonded stakingInfo={stakingAccount} />
@@ -151,9 +171,17 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
             </td>
           )
         }
+        <td>
+          <Button
+            icon=''
+            key='unsubscribe'
+            label={isSubscribed ? t('Unsubscribe') : t('Subscribe')}
+            onClick={setOpenConfirmation.bind(null, true)}
+          />
+        </td>
       </tr>
       <tr>
-        <td colSpan={3}>
+        <td colSpan={4}>
           <Button.Group>
             <Button
               icon=''

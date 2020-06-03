@@ -2965,6 +2965,7 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.9.2
     "@polkadot/react-components": 0.42.0-beta.60
+    paralleljs: ^0.2.1
   languageName: unknown
   linkType: soft
 
@@ -16111,6 +16112,13 @@ __metadata:
     inherits: ^2.0.3
     readable-stream: ^2.1.5
   checksum: 2/65170af2e76b0d9305a1b8143e7aaa7fd0f726a038315fab7b8a92773a446d35623bc56bbac0ee4e6feb6757243c30408e1cd93da499fa44008fa7f9ded0c6c8
+  languageName: node
+  linkType: hard
+
+"paralleljs@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "paralleljs@npm:0.2.1"
+  checksum: 2/96ffe18f930f8b433cdfb4fe35eb9f88c55d8f1a80deae6bd84b0a3c02ad81b01797d91863f4a3273e64980741408880df3b1e2899553c73e65229b6d059086d
   languageName: node
   linkType: hard
 
