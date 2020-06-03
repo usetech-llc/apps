@@ -37,6 +37,7 @@ function useValidatorsFromServer (): ValidatorsFromServerInterface {
   }, []);
 
   useEffect(() => {
+    setValidatorsLoading(true);
     fetchData('/api/health').subscribe((result) => {
       if (result && result.connected) {
         fetchData('/api/bestvalidators').subscribe((validators) => {
