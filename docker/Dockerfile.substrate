@@ -1,16 +1,18 @@
-FROM ubuntu:latest as data
+FROM rust:latest
 LABEL maintainer="gz@usetech.com"
 
 EXPOSE 9944 
 VOLUME ["/chain-data"]
 
-RUN apt-get update; apt-get install -y curl unzip
+# Install build tools
+RUN apt-get update && apt-get -y install -y cmake pkg-config libssl-dev git gcc build-essential clang libclang-dev curl
+RUN rustup update stable
+RUN rustup default stable
+RUN rustup update nightly
+RUN rustup target add wasm32-unknown-unknown --toolchain nightly
+RUN rustup update
 
 WORKDIR /substrate
-
-# Install RUST
-COPY ["docker/getrust.sh", "./getrust.sh"]
-RUN /bin/bash ./getrust.sh
 RUN git clone https://github.com/paritytech/substrate substrate
 
 # Build specific commit of substrate (to match chain data)
@@ -18,23 +20,27 @@ WORKDIR /substrate/substrate
 
 RUN git fetch --all
 
+# Compatible with API 1.14
+RUN git checkout 29955755ce4
+
 # Compatible with API 1.11.0
 # RUN git checkout fc6e2a625d8
 
 # Compatible with API 1.10.1
-RUN git checkout 2b988996d031
+# RUN git checkout 2b988996d031
 
 # Compatible with API 1.09.1
-RUN git checkout 2e8080e29
+# RUN git checkout 2e8080e29
 
 ENV PATH="/root/.cargo/bin:${PATH}"
 
 RUN cargo build --release
 
 # Copy chain spec
+COPY ["docker/spec_1_14.json", "./chainspec.json"]
 # COPY ["docker/chainspec.json", "./chainspec.json"]
 # COPY ["docker/spec_1_10.json", "./chainspec.json"]
-COPY ["docker/spec_1_09.json", "./chainspec.json"]
+# COPY ["docker/spec_1_09.json", "./chainspec.json"]
 
 # Copy and run start script
 COPY ["docker/run.sh", "./run.sh"]
