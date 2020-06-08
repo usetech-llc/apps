@@ -14,7 +14,7 @@ function createDev (t: (key: string, text: string, options: { ns: string }) => s
   ];
 }
 
-function createLive (t: (key: string, text: string, options: { ns: string }) => string): Option[] {
+export function createLive (t: (key: string, text: string, options: { ns: string }) => string): Option[] {
   return [
     {
       info: 'kusama',

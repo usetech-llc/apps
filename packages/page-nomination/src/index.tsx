@@ -212,6 +212,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
     web3Accounts().then((res) => {
       setAccountsAvailable(!!res.length);
     });
+
   }, []);
 
   return (
@@ -334,5 +335,10 @@ export default React.memo(styled(Nomination)`
 
    .text-center {
       text-align: center;
+   }
+   
+   .telegram-img {
+      width: 30px;
+      height: 30px;
    }
 `);

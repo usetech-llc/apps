@@ -11,11 +11,13 @@ import { Table } from '@polkadot/react-components';
 import { useCall, useApi } from '@polkadot/react-hooks';
 import { FormatBalance } from '@polkadot/react-query';
 import { Option } from '@polkadot/types';
+import uiSettings from '@polkadot/ui-settings';
 
 import ElectionBanner from '../ElectionBanner';
 import { useTranslation } from '../translate';
 import Account from './Account';
 import NewStake from './NewStake';
+import telegram from '../assets/img/telegram.png';
 
 interface Props {
   className?: string;
@@ -51,6 +53,7 @@ function Actions ({ className, hideNewStake, isInElection, next, ownStashes, sel
         (a.isStashValidating ? 1 : (a.isStashNominating ? 5 : 99)) - (b.isStashValidating ? 1 : (b.isStashNominating ? 5 : 99))
       )
     });
+    console.log('settings', uiSettings.get());
   }, [ownStashes]);
 
   const header = useMemo(() => [
@@ -69,8 +72,22 @@ function Actions ({ className, hideNewStake, isInElection, next, ownStashes, sel
     </tr>
   ), [bondedTotal]);
 
+  const isKusama = uiSettings && uiSettings.apiUrl.includes('kusama');
+
   return (
     <div className={className}>
+      <a
+        className='telegram-icon'
+        href={isKusama ? 'https://t.me/Kusama_bot ' : 'https://t.me/Polkadot_Ryabina_bot'}
+        rel='noreferrer noopener'
+        target='_blank'
+      >
+        <img
+          alt='telegram-img'
+          className='telegram-img'
+          src={telegram}
+        />
+      </a>
       {!hideNewStake &&
       <NewStake/>
       }
