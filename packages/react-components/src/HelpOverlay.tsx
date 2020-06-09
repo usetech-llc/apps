@@ -20,12 +20,12 @@ function HelpOverlay ({ className, md }: Props): React.ReactElement<Props> {
 
   return (
     <div className={className}>
-      <div className='help-button'>
+      <a className='help-button' onClick={toggleVisible}>
         <Icon
-          name='help circle'
-          onClick={toggleVisible}
+          name='question circle outline'
         />
-      </div>
+        Help
+      </a>
       <div className={`help-slideout ${isVisible ? 'open' : 'closed'}`}>
         <div className='help-button'>
           <Icon
@@ -45,15 +45,14 @@ function HelpOverlay ({ className, md }: Props): React.ReactElement<Props> {
 
 export default React.memo(styled(HelpOverlay)`
   .help-button {
-    cursor: pointer;
-    font-size: 2rem;
-    padding: 1.25rem 1.5rem 0 0;
-  }
-
-  > .help-button {
-    position: absolute;
-    right: 0rem;
-    top: 0rem;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 24px;
+    padding: 5px 10px;
+    background: #FAFAFA;
+    color: #464E5F;
   }
 
   .help-slideout {
@@ -71,6 +70,10 @@ export default React.memo(styled(HelpOverlay)`
 
     .help-button {
       text-align: right;
+      background: transparent;
+      position: absolute;
+      right: 0rem;
+      top: 0rem;
     }
 
     .help-content {

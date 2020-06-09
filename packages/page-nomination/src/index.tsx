@@ -311,15 +311,56 @@ export default React.memo(styled(Nomination)`
    .error-block {
       background: #F8EFEF;
       border: 1px solid rgba(202, 20, 20, 0.2);
+      border-radius: 4px;
       text-align: center;
       color: #CA1414;
       font-size: 12px;
       line-height: 24px;
       margin: 5px 0;
-      padding: 8px 113px;
+      padding: 8px 16px;
+   }
+   
+   .warning-block {
+      background: #F7F2EE;
+      border: 1px solid rgba(202, 96, 20, 0.2);
+      box-sizing: border-box;
+      border-radius: 4px;
+      margin: 5px 0;
+      font-size: 12px;
+      line-height: 24px;
+      padding: 8px 16px;
    }
    
    section {
       margin: 8px 0;
+   }
+   
+   .header-qr {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 30px;  
+   }
+   
+   .close-window {
+      font-family: 'Roboto';
+      font-style: normal;
+      font-weight: normal;
+      font-size: 14px;
+      line-height: 24px;
+      color: #464E5F;
+   }
+   
+   .account-panel, .bond-section-block {
+      background: white;
+      border: 1px solid #DDDDDD;
+      box-sizing: border-box;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05);
+      border-radius: 4px;
+      padding: 24px;
+   }
+   
+   .account-panel {
+       text-align: center;
    }
 `);

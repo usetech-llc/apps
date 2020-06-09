@@ -35,7 +35,7 @@ function BondSection ({ amount, balanceInitialized, setAmountToNominate }: Props
           />
         )}
       </div>
-      <div className='error-block'>
+      <div className='warning-block'>
         {t('Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for')}
         <EraToTime showBlocks/>, {t('which is approximately')} <EraToTime showDays/>.
       </div>
