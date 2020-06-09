@@ -34,20 +34,8 @@ function format (value: Compact<any> | BN | string, currency: string, withSi?: b
     return formatBalance(value);
   }
 
-  return <>{prefix}{!isShort && (<>.<span className='ui--FormatBalance-postfix'>{`000${postfix || ''}`.slice(-3)}</span></>)} {currency}</>;
+  return <>{prefix}{!isShort && (<>.<span className='ui--FormatBalance-postfix'>{`000${postfix || ''}`.slice(-3)}</span></>)} <span className='currency'>{currency}</span></>;
 }
-
-// function formatSi (value: Compact<any> | BN | string): React.ReactNode {
-//   const strValue = ((value as Compact<any>).toBn ? (value as Compact<any>).toBn() : value).toString();
-//   const [prefix, postfix] = strValue === '0'
-//     ? ['0', '0']
-//     : formatBalance(value, { withSi: false }).split('.');
-//   const unit = strValue === '0'
-//     ? ''
-//     : formatBalance.calcSi(strValue).value;
-
-//   return <>{prefix}.<span className='balance-postfix'>{`000${postfix || ''}`.slice(-3)}</span>{unit === '-' ? '' : unit}</>;
-// }
 
 function FormatBalance ({ children, className, isShort, label, labelPost, value, withSi }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
@@ -55,13 +43,13 @@ function FormatBalance ({ children, className, isShort, label, labelPost, value,
 
   return (
     <div className={`ui--FormatBalance ${className}`}>
-      {label || ''}<span className='ui--FormatBalance-value'>{
-        value
-          ? value === 'all'
-            ? t('everything')
-            : format(value, currency, withSi, isShort)
-          : '-'
-      }</span>{labelPost}{children}
+      {label || ''}
+      <span className={`ui--FormatBalance-value ${className}`}>
+        { value
+          ? value === 'all' ? t('everything') : format(value, currency, withSi, isShort) : '-'
+        }
+      </span>
+      <span className='ui--FormatBalance-label'>{labelPost}{children}</span>
     </div>
   );
 }
@@ -73,6 +61,7 @@ export default React.memo(styled(FormatBalance)`
 
   * {
     vertical-align: baseline !important;
+     font-family: 'Roboto', sans-serif;
   }
 
   > label,
@@ -80,6 +69,33 @@ export default React.memo(styled(FormatBalance)`
     display: inline-block;
     margin-right: 0.25rem;
     vertical-align: baseline;
+  }
+  
+  .qr-panel.ui--FormatBalance-value {
+   text-align: left;
+    font-weight: bold;
+    font-size: 40px;
+    line-height: 60px;
+  }
+  
+  .qr-panel.ui--FormatBalance-value > .currency {
+    font-size: 20px;
+    line-height: 30px;
+    font-weight: normal;
+  }
+  
+  .qr-panel .ui--FormatBalance-postfix {
+      font-weight: bold;
+      font-size: 40px;
+      line-height: 60px;
+  }
+  
+  .ui--FormatBalance-label {
+      font-family: 'Roboto', sans-serif;
+      font-style: normal;
+      font-weight: normal;
+      font-size: 20px;
+      line-height: 30px;
   }
 
   .ui--FormatBalance-value {

@@ -86,11 +86,6 @@ const Wrapper = styled.div`
       min-width: 0;
 
       .ui.selection.dropdown {
-        &:not(.floating) {
-          padding-left: 1.45rem;
-          padding-top: 1.75rem;
-        }
-
         &.floating {
           > .dropdown.icon {
             top: 1.25rem;
@@ -100,23 +95,6 @@ const Wrapper = styled.div`
             padding: 0.45rem 0
           }
         }
-
-        &.search:not(.multiple) > input.search {
-          padding-left: 1.45rem;
-          padding-top: 1.75rem;
-        }
-
-        > .delete.icon,
-        > .dropdown.icon,
-        > .search.icon {
-          top: 1.75rem;
-        }
-      }
-
-      .ui.input > input,
-      .ui--output {
-        padding-left: 1.45rem;
-        padding-top: 1.75rem;
       }
 
       .ui--InputFile,

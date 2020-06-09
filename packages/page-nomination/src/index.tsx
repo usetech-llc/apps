@@ -14,21 +14,19 @@ import { Balance } from '@polkadot/types/interfaces/runtime';
 import React, { useState, useCallback, useEffect, useRef, useContext, Suspense } from 'react';
 import BN from 'bn.js';
 import styled from 'styled-components';
-import { Button, HelpOverlay, StatusContext, Spinner } from '@polkadot/react-components';
-import basicMd from '@polkadot/app-staking/md/basic.md';
+import { Button, StatusContext, Spinner } from '@polkadot/react-components';
 import { useApi, useCall, useOwnStashInfos, useStashIds } from '@polkadot/react-hooks';
-import { QrDisplayAddress } from '@polkadot/react-qr';
 import keyring from '@polkadot/ui-keyring';
 import { web3FromSource, web3Accounts, web3Enable } from '@polkadot/extension-dapp';
+import uiSettings from '@polkadot/ui-settings';
 
 // local imports and components
-import AccountSelector from './AccountSelector';
-import EraToTime from './EraToTime';
-import Available from './Available';
+import AccountSection from './AccountSection';
+import QrSection from './QrSection';
 import useValidators from './useValidators';
 import { useSlashes } from './useShalses';
 import WalletSelector from './WalletSelector';
-import InputBalance from './InputBalance';
+import BondSection from './BondSection';
 import { useFees, WholeFeesType, useBalanceClear } from './useBalance';
 import { useTranslation } from './translate';
 
@@ -42,6 +40,8 @@ interface Validators {
 function Nomination ({ className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
+  const [wallet, setWallet] = useState<string | null>(null);
+  const [web3Enabled, setWeb3Enabled] = useState<boolean>(false);
   const ownStashes = useOwnStashInfos();
   const allStashes = useStashIds();
   const stakingOverview = useCall<DeriveStakingOverview>(api.derive.staking.overview, []);
@@ -52,15 +52,12 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
   const { filteredValidators } = useValidators();
   const [{ next, validators }, setValidators] = useState<Validators>({});
   const [accountId, setAccountId] = useState<string | null>(null);
-  const [wallet, setWallet] = useState<string | null>(null);
   const [amount, setAmount] = useState<BN | undefined>(new BN(0));
-  const [web3Enabled, setWeb3Enabled] = useState<boolean>(false);
   const [accountsAvailable, setAccountsAvailable] = useState<boolean>(false);
   const [startButtonDisabled, setStartButtonDisabled] = useState<boolean>(false);
   const [isNominating, setIsNominating] = useState<boolean>(false);
   const [amountToNominate, setAmountToNominate] = useState<BN | undefined>(new BN(0));
   const [balanceInitialized, setBalanceInitialized] = useState<boolean>(false);
-  const accountSegment: any = useRef(null);
   const accountBalance: Balance | null = useBalanceClear(accountId);
   const { wholeFees }: WholeFeesType = useFees(accountId, selectedValidators);
   const { queueAction } = useContext(StatusContext);
@@ -201,10 +198,6 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
   }, [accountId, t, queueAction]);
 
   useEffect(() => {
-    if (accountSegment && accountSegment.current) {
-      window.scrollTo(0, accountSegment.current.offsetTop);
-    }
-
     web3Enable('').then((res) => {
       setWeb3Enabled(!!res.length);
     });
@@ -212,118 +205,87 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
     web3Accounts().then((res) => {
       setAccountsAvailable(!!res.length);
     });
-
   }, []);
+
+  const isKusama = uiSettings && uiSettings.apiUrl.includes('kusama');
 
   return (
     // in all apps, the main wrapper is setup to allow the padding
     // and margins inside the application. (Just from a consistent pov)
     <main className={`nomination-app ${className}`}>
-      <HelpOverlay md={basicMd} />
       <div className='ui placeholder segment'>
-        <h2>{t('Step {{stepNumber}}', { replace: { stepNumber: 1 } })}</h2>
-        <br />
-        <WalletSelector
-          onChange={setWallet}
-          title={t('Connect to a wallet')}
-          value={wallet}
-        />
-        {!web3Enabled &&
-        <h4 className='ui orange header'>{t('Please enable the polkadot.js extension!')}</h4>
-        }
-        {(web3Enabled && !accountsAvailable) &&
-        <h4 className='ui orange header'>{t('You have no accounts in polkadot.js extension. Please create account and send funds to it.')}</h4>
-        }
-      </div>
-      { web3Enabled && (
-        <div
-          className='ui placeholder segment'
-          ref={accountSegment}
-        >
-          <h2>{t('Step {{stepNumber}}', { replace: { stepNumber: 2 } })}</h2>
-          <br />
-          <AccountSelector
-            onChange={setAccountId}
-            title={t('Your account')}
-            value={accountId}
-          />
-          {accountId && (
-            <Available
-              params={accountId}
+        <div className='nomination-row'>
+          <div className='left'>
+            <h1>{t('Your account')}</h1>
+            <WalletSelector
+              onChange={setWallet}
+              title={t('Connect to a wallet')}
+              value={wallet}
             />
-          )}
-          {accountId &&
-          <QrDisplayAddress
-            address={accountId}
-            className={'qr-center'}
-            genesisHash={api.genesisHash.toHex()}
-            size={200}
-          />
-          }
-          {amount && !amount.gtn(0) &&
-          <h4 className='ui red header text-center'>{t('Your account`s balance is insufficient for nomination')}</h4>
-          }
-        </div>
-      )}
-      {amount && accountBalance && amount.gtn(0) && accountBalance.gtn(0) &&
-      <div className='ui placeholder segment'>
-        <h2>{t('Step {{stepNumber}}', { replace: { stepNumber: 3 } })}</h2>
-        <br />
-        <h2>{t('Enter the amount you would like to Nominate and click Start:')}</h2>
-        { balanceInitialized && (
-          <InputBalance
-            defaultValue={amount}
-            isDecimal
-            isFull
-            isZeroable
-            label={t('amount to bond')}
-            maxValue={amount}
-            onChange={setAmountToNominate}
-            withMax
-          />
-        )}
-        <h4 className='ui orange header'>
-          {t('Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for')}
-          <EraToTime showBlocks/>, {t('which is approximately')} <EraToTime showDays/>.
-        </h4>
-        { slashes > 0 &&
-        <h4 className='ui orange header'>
-          {t('Warning: You have been slashed. You need to update your nomination.')}
-        </h4>
-        }
-        <Button.Group>
-          <Button
-            icon='play'
-            isDisabled={startButtonDisabled}
-            isLoading={isNominating}
-            label={'Start'}
-            onClick={startNomination}
-          />
-        </Button.Group>
-      </div>
-      }
-      { accountId && (
-        <div className='ui placeholder segment'>
-          <h2>{t('Step {{stepNumber}}', { replace: { stepNumber: 4 } })}</h2>
-          <br />
-          <Suspense fallback={<Spinner />}>
-            <Actions
-              hideNewStake
-              isInElection={isInElection}
-              next={next}
-              ownStashes={ownStashes}
-              selectedValidators={selectedValidators}
-              validators={validators}
+            {!web3Enabled &&
+            <div className='error-block'>{t('Please enable the polkadot.js extension!')}</div>
+            }
+            {web3Enabled && (
+              <AccountSection
+                accountId={accountId}
+                accountsAvailable={accountsAvailable}
+                amount={amount}
+                setAccountId={setAccountId}
+              />
+            )}
+            <div className='divider' />
+            <BondSection
+              amount={amount}
+              balanceInitialized={balanceInitialized}
+              setAmountToNominate={setAmountToNominate}
             />
-          </Suspense>
+            { slashes > 0 &&
+            <div className='error-block'>
+              {t('Warning: You have been slashed. You need to update your nomination.')}
+            </div>
+            }
+            <Button.Group>
+              <Button
+                icon='play'
+                isDisabled={startButtonDisabled}
+                isLoading={isNominating}
+                label={'Start'}
+                onClick={startNomination}
+              />
+            </Button.Group>
+            { accountId && (
+              <Suspense fallback={<Spinner />}>
+                <Actions
+                  hideNewStake
+                  isInElection={isInElection}
+                  next={next}
+                  ownStashes={ownStashes}
+                  selectedValidators={selectedValidators}
+                  validators={validators}
+                />
+              </Suspense>
+            )}
+          </div>
+          <div className='right'>
+            <QrSection
+              accountId={accountId}
+              isKusama={isKusama}
+            />
+          </div>
         </div>
-      )}
+      </div>
     </main>
   );
 }
 
 export default React.memo(styled(Nomination)`
    max-width: 800px;
+   
+   .nomination-row {
+      display: grid;
+      grid-template-columns: 500px 210px;
+      grid-column-gap: 32px;
+   }
 
    .qr-center {
      margin: 0 auto;
@@ -340,5 +302,24 @@ export default React.memo(styled(Nomination)`
    .telegram-img {
       width: 30px;
       height: 30px;
+   }
+   
+   .icon.success {
+      font-size: 22px;
+   }
+   
+   .error-block {
+      background: #F8EFEF;
+      border: 1px solid rgba(202, 20, 20, 0.2);
+      text-align: center;
+      color: #CA1414;
+      font-size: 12px;
+      line-height: 24px;
+      margin: 5px 0;
+      padding: 8px 113px;
+   }
+   
+   section {
+      margin: 8px 0;
    }
 `);

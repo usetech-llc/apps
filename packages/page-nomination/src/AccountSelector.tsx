@@ -4,9 +4,9 @@
 
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Button, InputAddress } from '@polkadot/react-components';
+import { InputAddress } from '@polkadot/react-components';
 
-import { useTranslation } from './translate';
+// import { useTranslation } from './translate';
 
 interface Props {
   value?: string | null;
@@ -17,7 +17,7 @@ interface Props {
 
 function AccountSelector ({ className, onChange, title, value }: Props): React.ReactElement<Props> {
   const [accountId, setAccountId] = useState<string | null>(null);
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
 
   useEffect((): void => {
     if (accountId) {
@@ -26,17 +26,16 @@ function AccountSelector ({ className, onChange, title, value }: Props): React.R
   }, [accountId, onChange, value]);
 
   return (
-    <section className={className} >
+    <div className={className} >
       <h2>{title}</h2>
       <InputAddress
         className='medium'
         defaultValue={value}
-        label={t('select {{title}}', { replace: { title: title } })}
         onChange={setAccountId}
         type='account'
         value={value}
       />
-      <Button.Group>
+      {/* <Button.Group>
         <Button
           icon='arrow up'
           isDisabled
@@ -48,8 +47,8 @@ function AccountSelector ({ className, onChange, title, value }: Props): React.R
           isDisabled
           label={t('Create New')}
         />
-      </Button.Group>
-    </section>
+      </Button.Group> */}
+    </div>
   );
 }
 

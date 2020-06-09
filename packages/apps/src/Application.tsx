@@ -61,6 +61,12 @@ export default React.memo(styled(Application)`
   padding: 10px;
   justify-content: center;
   
+   .ui.placeholder.segment {
+      border-radius: 0;
+      background-color: #EEF0F8;
+      padding: 24px;
+   }
+  
   .connecting {
     width: 800px;
     display: flex;
@@ -69,5 +75,9 @@ export default React.memo(styled(Application)`
   
   .ui.segment {
     width: 800px;
+  }
+  
+  .success {
+    color: #39C707;
   }
 `);

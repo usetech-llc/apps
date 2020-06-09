@@ -4,9 +4,8 @@
 
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Dropdown } from '@polkadot/react-components';
+import { Dropdown, Icon } from '@polkadot/react-components';
 
-import { useTranslation } from './translate';
 import polkadot from './assets/img/polkadot.png';
 import enzyme from './assets/img/enzyme.png';
 import math from './assets/img/math.png';
@@ -56,9 +55,8 @@ const wallets = [
   }
 ];
 
-function WalletSelector ({ className, onChange, title }: Props): React.ReactElement<Props> {
+function WalletSection ({ className, onChange, title }: Props): React.ReactElement<Props> {
   const [wallet, setWallet] = useState<any>(wallets[0]);
-  const { t } = useTranslation();
 
   useEffect((): void => {
     if (wallet) {
@@ -67,13 +65,18 @@ function WalletSelector ({ className, onChange, title }: Props): React.ReactElem
   }, [wallet, onChange]);
 
   return (
-    <section className={className} >
-      <h2>{title}</h2>
+    <section className={className}>
+      <h2>
+        <Icon
+          className='success'
+          name='check circle outline'
+        />
+        {title}
+      </h2>
       <Dropdown
+        className='small'
         defaultValue={wallets[0].value}
-        help={t('Some wallets will be enabled later')}
         isFull
-        label={t('Connect to a wallet')}
         onChange={setWallet}
         options={wallets}
       />
@@ -81,7 +84,7 @@ function WalletSelector ({ className, onChange, title }: Props): React.ReactElem
   );
 }
 
-export default React.memo(styled(WalletSelector)`
+export default React.memo(styled(WalletSection)`
   align-items: flex-end;
 
   .summary {
@@ -93,5 +96,13 @@ export default React.memo(styled(WalletSelector)`
     line-height: 60px;
     text-align: center;
     font-size: 16px;
+  }
+  
+  h2 {
+    display: flex;
+    
+    .icon {
+       margin-right: 9px;
+    }
   }
 `);

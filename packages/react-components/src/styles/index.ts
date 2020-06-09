@@ -178,6 +178,7 @@ export default createGlobalStyle<Props>`
   body {
     height: 100%;
     margin: 0;
+    font-family: 'Roboto', sans-serif;
   }
 
   br {
@@ -208,18 +209,22 @@ export default createGlobalStyle<Props>`
   }
 
   h1, h2, h3, h4, h5 {
-    color: rgba(0, 0, 0, .6);
-    font-family: sans-serif;
+    color: #464E5F;
+    font-family: Roboto, sans-serif;
     font-weight: 100;
   }
 
   h1 {
-    text-transform: lowercase;
-
+    font-weight: bold;
     em {
       font-style: normal;
       text-transform: none;
     }
+  }
+  
+  h2 {
+    font-size: 16px;
+    font-weight: 500;
   }
 
   h1, h2, h3, h4, h5 {

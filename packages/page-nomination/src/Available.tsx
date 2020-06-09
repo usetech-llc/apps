@@ -7,6 +7,7 @@ import { DeriveBalancesAll } from '@polkadot/api-derive/types';
 import { AccountId, AccountIndex, Address } from '@polkadot/types/interfaces';
 
 import React from 'react';
+import styled from 'styled-components';
 import { useApi, useCall } from '@polkadot/react-hooks';
 import { FormatBalance } from '@polkadot/react-query';
 import { Spinner } from '@polkadot/react-components';
@@ -24,9 +25,13 @@ function AvailableDisplay ({ className, label, params }: Props): React.ReactElem
   const allBalances = useCall<DeriveBalancesAll>(api.derive.balances.all, [params]);
 
   return (
-    <div className='ui statistic'>
+    <div className={`ui statistic ${className}`}>
+      <div className={`${className} label`}>
+        {t('Your available balance')}
+      </div>
       {(!allBalances || !allBalances.availableBalance)
-        ? <Spinner /> : (
+        ? <Spinner />
+        : (
           <div className='value'>
             <FormatBalance
               className={className}
@@ -36,11 +41,23 @@ function AvailableDisplay ({ className, label, params }: Props): React.ReactElem
           </div>
         )
       }
-      <div className='label'>
-        {t('Your available balance')}
-      </div>
     </div>
   );
 }
 
-export default React.memo(AvailableDisplay);
+export default React.memo(styled(AvailableDisplay)`
+  min-width: 100%;
+  
+  * {
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .qr-panel.label {
+    font-family: 'Roboto', sans-serif;
+    text-align: left;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: normal;
+    text-transform: none;
+  } 
+`);

@@ -139,30 +139,8 @@ const Dropdown = React.memo(styled(BaseDropdown)`
       display: inline-block;
     }
 
-    .ui--Dropdown-icon {
-      height: 32px;
-      left: 0;
-      position: absolute;
-      top: -9px;
-      width: 32px;
-    }
-
     .ui--Dropdown-name {
       margin-left: 3rem;
-    }
-  }
-
-  .ui.selection.dropdown {
-    > .text > .ui--Dropdown-item {
-      .ui--Dropdown-icon {
-        left: -2.6rem;
-        top: -1.15rem;
-        opacity: 1;
-      }
-
-      .ui--Dropdown-name {
-        margin-left: 0;
-      }
     }
   }
 `) as unknown as IDropdown<any>;
