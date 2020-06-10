@@ -91,11 +91,11 @@ function extractExternal (accountId?: string | null): AccountFlags {
   const pair = keyring.getPair(publicKey);
 
   return {
-    hardwareType: pair.meta.hardwareType,
+    hardwareType: pair.meta.hardwareType as string,
     isExternal: !!pair.meta.isExternal,
     isHardware: !!pair.meta.isHardware,
     isMultisig: !!pair.meta.isMultisig,
-    threshold: pair.meta.threshold || 0,
+    threshold: pair.meta.threshold as number || 0,
     who: pair.meta.who as string[] || []
   };
 }

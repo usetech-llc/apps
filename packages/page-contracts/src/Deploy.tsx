@@ -238,9 +238,11 @@ class Deploy extends ContractModal<Props, State> {
         params={this.constructCall}
         tx={
           api.tx.contracts
-            ? api.tx.contracts.instantiate
-              ? 'contracts.instantiate' // V2 (new)
-              : 'contracts.create' // V2 (old)
+            ? (
+              !api.tx.contracts.instantiate
+                ? 'contracts.create' // V2 (new)
+                : 'contracts.instantiate' // V2 (old)
+            )
             : 'contract.create' // V1
         }
         withSpinner
