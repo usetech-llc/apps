@@ -6,6 +6,7 @@ import { ActiveEraInfo, EraIndex } from '@polkadot/types/interfaces';
 import { StakerState } from '@polkadot/react-hooks/types';
 
 import BN from 'bn.js';
+import styled from 'styled-components';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Table } from '@polkadot/react-components';
 import { useCall, useApi } from '@polkadot/react-hooks';
@@ -82,6 +83,7 @@ function Actions ({ className, hideNewStake, isInElection, next, ownStashes, sel
         rel='noreferrer noopener'
         target='_blank'
       >
+        Notifications
         <img
           alt='telegram-img'
           className='telegram-img'
@@ -113,4 +115,11 @@ function Actions ({ className, hideNewStake, isInElection, next, ownStashes, sel
   );
 }
 
-export default React.memo(Actions);
+export default React.memo(styled(Actions)`
+  .telegram-icon {
+    position: absolute;
+    right: 10px;
+    display: flex;
+    align-items: center;
+  }
+`);
