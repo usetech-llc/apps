@@ -106,7 +106,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
       });
   }, [accountId, api.tx.utility, extrinsicBond, extrinsicNominate, t, queueAction]);
 
-  const setSigner = useCallback(async () => {
+  const setSigner = useCallback(async (): Promise<void> => {
     if (!accountId) {
       return;
     }
@@ -154,11 +154,12 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
     }
   }, [filteredValidators, stakingOverview]);
 
-  useEffect(() => {
+  useEffect((): void => {
     if (!accountId) {
       return;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     setSigner().then();
   }, [accountId, setSigner]);
 
@@ -212,7 +213,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
   return (
     // in all apps, the main wrapper is setup to allow the padding
     // and margins inside the application. (Just from a consistent pov)
-    <main className={`nomination-app ${className}`}>
+    <main className={`nomination-app ${className || ''}`}>
       <div className='ui placeholder segment'>
         <div className='nomination-row'>
           <div className='left'>
