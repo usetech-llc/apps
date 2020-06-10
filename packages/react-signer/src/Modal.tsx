@@ -96,7 +96,7 @@ function extractExternal (accountId?: string | null): AccountFlags {
     isHardware: !!pair.meta.isHardware,
     isMultisig: !!pair.meta.isMultisig,
     threshold: pair.meta.threshold || 0,
-    who: pair.meta.who || []
+    who: pair.meta.who as string[] || []
   };
 }
 
@@ -663,7 +663,7 @@ class Signer extends React.PureComponent<Props, State> {
     let tx = submittable;
 
     if (basePair.meta.isMultisig) {
-      const others = basePair.meta.who.filter((who: string) => who !== signatory);
+      const others = (basePair.meta.who as string[]).filter((who: string) => who !== signatory);
       const info = await api.query.utility.multisigs(accountId as string, submittable.method.hash);
       let timepoint: Timepoint | null = null;
 
@@ -673,8 +673,8 @@ class Signer extends React.PureComponent<Props, State> {
 
       pair = keyring.getPair(signatory as string);
       tx = multiApproval
-        ? api.tx.utility.approveAsMulti(basePair.meta.threshold, others, timepoint, submittable.method.hash)
-        : api.tx.utility.asMulti(basePair.meta.threshold, others, timepoint, submittable.method);
+        ? api.tx.utility.approveAsMulti(basePair.meta.threshold as BigInt, others, timepoint, submittable.method.hash)
+        : api.tx.utility.asMulti(basePair.meta.threshold as BigInt, others, timepoint, submittable.method);
     }
 
     console.log('sendExtrinsic::', JSON.stringify(tx.method.toHuman()));
@@ -733,7 +733,7 @@ class Signer extends React.PureComponent<Props, State> {
         api.setSigner({ signPayload: this.signQrPayload });
         params.push(address);
       } else if (isInjected) {
-        const injected = await web3FromSource(source);
+        const injected = await web3FromSource(source as string);
 
         assert(injected, `Unable to find a signer for ${address}`);
 
@@ -819,7 +819,7 @@ class Signer extends React.PureComponent<Props, State> {
       queueSetTxStatus(id, 'qr');
       signer = { signPayload: this.signQrPayload };
     } else if (isInjected) {
-      const injected = await web3FromSource(source);
+      const injected = await web3FromSource(source as string);
 
       signer = injected?.signer;
     }
