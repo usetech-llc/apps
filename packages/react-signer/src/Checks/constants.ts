@@ -4,7 +4,6 @@
 
 import { DeriveFees, DeriveBalancesAll, DeriveContractFees } from '@polkadot/api-derive/types';
 
-import BN from 'bn.js';
 import { registry } from '@polkadot/react-api';
 import { createType } from '@polkadot/types';
 import { BN_ZERO } from '@polkadot/util';
