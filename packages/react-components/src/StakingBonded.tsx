@@ -10,13 +10,26 @@ import { FormatBalance } from '@polkadot/react-query';
 interface Props {
   className?: string;
   stakingInfo?: DeriveStakingAccount;
+  withLabel?: string;
 }
 
-function StakingBonded ({ className, stakingInfo }: Props): React.ReactElement<Props> | null {
+function StakingBonded ({ className, stakingInfo, withLabel }: Props): React.ReactElement<Props> | null {
   const balance = stakingInfo?.stakingLedger?.active.unwrap();
 
   if (!balance?.gtn(0)) {
     return null;
+  }
+
+  if (withLabel) {
+    return (
+      <>
+        <span>{withLabel} </span>
+        <FormatBalance
+          className={className}
+          value={balance}
+        />
+      </>
+    );
   }
 
   return (

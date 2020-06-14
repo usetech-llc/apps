@@ -6,17 +6,17 @@ import { ActiveEraInfo, EraIndex } from '@polkadot/types/interfaces';
 import { StakerState } from '@polkadot/react-hooks/types';
 
 import BN from 'bn.js';
-import React, { useEffect, useMemo, useState } from 'react';
-import { Table } from '@polkadot/react-components';
+import styled from 'styled-components';
+import React, { useEffect, useState } from 'react';
 import { useCall, useApi } from '@polkadot/react-hooks';
 import { FormatBalance } from '@polkadot/react-query';
 import { Option } from '@polkadot/types';
+import Spinner from '@polkadot/react-components/Spinner';
 
 import ElectionBanner from '../ElectionBanner';
 import { useTranslation } from '../translate';
 import Account from './Account';
 import NewStake from './NewStake';
-import telegram from '../assets/img/telegram.png';
 
 interface Props {
   className?: string;
@@ -54,47 +54,169 @@ function Actions ({ className, hideNewStake, isInElection, next, ownStashes, sel
     });
   }, [ownStashes]);
 
-  const header = useMemo(() => [
-    [t('Accounts'), 'start'],
-    [t('nominated'), 'number'],
-    [undefined, undefined, 2]
-  ], [t]);
-
-  const footer = useMemo(() => (
-    <tr>
-      <td colSpan={2} />
-      <td className='number'>
-        {bondedTotal && <FormatBalance value={bondedTotal} />}
-      </td>
-      <td colSpan={2} />
-    </tr>
-  ), [bondedTotal]);
-
   return (
     <div className={className}>
       {!hideNewStake &&
       <NewStake/>
       }
       <ElectionBanner isInElection={isInElection} />
-      <Table
-        empty={foundStashes && t('No funds staked yet. Bond funds to validate or nominate a validator')}
-        footer={footer}
-        header={header}
-      >
-        {foundStashes?.map((info): React.ReactNode => (
-          <Account
-            activeEra={activeEra}
-            info={info}
-            isDisabled={isInElection}
-            key={info.stashId}
-            next={next}
-            selectedValidators={selectedValidators}
-            validators={validators}
-          />
-        ))}
-      </Table>
+      { (!foundStashes || !foundStashes.length) ? (
+        <div className='stakes table'>
+          <Spinner label={t<string>('No funds staked yet. Bond funds to validate or nominate a validator')} />
+        </div>
+      ) : (
+        <div className='stakes table'>
+          <div className='thead white-block'>
+            <div className='column'>
+              {t('Accounts')}
+            </div>
+            <div className='column'>
+              {t('Active nomination')}
+            </div>
+            <div className='column'>
+              {bondedTotal && (
+                <>
+                  {t('Total bonded:')}
+                  <FormatBalance value={bondedTotal} />
+                </>
+              )}
+            </div>
+          </div>
+          <div className='tbody'>
+            {foundStashes?.map((info): React.ReactNode => (
+              <Account
+                activeEra={activeEra}
+                info={info}
+                isDisabled={isInElection}
+                key={info.stashId}
+                next={next}
+                selectedValidators={selectedValidators}
+                stashId={info.stashId}
+                validators={validators}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-export default React.memo(Actions);
+export default React.memo(styled(Actions)` 
+
+  * {
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .ui--AccountName {
+  
+  }
+  
+  .white-block {
+    background: #FFFFFF;
+    border: 1px solid #DDDDDD;
+    box-sizing: border-box;
+    border-radius: 4px;
+    margin: 10px 0;
+    padding: 9px 16px;
+  }
+  
+  .white-block.with-footer {
+    margin-bottom: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: none;
+    display: grid;
+    grid-template-columns: 180px 180px 1fr;
+    column-gap: 10px;
+  }
+  
+  .stakes.table {
+    margin-top: 20px;
+  }
+  
+  .footer-row {
+    background: #F1F1F1;
+    border-radius: 0px 0px 3px 3px;
+    padding: 8px 15px;
+    border-left: 1px solid #DDDDDD;
+    border-right: 1px solid #DDDDDD;
+    border-bottom: 1px solid #DDDDDD;
+    display: flex;
+  }
+  
+  .table .thead {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 22px;
+    display: grid;
+    grid-template-columns: 180px 1fr 200px;
+    column-gap: 10px; 
+    text-align: left;
+    align-items: center;
+  }
+  
+  .accordion {
+    display: grid;
+    position: relative;
+    
+    .with-bottom-border {
+      border-bottom: 1px solid #0000002e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .item {
+      margin: 0 10px;
+    }
+    
+    .toggle-accordion {
+      color: #464E5F;
+      font-size: 18px;
+      line-height: 30px;
+      text-align: right;
+    }
+  }
+  
+  .accordion-header {
+    display: grid;
+    grid-template-columns: 1fr 37px;
+  }
+  
+  .accordion-body-inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .accordion-body {
+    display: flex;
+    min-height: 30px;
+  }
+  
+  .column.accordion {
+    background: #FFFFFF;
+    padding: 9px 16px;
+    border-left: 1px solid #DDDDDD;
+    border-right: 1px solid #DDDDDD;
+    
+    font-family: 'Roboto';
+    
+    h4 {
+      font-size: 18px;
+      line-height: 21px;
+      font-family: 'Roboto';
+      font-style: normal;
+      font-weight: normal;
+    }
+    
+    .ui--AddressMini {
+      &.padded {
+        padding: 8px 0;
+      }
+    }
+  }
+`);

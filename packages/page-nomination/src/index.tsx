@@ -54,7 +54,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
   const [accountId, setAccountId] = useState<string | null>(null);
   const [amount, setAmount] = useState<BN | undefined>(new BN(0));
   const [accountsAvailable, setAccountsAvailable] = useState<boolean>(false);
-  const [startButtonDisabled, setStartButtonDisabled] = useState<boolean>(false);
+  const [stashIsCurrent, setStashIsCurrent] = useState<boolean>(false);
   const [isNominating, setIsNominating] = useState<boolean>(false);
   const [amountToNominate, setAmountToNominate] = useState<BN | undefined>(new BN(0));
   const [balanceInitialized, setBalanceInitialized] = useState<boolean>(false);
@@ -90,12 +90,13 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
     const txs = [extrinsicBond, extrinsicNominate];
 
     setIsNominating(true);
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     api.tx.utility
       .batch(txs)
       .signAndSend(accountId, ({ status }) => {
         if (status.isInBlock) {
           const message: ActionStatus = {
-            action: `included in ${status.asInBlock}`,
+            action: `included in ${status.asInBlock as unknown as string}`,
             message: t('Funds nominated successfully!'),
             status: 'success'
           };
@@ -134,8 +135,8 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
     }
 
     const currentStash = ownStashes.find((stash) => stash.stashId === accountId);
-
-    setStartButtonDisabled(!!currentStash);
+    console.log('currentStash', !!currentStash);
+    setStashIsCurrent(!!currentStash);
   }, [accountId, ownStashes]);
 
   /**
@@ -198,11 +199,13 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
     currentAccountRef.current = accountId;
   }, [accountId, t, queueAction]);
 
-  useEffect(() => {
+  useEffect((): void => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     web3Enable('').then((res) => {
       setWeb3Enabled(!!res.length);
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     web3Accounts().then((res) => {
       setAccountsAvailable(!!res.length);
     });
@@ -220,7 +223,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
             <h1>{t('Your account')}</h1>
             <WalletSelector
               onChange={setWallet}
-              title={t('Connect to a wallet')}
+              title={t<string>('Connect to a wallet')}
               value={wallet}
             />
             {!web3Enabled &&
@@ -245,27 +248,14 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
               {t('Warning: You have been slashed. You need to update your nomination.')}
             </div>
             }
-            <Button.Group>
-              <Button
-                icon='play'
-                isDisabled={startButtonDisabled}
-                isLoading={isNominating}
-                label={'Start'}
-                onClick={startNomination}
-              />
-            </Button.Group>
-            { accountId && (
-              <Suspense fallback={<Spinner />}>
-                <Actions
-                  hideNewStake
-                  isInElection={isInElection}
-                  next={next}
-                  ownStashes={ownStashes}
-                  selectedValidators={selectedValidators}
-                  validators={validators}
-                />
-              </Suspense>
-            )}
+            <Button
+              className='start'
+              icon='play'
+              isLoading={isNominating}
+              isPrimary
+              label={stashIsCurrent ? t('Add funds') : t('Bond and Nominate')}
+              onClick={startNomination}
+            />
           </div>
           <div className='right'>
             <QrSection
@@ -273,6 +263,20 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
               isKusama={isKusama}
             />
           </div>
+        </div>
+        <div className='nomination-active'>
+          { accountId && (
+            <Suspense fallback={<Spinner />}>
+              <Actions
+                hideNewStake
+                isInElection={isInElection}
+                next={next}
+                ownStashes={ownStashes}
+                selectedValidators={selectedValidators}
+                validators={validators}
+              />
+            </Suspense>
+          )}
         </div>
       </div>
     </main>

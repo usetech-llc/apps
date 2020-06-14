@@ -3,28 +3,27 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import { DeriveBalancesAll, DeriveStakingAccount } from '@polkadot/api-derive/types';
-import { EraIndex } from '@polkadot/types/interfaces';
+import { EraIndex, ValidatorPrefsTo145 } from '@polkadot/types/interfaces';
 import { StakerState } from '@polkadot/react-hooks/types';
 
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import SemanticPopup from 'semantic-ui-react/dist/commonjs/modules/Popup/Popup';
-import { AddressInfo,
-  AddressSmall,
+import { AddressMini,
   Button,
   StakingBonded,
-  StakingRedeemable,
   StakingUnbonding,
   StatusContext,
-  TxButton } from '@polkadot/react-components';
+  TxButton,
+  Icon } from '@polkadot/react-components';
 import { useApi, useCall, useToggle } from '@polkadot/react-hooks';
 
 import { useTranslation } from '../../translate';
 import BondExtra from './BondExtra';
-import ListNominees from './ListNominees';
 import Nominate from './Nominate';
 import Unbond from './Unbond';
-import SubscribeForm from './SubscribeForm';
+import useInactives from '@polkadot/app-nomination/Actions/useInactives';
+import { FormatBalance } from '@polkadot/react-query/index';
 
 interface Props {
   activeEra?: EraIndex;
@@ -37,17 +36,55 @@ interface Props {
   selectedValidators?: string[];
 }
 
-function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessionIdQueue, isOwnController, isOwnStash, isStashNominating, isStashValidating, nominating, stakingLedger, stashId }, next, selectedValidators, validators }: Props): React.ReactElement<Props> {
+function CommissionBalance (stakingAccount: DeriveStakingAccount, withLabel?: string): any {
+  if (!stakingAccount || !stakingAccount.validatorPrefs) {
+    return null;
+  }
+
+  return (
+    <>
+      <div />
+      {(stakingAccount.validatorPrefs as any as ValidatorPrefsTo145).unstakeThreshold && (
+        <>
+          <span>{withLabel}</span>
+          <div className='result'>
+            {(stakingAccount.validatorPrefs as any as ValidatorPrefsTo145).unstakeThreshold.toString()}
+          </div>
+        </>
+      )}
+      {(stakingAccount.validatorPrefs.commission || (stakingAccount.validatorPrefs as any as ValidatorPrefsTo145).validatorPayment) && (
+        (stakingAccount.validatorPrefs as any as ValidatorPrefsTo145).validatorPayment
+          ? (
+            <>
+              <span>{withLabel}</span>
+              <FormatBalance
+                className='result'
+                value={(stakingAccount.validatorPrefs as any as ValidatorPrefsTo145).validatorPayment}
+              />
+            </>
+          )
+          : (
+            <>
+              <span>{withLabel}</span>
+              <span>{(stakingAccount.validatorPrefs.commission.unwrap().toNumber() / 10_000_000).toFixed(2)}%</span>
+            </>
+          )
+      )}
+    </>
+  );
+}
+
+function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNominating, nominating, stakingLedger, stashId }, next, selectedValidators, validators }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
   const balancesAll = useCall<DeriveBalancesAll>(api.derive.balances.all, [stashId]);
   const stakingAccount = useCall<DeriveStakingAccount>(api.derive.staking.account, [stashId]);
   const [isBondExtraOpen, toggleBondExtra] = useToggle();
+  const [isAccordionOpen, toggleAccordion] = useToggle();
   const [isNominateOpen, toggleNominate] = useToggle();
   const [isUnbondOpen, toggleUnbond] = useToggle();
   const [notOptimal, setNotOptimal] = useState<boolean>(false);
-  const [openConfirmation, setOpenConfirmation] = useState<boolean>(false);
-  const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
+  const { nomsActive, nomsInactive, nomsWaiting } = useInactives(stashId, nominating);
   const { queueExtrinsic } = useContext(StatusContext);
 
   const stopNomination = useCallback(() => {
@@ -69,11 +106,6 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
     window.open(`https://kusama.subscan.io/account/${stashId}?tab=reward`, '_blank');
   }, [stashId]);
 
-  const toggleSubscribe = useCallback((email) => {
-    console.log('toggleSubscribe', email);
-    setOpenConfirmation(false);
-  }, []);
-
   useEffect((): void => {
     // case if current validators are not optimal
     if (selectedValidators && selectedValidators.length && nominating && nominating.length) {
@@ -91,12 +123,16 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
       }
     }
   }, [nominating, selectedValidators]);
+  console.log('balancesAll', balancesAll);
 
   return (
-    <>
-      <tr className={className}>
-        <td className='address'>
-          <AddressSmall value={stashId} />
+    <div className='account-block'>
+      <div className='white-block with-footer'>
+        <div className='column address'>
+          {/* <AddressSmall value={stashId} /> */}
+          <AddressMini
+            value={stashId}
+          />
           {isBondExtraOpen && (
             <BondExtra
               onClose={toggleBondExtra}
@@ -123,133 +159,178 @@ function Account ({ className, info: { controllerId, hexSessionIdNext, hexSessio
               stashId={stashId}
             />
           )}
-          {/* <Confirm
-            content={isSubscribed ? 'Are you sure you want to unsubscribe from updates?' : <SubscribeForm />}
-            onCancel={setOpenConfirmation.bind(null, false)}
-            onConfirm={toggleSubscribe}
-            open={openConfirmation}
-          /> */}
-          {openConfirmation && (
-            <SubscribeForm
-              onClose={setOpenConfirmation.bind(null, false)}
-              onConfirm={toggleSubscribe}
+        </div>
+        <div className='column address'>
+          {nomsActive && nomsActive.map((nomineeId, index): React.ReactNode => (
+            <AddressMini
+              key={index}
+              value={nomineeId}
+              withBonded
+            />
+          ))}
+        </div>
+        <div className='column all'>
+          { stakingAccount &&
+            <div className='accordion'>
+              <div className='accordion-header'>
+                <div className='with-bottom-border'>
+                  { stakingAccount?.stakingLedger?.active.unwrap().gtn(0) && (
+                    <div className='item'>
+                      <StakingBonded stakingInfo={stakingAccount} withLabel={t('bonded:')} />
+                    </div>
+                  )}
+                  <div className='item'>
+                    <CommissionBalance
+                      stakingAccount={stakingAccount}
+                      withLabel={t('commission:')}
+                    />
+                  </div>
+                  <div className='item'>
+                    <StakingUnbonding
+                      stakingInfo={stakingAccount}
+                      withLabel={t<string>('unbonding:')}
+                    />
+                  </div>
+                </div>
+                <a
+                  className='toggle-accordion'
+                  onClick={toggleAccordion}
+                >
+                  { isAccordionOpen &&
+                    <Icon name='angle up' />
+                  }
+                  { !isAccordionOpen &&
+                    <Icon name='angle down' />
+                  }
+                </a>
+              </div>
+              <div className='accordion-body'>
+                { isAccordionOpen && (
+                  <div className='accordion-body-inner'>
+                    { balancesAll && (
+                      <div className='item'>
+                        <span>{t('total')}: </span>
+                        <FormatBalance
+                          className='result'
+                          value={balancesAll.votingBalance}
+                        />
+                      </div>
+                    )}
+                    { balancesAll && (
+                      <div className='item'>
+                        <span>{t('transferrable')}: </span>
+                        <FormatBalance
+                          className='result'
+                          value={balancesAll.availableBalance}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+      { isAccordionOpen && (
+        <div className='column accordion'>
+          {(nomsWaiting && nomsWaiting.length > 0) && (
+            <>
+              <h4>{`${t('Waiting nominations')} (${nomsWaiting.length})`}</h4>
+              {nomsWaiting.map((nomineeId, index): React.ReactNode => (
+                <AddressMini
+                  key={index}
+                  value={nomineeId}
+                  withBonded
+                />
+              ))}
+            </>
+          )}
+          {(nomsInactive && nomsInactive.length > 0) && (
+            <>
+              <h4>{`${t('Inactive nominations')} (${nomsInactive.length})`}</h4>
+              {nomsInactive.map((nomineeId, index): React.ReactNode => (
+                <AddressMini
+                  key={index}
+                  value={nomineeId}
+                  withBonded
+                />
+              ))}
+            </>
+          )}
+        </div>
+      )}
+      <div className='footer-row'>
+        <Button.Group>
+          <Button
+            className='footer-button'
+            icon=''
+            isDisabled={!isOwnStash && !balancesAll?.freeBalance.gtn(0)}
+            key='rewards'
+            label={t('Rewards')}
+            onClick={openRewards}
+          />
+          <Button
+            className='footer-button'
+            icon=''
+            isDisabled={!isOwnController}
+            key='bondMore'
+            label={t('Bond more')}
+            onClick={toggleBondExtra}
+          />
+          { notOptimal && (
+            <SemanticPopup
+              content='Your nomination is not optimal. Update please!'
+              trigger={
+                <TxButton
+                  accountId={controllerId}
+                  className='warning footer-button'
+                  icon='warning sign'
+                  isDisabled={!selectedValidators?.length}
+                  isPrimary
+                  label={t('Update nomination')}
+                  params={[selectedValidators]}
+                  tx='staking.nominate'
+                />
+              }
             />
           )}
-        </td>
-        <td className='number'>
-          <StakingBonded stakingInfo={stakingAccount} />
-          <StakingUnbonding stakingInfo={stakingAccount} />
-          <StakingRedeemable stakingInfo={stakingAccount} />
-        </td>
-        {isStashValidating
-          ? (
-            <td className='all'>
-              <AddressInfo
-                address={stashId}
-                withBalance
-                withBalanceToggle
-                withHexSessionId={hexSessionIdNext !== '0x' && [hexSessionIdQueue, hexSessionIdNext]}
-                withValidatorPrefs
-              />
-            </td>
-          )
-          : (
-            <td className='all'>
-              <AddressInfo
-                address={stashId}
-                withBalance
-                withBalanceToggle
-                withHexSessionId={hexSessionIdNext !== '0x' && [hexSessionIdQueue, hexSessionIdNext]}
-                withValidatorPrefs
-              />
-              {isStashNominating && (
-                <ListNominees
-                  nominating={nominating}
-                  stashId={stashId}
-                />
-              )}
-            </td>
-          )
-        }
-        <td>
+          { !notOptimal && (
+            <TxButton
+              accountId={controllerId}
+              className='footer-button'
+              icon='hand paper outline'
+              isDisabled={!selectedValidators?.length}
+              isPrimary
+              label={isStashNominating ? t('Update nomination') : t('Nominate')}
+              params={[selectedValidators]}
+              tx='staking.nominate'
+            />
+          )}
           <Button
+            className='footer-button'
             icon=''
-            key='unsubscribe'
-            label={isSubscribed ? t('Unsubscribe') : t('Subscribe')}
-            onClick={setOpenConfirmation.bind(null, true)}
+            isDisabled={!isStashNominating}
+            key='stop'
+            label={t('Stop nomination')}
+            onClick={stopNomination}
           />
-        </td>
-      </tr>
-      <tr>
-        <td colSpan={4}>
-          <Button.Group>
-            <Button
-              icon=''
-              isDisabled={!isOwnStash && !balancesAll?.freeBalance.gtn(0)}
-              key='rewards'
-              label={t('Rewards')}
-              onClick={openRewards}
-            />
-            <Button
-              icon=''
-              isDisabled={!isOwnController}
-              key='bondMore'
-              label={t('Bond more')}
-              onClick={toggleBondExtra}
-            />
-            { notOptimal && (
-              <SemanticPopup
-                content='Your nomination is not optimal. Update please!'
-                trigger={
-                  <TxButton
-                    accountId={controllerId}
-                    className='warning'
-                    icon='warning sign'
-                    isDisabled={!selectedValidators?.length}
-                    isPrimary
-                    label={t('Update nomination')}
-                    params={[selectedValidators]}
-                    tx='staking.nominate'
-                  />
-                }
-              />
-            )}
-            { !notOptimal && (
-              <TxButton
-                accountId={controllerId}
-                icon='hand paper outline'
-                isDisabled={!selectedValidators?.length}
-                isPrimary
-                label={isStashNominating ? t('Update nomination') : t('Nominate')}
-                params={[selectedValidators]}
-                tx='staking.nominate'
-              />
-            )}
-            <Button
-              icon=''
-              isDisabled={!isStashNominating}
-              key='stop'
-              label={t('Stop nomination')}
-              onClick={stopNomination}
-            />
-            <Button
-              icon=''
-              isDisabled={!isOwnStash && !balancesAll?.freeBalance.gtn(0)}
-              key='unbond'
-              label={t('Unbond')}
-              onClick={toggleUnbond}
-            />
-          </Button.Group>
-        </td>
-      </tr>
-    </>
+          <Button
+            className='footer-button'
+            icon=''
+            isDisabled={!isOwnStash && !balancesAll?.freeBalance.gtn(0)}
+            key='unbond'
+            label={t('Unbond')}
+            onClick={toggleUnbond}
+          />
+        </Button.Group>
+      </div>
+    </div>
   );
 }
 
 export default React.memo(styled(Account)`
   .ui--Button-Group {
     display: inline-block;
-    margin-right: 0.25rem;
-    vertical-align: inherit;
   }
 `);

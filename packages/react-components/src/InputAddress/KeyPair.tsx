@@ -53,6 +53,11 @@ export default React.memo(styled(KeyPair)`
     overflow: hidden;
     text-align: right;
     text-overflow: ellipsis;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 18px;
   }
 
   > .icon {

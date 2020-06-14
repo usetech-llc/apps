@@ -29,7 +29,7 @@ function AccountSelector ({ className, onChange, title, value }: Props): React.R
     <div className={className} >
       <h2>{title}</h2>
       <InputAddress
-        className='medium'
+        className='small'
         defaultValue={value}
         onChange={setAccountId}
         type='account'

@@ -18,6 +18,7 @@ import { useTranslation } from './translate';
 interface Props {
   className?: string;
   stakingInfo?: DeriveStakingAccount;
+  withLabel?: string;
 }
 
 function remainingBlocks (remainingEras: BN, { eraLength, eraProgress }: DeriveSessionProgress): BN {
@@ -27,7 +28,7 @@ function remainingBlocks (remainingEras: BN, { eraLength, eraProgress }: DeriveS
     .add(eraLength.sub(eraProgress));
 }
 
-function StakingUnbonding ({ className, stakingInfo }: Props): React.ReactElement<Props> | null {
+function StakingUnbonding ({ className, stakingInfo, withLabel }: Props): React.ReactElement<Props> | null {
   const { api } = useApi();
   const progress = useCall<DeriveSessionProgress>(api.derive.session.progress, []);
   const { t } = useTranslation();
@@ -48,6 +49,7 @@ function StakingUnbonding ({ className, stakingInfo }: Props): React.ReactElemen
 
   return (
     <div className={className}>
+      {withLabel}
       <Icon
         data-for={trigger}
         data-tip

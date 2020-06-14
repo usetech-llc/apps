@@ -30,6 +30,54 @@ const defaultLabel: React.ReactNode = (
 const Wrapper = styled.div`
   display: block;
   position: relative;
+  
+  &.small {
+     .ui.selection.dropdown {
+         &:not(.floating) {
+            padding: .78571429em 2.1em .78571429em 1em !important;
+         }
+         
+         &.search:not(.multiple) > input.search {
+          padding: .67857143em 2.1em .67857143em 1em !important;
+        }
+
+        > .delete.icon,
+        > .dropdown.icon,
+        > .search.icon {
+          top: .78571429em !important;
+        }
+     }
+     
+     .ui.input > input,
+      .ui--output {
+        padding: .67857143em 1em !important;
+     }
+     
+     .ui--Dropdown-item {
+        
+        .ui--Dropdown-icon {
+          height: 32px;
+          left: 0;
+          position: absolute;
+          top: -9px;
+          width: 32px;
+        }
+     } 
+     
+     .ui.selection.dropdown {
+        > .text > .ui--Dropdown-item {
+          .ui--Dropdown-icon {
+            left: -2.6rem;
+            top: -1.15rem;
+            opacity: 1;
+          }
+    
+          .ui--Dropdown-name {
+            margin-left: 0;
+          }
+        }
+      }
+  }
 
   .withEllipsis {
     overflow: hidden;
@@ -86,6 +134,11 @@ const Wrapper = styled.div`
       min-width: 0;
 
       .ui.selection.dropdown {
+        &:not(.floating) {
+          padding-left: 1.45rem;
+          padding-top: 1.75rem;
+        }
+
         &.floating {
           > .dropdown.icon {
             top: 1.25rem;
@@ -95,6 +148,23 @@ const Wrapper = styled.div`
             padding: 0.45rem 0
           }
         }
+
+        &.search:not(.multiple) > input.search {
+          padding-left: 1.45rem;
+          padding-top: 1.75rem;
+        }
+
+        > .delete.icon,
+        > .dropdown.icon,
+        > .search.icon {
+          top: 1.75rem;
+        }
+      }
+
+      .ui.input > input,
+      .ui--output {
+        padding-left: 1.45rem;
+        padding-top: 1.75rem;
       }
 
       .ui--InputFile,

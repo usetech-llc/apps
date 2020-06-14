@@ -1,6 +1,9 @@
 {
   "Account was changed!": "Account was changed!",
+  "Active nomination": "Active nomination",
+  "Add funds": "Add funds",
   "Amount to bond and nominate:": "Amount to bond and nominate:",
+  "Bond and Nominate": "Bond and Nominate",
   "{{blocks}} blocks": "{{blocks}} blocks",
   "Connect to a wallet": "Connect to a wallet",
   "Create New": "Create New",
@@ -10,7 +13,6 @@
   "Please enter a valid email address": "Please enter a valid email address",
   "Select your account:": "Select your account:",
   "Some wallets will be enabled later": "Some wallets will be enabled later",
-  "Start nomination": "Start nomination",
   "Staking events subscription": "Staking events subscription",
   "Submit": "Submit",
   "There is currently an ongoing election for new validator candidates. As such staking operations are not permitted.": "There is currently an ongoing election for new validator candidates. As such staking operations are not permitted.",
@@ -21,7 +23,7 @@
   "You have no accounts in polkadot.js extension. Please create account and send funds to it.": "You have no accounts in polkadot.js extension. Please create account and send funds to it.",
   "You need to leave enough free balance for payment of fees.": "You need to leave enough free balance for payment of fees.",
   "Your nomination is not optimal. Update please!": "Your nomination is not optimal. Update please!",
-  "Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for": "Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for",
+  "Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for ": "Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for ",
   "Warning: You have been slashed. You need to update your nomination.": "Warning: You have been slashed. You need to update your nomination.",
   "which is approximately": "which is approximately"
 }

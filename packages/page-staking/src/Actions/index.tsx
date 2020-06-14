@@ -78,7 +78,7 @@ function Actions ({ className, hideNewStake, isInElection, next, ownStashes, tar
       }
       <ElectionBanner isInElection={isInElection} />
       <Table
-        empty={foundStashes && t('No funds staked yet. Bond funds to validate or nominate a validator')}
+        empty={foundStashes && t<string>('No funds staked yet. Bond funds to validate or nominate a validator')}
         footer={footer}
         header={header}
       >

@@ -175,7 +175,7 @@ function AccountName ({ children, className, defaultName, label, noLookup, onCli
 
   return (
     <div
-      className={`ui--AccountName ${withSidebar && 'withSidebar'} ${className}`}
+      className={`ui--AccountName ${withSidebar as boolean && 'withSidebar'} ${className as string}`}
       onClick={
         withSidebar
           ? _onToggleSidebar
@@ -194,6 +194,19 @@ export default React.memo(styled(AccountName)`
     border-bottom-color: #333;
     cursor: help !important;
   }
+  
+  &.from-address-mini {
+    .via-identity {
+      .name {
+        text-transform: uppercase;
+        font-family: 'Roboto';
+        font-style: normal;
+        font-weight: bold !important;
+        font-size: 14px;
+        line-height: 21px;
+      }
+    }
+  }
 
   .via-identity {
     display: inline-block;
@@ -205,11 +218,9 @@ export default React.memo(styled(AccountName)`
     .name {
       font-weight: normal !important;
       filter: grayscale(100%);
-      opacity: 0.6;
       text-transform: uppercase;
 
       &.isAddress {
-        font-family: monospace;
         text-transform: none;
       }
 

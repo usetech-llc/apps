@@ -66,6 +66,7 @@ function AddressMini ({ balance, bonded, children, className, iconInfo, isPadded
             {withName
               ? (
                 <AccountName
+                  className='from-address-mini'
                   noLookup={noLookup}
                   value={value}
                   withSidebar={withSidebar}
@@ -130,6 +131,7 @@ export default React.memo(styled(AddressMini)`
       overflow: hidden;
       text-overflow: ellipsis;
     }
+   
   }
 
   &.withShrink {
@@ -148,9 +150,8 @@ export default React.memo(styled(AddressMini)`
     .ui--Balance,
     .ui--Bonded,
     .ui--LockedVote {
-      font-size: 0.75rem;
       margin-left: 2.25rem;
-      margin-top: -0.5rem;
+      margin-top: -10px;
       text-align: left;
     }
   }
@@ -183,5 +184,13 @@ export default React.memo(styled(AddressMini)`
     margin-left: 2.25rem;
     margin-top: -0.5rem;
     text-align: left;
+  }
+  
+  .ui--Bonded {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px !important;
+    line-height: 16px;
   }
 `);

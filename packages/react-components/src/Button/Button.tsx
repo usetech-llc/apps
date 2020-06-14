@@ -21,7 +21,7 @@ function Button ({ children, className, floated, icon, isAnimated, isBasic = fal
     animated: isAnimated,
     basic: isBasic,
     circular: isCircular,
-    className: `${className} ${isIcon && 'isIcon'}`,
+    className: `${className as string} ${isIcon && 'isIcon'}`,
     'data-for': triggerId,
     'data-tip': !!tooltip,
     disabled: isDisabled,
@@ -76,8 +76,25 @@ export default React.memo(styled(Button)`
     margin-left: 0.25rem;
   }
   
+  &.start {
+    float: right;
+  }
+  
+  &.footer-button {
+    background: rgba(70, 78, 95, 0.15) !important;
+    padding: 0px 16px;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 24px;
+    border-radius: 0 !important;
+    color: #464E5F !important;
+  }
+  
   &.warning {
-    background-color: #f2711c !important;
+    background-color: #40B0EF !important;
+    color: white;
   }
 
   &.isIcon {
@@ -93,4 +110,5 @@ export default React.memo(styled(Button)`
       margin: 0 0 0 0.25rem !important;
     }
   }
+ 
 `);

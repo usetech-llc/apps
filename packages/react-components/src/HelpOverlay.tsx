@@ -27,12 +27,26 @@ function HelpOverlay ({ className, md }: Props): React.ReactElement<Props> {
         Help
       </a>
       <div className={`help-slideout ${isVisible ? 'open' : 'closed'}`}>
-        <div className='help-button'>
-          <Icon
-            name='close'
+        <div className='icons right'>
+          <a
+            className='help-button'
             onClick={toggleVisible}
-          />
+          >
+            <Icon
+              name='arrow left'
+            />
+            Back to wallet
+          </a>
+          <a
+            className='close-window'
+            href='/'
+            onClick={toggleVisible}
+          >
+            <Icon name='close' />
+            Close window
+          </a>
         </div>
+        <header>Help</header>
         <ReactMd
           className='help-content'
           escapeHtml={false}
@@ -44,6 +58,19 @@ function HelpOverlay ({ className, md }: Props): React.ReactElement<Props> {
 }
 
 export default React.memo(styled(HelpOverlay)`
+
+   header {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 28px;
+    line-height: 36px;
+    text-align: left;
+    padding: 0 1.5rem;
+    margin-bottom: 0;
+    margin-top: 1.5rem;
+   }
+   
   .help-button {
     font-family: Roboto;
     font-style: normal;
@@ -53,25 +80,27 @@ export default React.memo(styled(HelpOverlay)`
     padding: 5px 10px;
     background: #FAFAFA;
     color: #464E5F;
+    cursor: pointer;
   }
 
   .help-slideout {
-    background: #eee;
+    background: #EEF0F8;
     border-left: 0.25rem solid #ddd;
     bottom: 0;
-    max-width: 50rem;
+    width: 100%;
     overflow-y: scroll;
-    position: fixed;
-    right: -50rem;
+    position: absolute;
+    right: -100%;
+    display: none;
     top: 0;
     transition-duration: .5s;
     transition-property: all;
     z-index: 10;
 
-    .help-button {
+    .icons.right {
       text-align: right;
-      background: transparent;
       position: absolute;
+      padding: 37px 1.5rem 0 0;
       right: 0rem;
       top: 0rem;
     }
@@ -82,6 +111,11 @@ export default React.memo(styled(HelpOverlay)`
 
     &.open {
       right: 0;
+      display: block;
+      
+      .help-button {
+        margin-right: 30px;
+      }
     }
   }
 `);

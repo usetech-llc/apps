@@ -28,7 +28,7 @@ function QrSection ({ accountId, isKusama }: Props): React.ReactElement<Props> {
   return (
     <section className='account-qr-info'>
       <div className='header-qr'>
-        <HelpOverlay md={basicMd} />
+        <HelpOverlay md={basicMd as string} />
         <a
           className='telegram-icon'
           href={isKusama ? 'https://t.me/Kusama_bot ' : 'https://t.me/Polkadot_Ryabina_bot'}
@@ -38,10 +38,14 @@ function QrSection ({ accountId, isKusama }: Props): React.ReactElement<Props> {
           <img
             alt='telegram-img'
             className='telegram-img'
-            src={telegram}
+            src={telegram as string}
           />
         </a>
-        <a href='/' onClick={closeWindow} className='close-window'>
+        <a
+          className='close-window'
+          href='/'
+          onClick={closeWindow}
+        >
           <Icon name='close' />
           Close window
         </a>
@@ -53,13 +57,13 @@ function QrSection ({ accountId, isKusama }: Props): React.ReactElement<Props> {
             params={accountId}
           />
         )}
-        {accountId &&
-        <QrDisplayAddress
+        {accountId && (
+          <QrDisplayAddress
             address={accountId}
             className={'qr-center'}
             genesisHash={api.genesisHash.toHex()}
-        />
-        }
+          />
+        )}
       </div>
     </section>
   );
