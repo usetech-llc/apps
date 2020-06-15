@@ -36,37 +36,37 @@ interface Props {
   selectedValidators?: string[];
 }
 
-function CommissionBalance (stakingAccount: DeriveStakingAccount, withLabel?: string): any {
-  if (!stakingAccount || !stakingAccount.validatorPrefs) {
+function CommissionBalance (stakingInfo: DeriveStakingAccount, withLabel?: string): any {
+  if (!stakingInfo || !stakingInfo.validatorPrefs) {
     return null;
   }
 
   return (
     <>
       <div />
-      {(stakingAccount.validatorPrefs as any as ValidatorPrefsTo145).unstakeThreshold && (
+      {(stakingInfo.validatorPrefs as any as ValidatorPrefsTo145).unstakeThreshold && (
         <>
           <span>{withLabel}</span>
           <div className='result'>
-            {(stakingAccount.validatorPrefs as any as ValidatorPrefsTo145).unstakeThreshold.toString()}
+            {(stakingInfo.validatorPrefs as any as ValidatorPrefsTo145).unstakeThreshold.toString()}
           </div>
         </>
       )}
-      {(stakingAccount.validatorPrefs.commission || (stakingAccount.validatorPrefs as any as ValidatorPrefsTo145).validatorPayment) && (
-        (stakingAccount.validatorPrefs as any as ValidatorPrefsTo145).validatorPayment
+      {(stakingInfo.validatorPrefs.commission || (stakingInfo.validatorPrefs as any as ValidatorPrefsTo145).validatorPayment) && (
+        (stakingInfo.validatorPrefs as any as ValidatorPrefsTo145).validatorPayment
           ? (
             <>
               <span>{withLabel}</span>
               <FormatBalance
                 className='result'
-                value={(stakingAccount.validatorPrefs as any as ValidatorPrefsTo145).validatorPayment}
+                value={(stakingInfo.validatorPrefs as any as ValidatorPrefsTo145).validatorPayment}
               />
             </>
           )
           : (
             <>
               <span>{withLabel}</span>
-              <span>{(stakingAccount.validatorPrefs.commission.unwrap().toNumber() / 10_000_000).toFixed(2)}%</span>
+              <span>{(stakingInfo.validatorPrefs.commission.unwrap().toNumber() / 10_000_000).toFixed(2)}%</span>
             </>
           )
       )}
@@ -175,14 +175,14 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
                 <div className='with-bottom-border'>
                   { stakingAccount?.stakingLedger?.active.unwrap().gtn(0) && (
                     <div className='item'>
-                      <StakingBonded stakingInfo={stakingAccount} withLabel={t('bonded:')} />
+                      <StakingBonded
+                        stakingInfo={stakingAccount}
+                        withLabel={t('bonded:')}
+                      />
                     </div>
                   )}
                   <div className='item'>
-                    <CommissionBalance
-                      stakingAccount={stakingAccount}
-                      withLabel={t('commission:')}
-                    />
+                    {CommissionBalance(stakingAccount, t('commission:'))}
                   </div>
                   <div className='item'>
                     <StakingUnbonding
