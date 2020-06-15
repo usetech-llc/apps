@@ -123,7 +123,6 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
       }
     }
   }, [nominating, selectedValidators]);
-  console.log('balancesAll', balancesAll);
 
   return (
     <div className='account-block'>

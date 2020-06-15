@@ -6,15 +6,15 @@
 import { AppProps as Props } from '@polkadot/react-components/types';
 import { DeriveStakingOverview } from '@polkadot/api-derive/types';
 import { ElectionStatus } from '@polkadot/types/interfaces';
-import { ActionStatus } from '@polkadot/react-components/Status/types';
+import { ActionStatus, QueueAction$Add, QueueStatus, QueueTx } from '@polkadot/react-components/Status/types';
 import { Balance } from '@polkadot/types/interfaces/runtime';
 
 // external imports (including those found in the packages/*
 // of this repo)
-import React, { useState, useCallback, useEffect, useRef, useContext, Suspense } from 'react';
+import React, { useState, useCallback, useEffect, useRef, Suspense } from 'react';
 import BN from 'bn.js';
 import styled from 'styled-components';
-import { Button, StatusContext, Spinner } from '@polkadot/react-components';
+import { Button, Spinner } from '@polkadot/react-components';
 import { useApi, useCall, useOwnStashInfos, useStashIds } from '@polkadot/react-hooks';
 import keyring from '@polkadot/ui-keyring';
 import { web3FromSource, web3Accounts, web3Enable } from '@polkadot/extension-dapp';
@@ -29,6 +29,7 @@ import WalletSelector from './WalletSelector';
 import BondSection from './BondSection';
 import { useFees, WholeFeesType, useBalanceClear } from './useBalance';
 import { useTranslation } from './translate';
+import Status from './Status';
 
 const Actions = React.lazy(() => import('./Actions'));
 
@@ -37,7 +38,16 @@ interface Validators {
   validators?: string[];
 }
 
-function Nomination ({ className }: Props): React.ReactElement<Props> {
+interface AppProps {
+  basePath: string;
+  className?: string;
+  onStatusChange: (status: ActionStatus) => void;
+  queueAction: QueueAction$Add;
+  stqueue: QueueStatus[];
+  txqueue: QueueTx[];
+}
+
+function Nomination ({ className, onStatusChange, queueAction, stqueue, txqueue }: AppProps): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
   const [wallet, setWallet] = useState<string | null>(null);
@@ -60,7 +70,6 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
   const [balanceInitialized, setBalanceInitialized] = useState<boolean>(false);
   const accountBalance: Balance | null = useBalanceClear(accountId);
   const { wholeFees }: WholeFeesType = useFees(accountId, selectedValidators);
-  const { queueAction } = useContext(StatusContext);
   const currentAccountRef = useRef<string | null>();
   const slashes = useSlashes(accountId);
   const extrinsicBond = (amountToNominate && accountId)
@@ -188,7 +197,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
   useEffect(() => {
     if (currentAccountRef.current && currentAccountRef.current !== accountId) {
       const message: ActionStatus = {
-        action: 'account changed',
+        action: '',
         message: t('Account was changed!'),
         status: 'success'
       };
@@ -213,6 +222,7 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
 
   const isKusama = uiSettings && uiSettings.apiUrl.includes('kusama');
 
+  // @ts-ignore
   return (
     // in all apps, the main wrapper is setup to allow the padding
     // and margins inside the application. (Just from a consistent pov)
@@ -279,12 +289,18 @@ function Nomination ({ className }: Props): React.ReactElement<Props> {
           )}
         </div>
       </div>
+      <Status
+        queueAction={queueAction}
+        stqueue={stqueue}
+        txqueue={txqueue}
+      />
     </main>
   );
 }
 
 export default React.memo(styled(Nomination)`
    max-width: 800px;
+   position: relative;
    
    .nomination-row {
       display: grid;

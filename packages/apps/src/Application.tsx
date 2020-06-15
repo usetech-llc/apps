@@ -14,7 +14,6 @@ import GlobalStyle from '@polkadot/react-components/styles';
 import Signer from '@polkadot/react-signer';
 
 import { useTranslation } from './translate';
-import Status from './Content/Status';
 
 export const PORTAL_ID = 'portals';
 
@@ -24,13 +23,13 @@ function Application ({ className }: Props): React.ReactElement<Props> {
   const { queueAction, stqueue, txqueue } = useContext(StatusContext);
 
   return (
-    <div className={`nomination-stand-alone ${className}`}>
+    <div className={`nomination-stand-alone ${className as string}`}>
       <GlobalStyle uiHighlight={defaultColor} />
       {(!isApiReady || !isApiConnected)
         ? (
           <div className='ui placeholder segment'>
             <div className='connecting'>
-              <Spinner label={t('Initializing connection')}/>
+              <Spinner label={t<string>('Initializing connection')}/>
             </div>
           </div>
         )
@@ -39,15 +38,13 @@ function Application ({ className }: Props): React.ReactElement<Props> {
             <AppNomination
               basePath=''
               onStatusChange={queueAction}
+              queueAction={queueAction}
+              stqueue={stqueue}
+              txqueue={txqueue}
             />
           </Signer>
         )
       }
-      <Status
-        queueAction={queueAction}
-        stqueue={stqueue}
-        txqueue={txqueue}
-      />
     </div>
   );
 }

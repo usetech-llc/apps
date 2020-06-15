@@ -112,6 +112,14 @@ export default React.memo(styled(Actions)`
   
   }
   
+  .account-block {
+    margin-bottom: 10px;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
   .white-block {
     background: #FFFFFF;
     border: 1px solid #DDDDDD;
@@ -119,6 +127,10 @@ export default React.memo(styled(Actions)`
     border-radius: 4px;
     margin: 10px 0;
     padding: 9px 16px;
+    
+    &.with-footer {
+        margin-top: 0;
+    }
   }
   
   .white-block.with-footer {
@@ -145,17 +157,23 @@ export default React.memo(styled(Actions)`
     display: flex;
   }
   
-  .table .thead {
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: bold;
-    font-size: 14px;
-    line-height: 22px;
-    display: grid;
-    grid-template-columns: 180px 1fr 200px;
-    column-gap: 10px; 
-    text-align: left;
-    align-items: center;
+  .table {
+    .thead {
+      font-family: 'Roboto';
+      font-style: normal;
+      font-weight: bold;
+      font-size: 14px;
+      line-height: 22px;
+      display: grid;
+      grid-template-columns: 180px 1fr 200px;
+      column-gap: 10px; 
+      text-align: left;
+      align-items: center;
+    }
+    .tbody {
+       height: 500px;
+       overflow-y: scroll;
+    }
   }
   
   .accordion {

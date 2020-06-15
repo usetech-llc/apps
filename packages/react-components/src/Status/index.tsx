@@ -202,11 +202,17 @@ function Status ({ className, stqueue, txqueue }: Props): React.ReactElement<Pro
 
 export default React.memo(styled(Status)`
   display: inline-block;
-  position: fixed;
-  right: 0.25rem;
-  top: 0.25rem;
-  width: 23rem;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%;
   z-index: 1001;
+  
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 24px;
 
   .dismiss {
     margin-bottom: 0.25rem;
@@ -214,6 +220,10 @@ export default React.memo(styled(Status)`
 
   .item {
     display: block;
+    
+    .icon {
+      font-size: 14px;
+    }
 
     > .wrapper > .container {
       align-items: center;
@@ -257,9 +267,7 @@ export default React.memo(styled(Status)`
       }
 
       .short {
-        font-size: 2.5rem;
         opacity:  0.75;
-        padding: 0.5rem 0 0.5rem 0.5rem;
 
         i.icon {
           line-height: 1;
