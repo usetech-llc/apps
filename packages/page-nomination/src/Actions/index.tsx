@@ -139,7 +139,7 @@ export default React.memo(styled(Actions)`
     border-bottom-right-radius: 0;
     border-bottom: none;
     display: grid;
-    grid-template-columns: 180px 180px 1fr;
+    grid-template-columns: 170px 170px 1fr;
     column-gap: 10px;
   }
   
@@ -165,7 +165,7 @@ export default React.memo(styled(Actions)`
       font-size: 14px;
       line-height: 22px;
       display: grid;
-      grid-template-columns: 180px 1fr 200px;
+      grid-template-columns: 170px 1fr 200px;
       column-gap: 10px; 
       text-align: left;
       align-items: center;
@@ -173,6 +173,7 @@ export default React.memo(styled(Actions)`
     .tbody {
        height: 500px;
        overflow-y: scroll;
+       overflow-x: hidden;
     }
   }
   
