@@ -91,12 +91,12 @@ function extractExternal (accountId?: string | null): AccountFlags {
   const pair = keyring.getPair(publicKey);
 
   return {
-    hardwareType: pair.meta.hardwareType,
+    hardwareType: pair.meta.hardwareType as string,
     isExternal: !!pair.meta.isExternal,
     isHardware: !!pair.meta.isHardware,
     isMultisig: !!pair.meta.isMultisig,
-    threshold: pair.meta.threshold || 0,
-    who: pair.meta.who || []
+    threshold: (pair.meta.threshold as number) || 0,
+    who: ((pair.meta.who as string[]) || []).map((w) => keyring.encodeAddress(keyring.decodeAddress(w)))
   };
 }
 
@@ -673,8 +673,8 @@ class Signer extends React.PureComponent<Props, State> {
 
       pair = keyring.getPair(signatory as string);
       tx = multiApproval
-        ? api.tx.utility.approveAsMulti(basePair.meta.threshold, others, timepoint, submittable.method.hash)
-        : api.tx.utility.asMulti(basePair.meta.threshold, others, timepoint, submittable.method);
+        ? api.tx.utility.approveAsMulti(basePair.meta.threshold as number, others, timepoint, submittable.method.hash)
+        : api.tx.utility.asMulti(basePair.meta.threshold as number, others, timepoint, submittable.method);
     }
 
     console.log('sendExtrinsic::', JSON.stringify(tx.method.toHuman()));
@@ -733,7 +733,7 @@ class Signer extends React.PureComponent<Props, State> {
         api.setSigner({ signPayload: this.signQrPayload });
         params.push(address);
       } else if (isInjected) {
-        const injected = await web3FromSource(source);
+        const injected = await web3FromSource(source as string);
 
         assert(injected, `Unable to find a signer for ${address}`);
 
@@ -819,7 +819,7 @@ class Signer extends React.PureComponent<Props, State> {
       queueSetTxStatus(id, 'qr');
       signer = { signPayload: this.signQrPayload };
     } else if (isInjected) {
-      const injected = await web3FromSource(source);
+      const injected = await web3FromSource(source as string);
 
       signer = injected?.signer;
     }
@@ -828,8 +828,8 @@ class Signer extends React.PureComponent<Props, State> {
 
     try {
       await extrinsic.signAsync((signer ? address : pair) as any, {
-        era: +blocks as any,
-        nonce: +(nonce || 0),
+        era: blocks.toNumber(),
+        nonce: nonce || 0,
         signer,
         tip: (showTip && tip) ? tip : undefined
       });

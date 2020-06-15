@@ -13,6 +13,7 @@ import styled from 'styled-components';
 import { HelpOverlay } from '@polkadot/react-components';
 import Tabs from '@polkadot/react-components/Tabs';
 import { useAccounts, useApi, useCall, useOwnStashInfos, useStashIds } from '@polkadot/react-hooks';
+import { isFunction } from '@polkadot/util';
 
 import basicMd from './md/basic.md';
 import Actions from './Actions';
@@ -34,7 +35,7 @@ function reduceNominators (nominators: string[], additional: string[]): string[]
   return nominators.concat(...additional.filter((nominator): boolean => !nominators.includes(nominator)));
 }
 
-function StakingApp ({ basePath, className }: Props): React.ReactElement<Props> {
+function StakingApp ({ basePath, className = '' }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
   const { hasAccounts } = useAccounts();
@@ -63,7 +64,7 @@ function StakingApp ({ basePath, className }: Props): React.ReactElement<Props> 
       name: 'actions',
       text: t('Account actions')
     },
-    api.query.staking.activeEra
+    isFunction(api.query.staking.activeEra)
       ? {
         name: 'payout',
         text: 'Payouts'
@@ -106,7 +107,7 @@ function StakingApp ({ basePath, className }: Props): React.ReactElement<Props> 
 
   return (
     <main className={`staking--App ${className}`}>
-      <HelpOverlay md={basicMd} />
+      <HelpOverlay md={basicMd as string} />
       <header>
         <Tabs
           basePath={basePath}
