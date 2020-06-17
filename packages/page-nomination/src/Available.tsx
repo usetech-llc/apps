@@ -25,20 +25,22 @@ function AvailableDisplay ({ className, label, params }: Props): React.ReactElem
   const allBalances = useCall<DeriveBalancesAll>(api.derive.balances.all, [params]);
 
   return (
-    <div className={`ui statistic ${className}`}>
-      <div className={`${className} label`}>
-        {t('Your available balance')}
-      </div>
+    <div className={`${className as string}`}>
       {(!allBalances || !allBalances.availableBalance)
         ? <Spinner />
         : (
-          <div className='value'>
-            <FormatBalance
-              className={className}
-              label={label}
-              value={allBalances?.availableBalance}
-            />
-          </div>
+          <>
+            <div className={`${className as string} label`}>
+              {t('Your available balance')}
+            </div>
+            <div className='value'>
+              <FormatBalance
+                className={className}
+                label={label}
+                value={allBalances?.availableBalance}
+              />
+            </div>
+          </>
         )
       }
     </div>
@@ -52,12 +54,17 @@ export default React.memo(styled(AvailableDisplay)`
     font-family: 'Roboto', sans-serif;
   }
   
+  .ui.statistic > .value {
+    line-height: inherit !important;
+  }
+  
   .qr-panel.label {
     font-family: 'Roboto', sans-serif;
     text-align: left;
+    font-style: normal;
+    font-weight: 500;
     font-size: 16px;
     line-height: 24px;
-    font-weight: normal;
     text-transform: none;
   } 
 `);

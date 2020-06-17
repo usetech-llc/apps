@@ -20,7 +20,10 @@ function HelpOverlay ({ className, md }: Props): React.ReactElement<Props> {
 
   return (
     <div className={className}>
-      <a className='help-button' onClick={toggleVisible}>
+      <a
+        className='help-button'
+        onClick={toggleVisible}
+      >
         <Icon
           name='question circle outline'
         />

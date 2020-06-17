@@ -71,10 +71,14 @@ export default React.memo(styled(FormatBalance)`
     vertical-align: baseline;
   }
   
+  .qr-panel.value {
+     line-height: inherit;
+  }
+  
   .qr-panel.ui--FormatBalance-value {
    text-align: left;
     font-weight: bold;
-    font-size: 40px;
+    font-size: 30px;
     line-height: 60px;
   }
   
@@ -86,7 +90,7 @@ export default React.memo(styled(FormatBalance)`
   
   .qr-panel .ui--FormatBalance-postfix {
       font-weight: bold;
-      font-size: 40px;
+      font-size: 30px;
       line-height: 60px;
   }
   

@@ -17,13 +17,14 @@ import { AddressMini,
   TxButton,
   Icon } from '@polkadot/react-components';
 import { useApi, useCall, useToggle } from '@polkadot/react-hooks';
+import { FormatBalance } from '@polkadot/react-query';
+import StakingRedeemable from '@polkadot/react-components/StakingRedeemable';
 
 import { useTranslation } from '../../translate';
 import BondExtra from './BondExtra';
 import Nominate from './Nominate';
 import Unbond from './Unbond';
-import useInactives from '@polkadot/app-nomination/Actions/useInactives';
-import { FormatBalance } from '@polkadot/react-query/index';
+import useInactives from '../useInactives';
 
 interface Props {
   activeEra?: EraIndex;
@@ -178,6 +179,14 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
                       <StakingBonded
                         stakingInfo={stakingAccount}
                         withLabel={t('bonded:')}
+                      />
+                    </div>
+                  )}
+                  { stakingAccount?.redeemable?.gtn(0) && (
+                    <div className='item'>
+                      <StakingRedeemable
+                        className='result'
+                        stakingInfo={stakingAccount}
                       />
                     </div>
                   )}

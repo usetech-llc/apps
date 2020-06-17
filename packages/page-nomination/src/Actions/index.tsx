@@ -172,7 +172,7 @@ export default React.memo(styled(Actions)`
     }
     .tbody {
        height: 500px;
-       overflow-y: scroll;
+       overflow-y: auto;
        overflow-x: hidden;
     }
   }
