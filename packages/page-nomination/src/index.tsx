@@ -21,6 +21,7 @@ import NewNomination from './NewNomination';
 import { useTranslation } from './translate';
 import Status from './Status';
 import ManageNominations from './ManageNominations';
+import {Spinner} from "@polkadot/react-components/index";
 
 interface Validators {
   next?: string[];
@@ -41,7 +42,7 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
   const { api } = useApi();
   const [wallet, setWallet] = useState<string | null>(null);
   const [web3Enabled, setWeb3Enabled] = useState<boolean>(false);
-  // const [showNominations, setShowNomination] = useState<boolean>(false);
+  const [status, setStatus] = useState<string | null>(null);
   const ownStashes = useOwnStashInfos();
   const allStashes = useStashIds();
   const stakingOverview = useCall<DeriveStakingOverview>(api.derive.staking.overview, []);
@@ -52,7 +53,7 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
   // const { wholeFees }: WholeFeesType = useFees(accountId, selectedValidators);
   const currentAccountRef = useRef<string | null>();
   const isKusama = uiSettings && uiSettings.apiUrl.includes('kusama');
-  // const newNomination = localStorage.getItem('newNomination');
+  const nominationStatus = localStorage.getItem('nominationStatus');
 
   const setSigner = useCallback(async (): Promise<void> => {
     if (!accountId) {
@@ -77,13 +78,13 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
   }, [accountId, api]);
 
   const toNomination = useCallback(() => {
-    // setShowNomination(true);
-    localStorage.setItem('newNomination', 'false');
+    setStatus('manage');
+    localStorage.removeItem('nominationStatus');
   }, []);
 
   const backToWallet = useCallback(() => {
-    // setShowNomination(false);
-    localStorage.setItem('newNomination', 'true');
+    setStatus('new');
+    localStorage.setItem('nominationStatus', 'new');
   }, []);
 
   useEffect((): void => {
@@ -117,6 +118,17 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
     currentAccountRef.current = accountId;
   }, [accountId, t, queueAction]);
 
+  useEffect(() => {
+    // initialize wallet
+    if (ownStashes) {
+      if (ownStashes.length && !nominationStatus) {
+        setStatus('manage');
+      } else {
+        setStatus('new');
+      }
+    }
+  }, [ownStashes, nominationStatus]);
+
   useEffect((): void => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     web3Enable('').then((res) => {
@@ -134,32 +146,37 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
     // and margins inside the application. (Just from a consistent pov)
     <main className={`nomination-app ${className || ''}`}>
       <div className='ui placeholder segment'>
-        <NewNomination
-          accountId={accountId}
-          accountsAvailable={accountsAvailable}
-          isKusama={isKusama}
-          ownStashes={ownStashes}
-          queueAction={queueAction}
-          selectedValidators={selectedValidators}
-          setAccountId={setAccountId}
-          setSelectedValidators={setSelectedValidators}
-          setWallet={setWallet}
-          stakingOverview={stakingOverview}
-          toNomination={toNomination}
-          wallet={wallet}
-          web3Enabled={web3Enabled}
-        />
-        <br />
-        <br />
-        <ManageNominations
-          accountId={accountId}
-          backToWallet={backToWallet}
-          isKusama={isKusama}
-          next={next}
-          ownStashes={ownStashes}
-          selectedValidators={selectedValidators}
-          validators={validators}
-        />
+        { !status && (
+          <Spinner label={t<string>('Initializing wallet')} />
+        )}
+        { status === 'new' && (
+          <NewNomination
+            accountId={accountId}
+            accountsAvailable={accountsAvailable}
+            isKusama={isKusama}
+            ownStashes={ownStashes}
+            queueAction={queueAction}
+            selectedValidators={selectedValidators}
+            setAccountId={setAccountId}
+            setSelectedValidators={setSelectedValidators}
+            setWallet={setWallet}
+            stakingOverview={stakingOverview}
+            toNomination={toNomination}
+            wallet={wallet}
+            web3Enabled={web3Enabled}
+          />
+        )}
+        { status === 'manage' && (
+          <ManageNominations
+            accountId={accountId}
+            backToWallet={backToWallet}
+            isKusama={isKusama}
+            next={next}
+            ownStashes={ownStashes}
+            selectedValidators={selectedValidators}
+            validators={validators}
+          />
+        )}
       </div>
       <Status
         queueAction={queueAction}

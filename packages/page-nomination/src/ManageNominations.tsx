@@ -44,22 +44,19 @@ function ManageNomination ({ accountId, backToWallet, isKusama, next, ownStashes
           />
         </div>
       </div>
-      { accountId && (
-        <Suspense fallback={<Spinner />}>
-          <Actions
-            hideNewStake
-            isInElection={isInElection}
-            next={next}
-            ownStashes={ownStashes}
-            selectedValidators={selectedValidators}
-            validators={validators}
-          />
-        </Suspense>
-      )}
+      <Suspense fallback={<Spinner />}>
+        <Actions
+          hideNewStake
+          isInElection={isInElection}
+          next={next}
+          ownStashes={ownStashes}
+          selectedValidators={selectedValidators}
+          validators={validators}
+        />
+      </Suspense>
       <Button
         className='back'
         icon='arrow left'
-        isDisabled
         label={t('Back to wallet section')}
         onClick={backToWallet}
       />

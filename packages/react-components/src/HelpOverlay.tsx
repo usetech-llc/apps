@@ -13,9 +13,10 @@ import Icon from './Icon';
 
 interface Props extends BareProps {
   md: string;
+  showCloseButton?: boolean;
 }
 
-function HelpOverlay ({ className, md }: Props): React.ReactElement<Props> {
+function HelpOverlay ({ className, md, showCloseButton }: Props): React.ReactElement<Props> {
   const [isVisible, toggleVisible] = useToggle();
 
   return (
@@ -40,14 +41,16 @@ function HelpOverlay ({ className, md }: Props): React.ReactElement<Props> {
             />
             Back to wallet
           </a>
-          <a
-            className='close-window'
-            href='/'
-            onClick={toggleVisible}
-          >
-            <Icon name='close' />
-            Close window
-          </a>
+          { showCloseButton && (
+            <a
+              className='close-window'
+              href='/'
+              onClick={toggleVisible}
+            >
+              <Icon name='close' />
+              Close window
+            </a>
+          )}
         </div>
         <header>Help</header>
         <ReactMd

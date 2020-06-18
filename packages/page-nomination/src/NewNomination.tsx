@@ -77,6 +77,7 @@ function NewNomination ({ accountId, accountsAvailable, isKusama, ownStashes, qu
             status: 'success'
           };
 
+          toNomination();
           queueAction([message]);
           setIsNominating(false);
         }
@@ -174,7 +175,6 @@ function NewNomination ({ accountId, accountsAvailable, isKusama, ownStashes, qu
         { (ownStashes && ownStashes.length > 0) && (
           <Button
             className='back'
-            isDisabled
             label={t('Manage nominations')}
             onClick={toNomination}
           />
