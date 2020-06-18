@@ -15,7 +15,6 @@ import { useApi, useCall } from '@polkadot/react-hooks';
 const Actions = React.lazy(() => import('./Actions'));
 
 interface Props {
-  accountId: string | null;
   backToWallet: () => void;
   isKusama: boolean;
   next?: string[];
@@ -24,7 +23,7 @@ interface Props {
   validators?: string[];
 }
 
-function ManageNomination ({ accountId, backToWallet, isKusama, next, ownStashes, selectedValidators, validators }: Props): React.ReactElement<Props> {
+function ManageNomination ({ backToWallet, isKusama, next, ownStashes, selectedValidators, validators }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
   const isInElection = useCall<boolean>(api.query.staking?.eraElectionStatus, [], {

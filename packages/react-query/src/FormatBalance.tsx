@@ -100,6 +100,14 @@ export default React.memo(styled(FormatBalance)`
       font-weight: normal;
       font-size: 20px;
       line-height: 30px;
+      
+      .ui.secondary.button {
+        color: rgba(0,0,0,.87) !important;
+        
+        &:hover {
+          color: !important;
+        }
+      } 
   }
 
   .ui--FormatBalance-value {

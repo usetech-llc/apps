@@ -9150,7 +9150,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"classnames@npm:^2.2.6":
+"classnames@npm:^2.2.5, classnames@npm:^2.2.6":
   version: 2.2.6
   resolution: "classnames@npm:2.2.6"
   checksum: 2/490eaeca5931846737ffd33e472a701d268d5b8bc5717dd4cf108a127b06e86e05350e06799abbbe763a0e4c945b4217f6700b7ae00ddc703505682c370e5cf2
@@ -9343,6 +9343,13 @@ __metadata:
     should-proxy: ^1.0.4
     url-pattern: ^1.0.3
   checksum: 2/c2001239a70d653a4d0a794c13079b423a3bcdec6c2c51e06619a090409ecb0c550a42fa76d16db4af4d3d960d5d314c2da0fa66b09ac8d1cbf33bedbeb129f0
+  languageName: node
+  linkType: hard
+
+"cnbuilder@npm:^2.5.0":
+  version: 2.6.0
+  resolution: "cnbuilder@npm:2.6.0"
+  checksum: 2/bb7533f4047bb960503a5f643db70e3f874ec296239fccaae542de2a52732853ca8523428ee51d028be82b673eb3d58b1b6fe093a89496282da3d54495528113
   languageName: node
   linkType: hard
 
@@ -21802,7 +21809,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.5.8, prop-types@npm:^15.6.1, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2":
+"prop-types@npm:^15.5.8, prop-types@npm:^15.6.0, prop-types@npm:^15.6.1, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2":
   version: 15.7.2
   resolution: "prop-types@npm:15.7.2"
   dependencies:
@@ -22172,6 +22179,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-draggable@npm:^4.4.2":
+  version: 4.4.3
+  resolution: "react-draggable@npm:4.4.3"
+  dependencies:
+    classnames: ^2.2.5
+    prop-types: ^15.6.0
+  checksum: 2/72f9e36019a76ea2e9ccf36e8d8c6d74e53d2ca52efcb102e8edb4bedf7c636a3fed4ffa17ea397df01603c6dd5c534190ab697f6e8378d04c4e546d04a6e612
+  languageName: node
+  linkType: hard
+
 "react-dropzone@npm:^10.2.2":
   version: 10.2.2
   resolution: "react-dropzone@npm:10.2.2"
@@ -22311,6 +22328,20 @@ __metadata:
   peerDependencies:
     react: ">=15"
   checksum: 2/534e43eaafd9519c0e2f3dc0996f738b9e81d6e5625681530f0804ac3268e507ef223b3a356e55286a694fee377cb4b831243aca5aa7a9f940d278a2b6641ca3
+  languageName: node
+  linkType: hard
+
+"react-scrollbars-custom@npm:^4.0.25":
+  version: 4.0.25
+  resolution: "react-scrollbars-custom@npm:4.0.25"
+  dependencies:
+    cnbuilder: ^2.5.0
+    react-draggable: ^4.4.2
+    zoom-level: ^2.5.0
+  peerDependencies:
+    prop-types: ^15.0.0
+    react: ^16.0.0
+  checksum: 2/f5fa5bf75a4f972a4b175bca772e7045415234ca83e26f273086b0d326738a87e73394649cfd694c76a788896cbc6b9b435c59468214b587ec3f0fbe4164ac33
   languageName: node
   linkType: hard
 
@@ -23366,6 +23397,7 @@ __metadata:
     i18next-scanner: ^2.11.0
     react: ^16.13.1
     react-dom: ^16.13.1
+    react-scrollbars-custom: ^4.0.25
     source-map-explorer: ^2.4.2
     stylelint: ^13.6.0
     stylelint-config-recommended: ^3.0.0
@@ -28045,5 +28077,12 @@ __metadata:
   version: 1.2.0
   resolution: "zepto@npm:1.2.0"
   checksum: 2/3780b49f9989461b062583dec8a99612315b57cedb9b6ba3c9b3f0176e28bb071f2c9f9e5f65393534eae727c57ae4e6d37a9198a4739f83c3c8c7edc2146acd
+  languageName: node
+  linkType: hard
+
+"zoom-level@npm:^2.5.0":
+  version: 2.5.0
+  resolution: "zoom-level@npm:2.5.0"
+  checksum: 2/b241bf9a70995086a7f16bfc5ffc6593d5066dd30a889e161e2ed39a057da184ead56322eddc5f0a453388df4c06b158f3fcb8df2a4c5c77cb313337d8ec23d3
   languageName: node
   linkType: hard

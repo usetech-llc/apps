@@ -15,7 +15,7 @@ import useUnbondDuration from '../useUnbondDuration';
 
 interface Props {
   className?: string;
-  controllerId?: AccountId | null;
+  controllerId?: string | AccountId | null;
   onClose: () => void;
   stakingLedger?: StakingLedger;
   stashId: string;
@@ -27,9 +27,10 @@ function Unbond ({ className, controllerId, onClose, stakingLedger, stashId }: P
   const [maxBalance] = useState<BN | null>(stakingLedger?.active.unwrap() || null);
   const [maxUnbond, setMaxUnbond] = useState<BN | null>(null);
 
+  // @ts-ignore
   return (
     <Modal
-      className={`staking--Unbond ${className}`}
+      className={`staking--Unbond ${className as string}`}
       header={t('Unbond funds')}
       size='large'
     >

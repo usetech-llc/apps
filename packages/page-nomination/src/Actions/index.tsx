@@ -8,6 +8,7 @@ import { StakerState } from '@polkadot/react-hooks/types';
 import BN from 'bn.js';
 import styled from 'styled-components';
 import React, { useEffect, useState } from 'react';
+import Scrollbar from 'react-scrollbars-custom';
 import { useCall, useApi } from '@polkadot/react-hooks';
 import { FormatBalance } from '@polkadot/react-query';
 import { Option } from '@polkadot/types';
@@ -83,18 +84,20 @@ function Actions ({ className, hideNewStake, isInElection, next, ownStashes, sel
             </div>
           </div>
           <div className='tbody'>
-            {foundStashes?.map((info): React.ReactNode => (
-              <Account
-                activeEra={activeEra}
-                info={info}
-                isDisabled={isInElection}
-                key={info.stashId}
-                next={next}
-                selectedValidators={selectedValidators}
-                stashId={info.stashId}
-                validators={validators}
-              />
-            ))}
+            <Scrollbar>
+              {foundStashes?.map((info): React.ReactNode => (
+                <Account
+                  activeEra={activeEra}
+                  info={info}
+                  isDisabled={isInElection}
+                  key={info.stashId}
+                  next={next}
+                  selectedValidators={selectedValidators}
+                  stashId={info.stashId}
+                  validators={validators}
+                />
+              ))}
+            </Scrollbar>
           </div>
         </div>
       )}
@@ -118,6 +121,11 @@ export default React.memo(styled(Actions)`
     &:last-child {
       margin-bottom: 0;
     }
+  }
+  
+  .result .ui--FormatBalance {
+    display: flex;
+    align-items: center
   }
   
   .white-block {

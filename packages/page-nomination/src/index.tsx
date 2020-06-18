@@ -13,6 +13,7 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { useApi, useCall, useOwnStashInfos, useStashIds } from '@polkadot/react-hooks';
 import keyring from '@polkadot/ui-keyring';
+import { Spinner } from '@polkadot/react-components';
 import { web3FromSource, web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 import uiSettings from '@polkadot/ui-settings';
 
@@ -21,7 +22,7 @@ import NewNomination from './NewNomination';
 import { useTranslation } from './translate';
 import Status from './Status';
 import ManageNominations from './ManageNominations';
-import {Spinner} from "@polkadot/react-components/index";
+import useValidators from './useValidators';
 
 interface Validators {
   next?: string[];
@@ -48,9 +49,9 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
   const stakingOverview = useCall<DeriveStakingOverview>(api.derive.staking.overview, []);
   const [selectedValidators, setSelectedValidators] = useState<string[]>([]);
   const [{ next, validators }, setValidators] = useState<Validators>({});
+  const { filteredValidators } = useValidators();
   const [accountId, setAccountId] = useState<string | null>(null);
   const [accountsAvailable, setAccountsAvailable] = useState<boolean>(false);
-  // const { wholeFees }: WholeFeesType = useFees(accountId, selectedValidators);
   const currentAccountRef = useRef<string | null>();
   const isKusama = uiSettings && uiSettings.apiUrl.includes('kusama');
   const nominationStatus = localStorage.getItem('nominationStatus');
@@ -141,6 +142,22 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
     });
   }, []);
 
+  /**
+   * Set validators list.
+   * If filtered validators
+   */
+  useEffect(() => {
+    if (filteredValidators && filteredValidators.length) {
+      setSelectedValidators(
+        filteredValidators.map((validator): string => validator.key).slice(0, 16)
+      );
+    } else {
+      stakingOverview && setSelectedValidators(
+        stakingOverview.validators.map((acc): string => acc.toString()).slice(0, 16)
+      );
+    }
+  }, [filteredValidators, setSelectedValidators, stakingOverview]);
+
   return (
     // in all apps, the main wrapper is setup to allow the padding
     // and margins inside the application. (Just from a consistent pov)
@@ -158,7 +175,6 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
             queueAction={queueAction}
             selectedValidators={selectedValidators}
             setAccountId={setAccountId}
-            setSelectedValidators={setSelectedValidators}
             setWallet={setWallet}
             stakingOverview={stakingOverview}
             toNomination={toNomination}
@@ -168,7 +184,6 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
         )}
         { status === 'manage' && (
           <ManageNominations
-            accountId={accountId}
             backToWallet={backToWallet}
             isKusama={isKusama}
             next={next}

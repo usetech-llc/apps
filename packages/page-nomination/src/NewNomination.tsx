@@ -18,7 +18,6 @@ import AccountSection from './AccountSection';
 import BondSection from './BondSection';
 import QrSection from './QrSection';
 import { useBalanceClear, useFees, WholeFeesType } from './useBalance';
-import useValidators from './useValidators';
 import { useTranslation } from './translate';
 import { useSlashes } from './useShalses';
 import Available from './Available';
@@ -32,20 +31,18 @@ interface Props {
   queueAction: QueueAction$Add;
   setAccountId: (accountId: string | null) => void;
   selectedValidators: string[];
-  setSelectedValidators: (validators: string[]) => void;
   stakingOverview: DeriveStakingOverview | undefined;
   setWallet: (wallet: string | null) => void;
   toNomination: () => void;
   web3Enabled: boolean;
 }
 
-function NewNomination ({ accountId, accountsAvailable, isKusama, ownStashes, queueAction, selectedValidators, setAccountId, setSelectedValidators, setWallet, stakingOverview, toNomination, wallet, web3Enabled }: Props): React.ReactElement<Props> {
+function NewNomination ({ accountId, accountsAvailable, isKusama, ownStashes, queueAction, selectedValidators, setAccountId, setWallet, toNomination, wallet, web3Enabled }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const { t } = useTranslation();
   const [amountToNominate, setAmountToNominate] = useState<BN | undefined>(new BN(0));
   const [amount, setAmount] = useState<BN | undefined>(new BN(0));
   const [stashIsCurrent, setStashIsCurrent] = useState<boolean>(false);
-  const { filteredValidators } = useValidators();
   const [isNominating, setIsNominating] = useState<boolean>(false);
   const { wholeFees }: WholeFeesType = useFees(accountId, selectedValidators);
   const accountBalance: Balance | null = useBalanceClear(accountId);
@@ -118,22 +115,6 @@ function NewNomination ({ accountId, accountsAvailable, isKusama, ownStashes, qu
   useEffect(() => {
     setBalanceInitialized(true);
   }, [amount]);
-
-  /**
-   * Set validators list.
-   * If filtered validators
-   */
-  useEffect(() => {
-    if (filteredValidators && filteredValidators.length) {
-      setSelectedValidators(
-        filteredValidators.map((validator): string => validator.key).slice(0, 16)
-      );
-    } else {
-      stakingOverview && setSelectedValidators(
-        stakingOverview.validators.map((acc): string => acc.toString()).slice(0, 16)
-      );
-    }
-  }, [filteredValidators, setSelectedValidators, stakingOverview]);
 
   return (
     <div className='nomination-row'>
