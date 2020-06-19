@@ -18,7 +18,6 @@ import ElectionBanner from '../ElectionBanner';
 import { useTranslation } from '../translate';
 import Account from './Account';
 import NewStake from './NewStake';
-import {Table} from "@polkadot/react-components/index";
 
 interface Props {
   className?: string;
