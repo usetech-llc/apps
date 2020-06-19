@@ -5,10 +5,10 @@
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { HelpOverlay, Icon } from '@polkadot/react-components';
-import basicMd from '@polkadot/app-staking/md/basic.md';
 
 import telegram from './assets/img/telegram.png';
 import { useTranslation } from './translate';
+import basicMd from './md/basic.md';
 
 interface Props {
   isKusama: boolean;
