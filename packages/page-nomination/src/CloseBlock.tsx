@@ -41,8 +41,8 @@ function CloseBlock ({ isKusama, showCloseButton = false, showTelegram = false }
       )}
       <HelpOverlay
         className={'help-button-block'}
-        showCloseButton={showCloseButton}
         md={basicMd as string}
+        showCloseButton={showCloseButton}
       />
       { showCloseButton && (
         <a
