@@ -106,7 +106,7 @@ export default React.memo(styled(HelpOverlay)`
     .icons.right {
       text-align: right;
       position: absolute;
-      padding: 37px 1.5rem 0 0;
+      padding: 24px 1.5rem 0 0;
       right: 0rem;
       top: 0rem;
     }
