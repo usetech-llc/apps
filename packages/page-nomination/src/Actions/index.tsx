@@ -8,7 +8,6 @@ import { StakerState } from '@polkadot/react-hooks/types';
 import BN from 'bn.js';
 import styled from 'styled-components';
 import React, { useEffect, useState } from 'react';
-import Scrollbar from 'react-scrollbars-custom';
 import { useCall, useApi } from '@polkadot/react-hooks';
 import { FormatBalance } from '@polkadot/react-query';
 import { Option } from '@polkadot/types';
@@ -83,24 +82,19 @@ function Actions ({ className, hideNewStake, isInElection, next, ownStashes, sel
               )}
             </div>
           </div>
-          <div
-            className='tbody'
-            style={{ height: `${foundStashes.length > 5 ? '500' : foundStashes.length * 122}px` }}
-          >
-            <Scrollbar>
-              {foundStashes?.map((info): React.ReactNode => (
-                <Account
-                  activeEra={activeEra}
-                  info={info}
-                  isDisabled={isInElection}
-                  key={info.stashId}
-                  next={next}
-                  selectedValidators={selectedValidators}
-                  stashId={info.stashId}
-                  validators={validators}
-                />
-              ))}
-            </Scrollbar>
+          <div className='tbody'>
+            {foundStashes?.map((info): React.ReactNode => (
+              <Account
+                activeEra={activeEra}
+                info={info}
+                isDisabled={isInElection}
+                key={info.stashId}
+                next={next}
+                selectedValidators={selectedValidators}
+                stashId={info.stashId}
+                validators={validators}
+              />
+            ))}
           </div>
         </div>
       )}
@@ -184,6 +178,8 @@ export default React.memo(styled(Actions)`
     .tbody {
        overflow-y: auto;
        overflow-x: hidden;
+       min-height: 122px;
+       max-height: 500px;
     }
   }
   
