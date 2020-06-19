@@ -18,6 +18,7 @@ import ElectionBanner from '../ElectionBanner';
 import { useTranslation } from '../translate';
 import Account from './Account';
 import NewStake from './NewStake';
+import {Table} from "@polkadot/react-components/index";
 
 interface Props {
   className?: string;
@@ -83,7 +84,10 @@ function Actions ({ className, hideNewStake, isInElection, next, ownStashes, sel
               )}
             </div>
           </div>
-          <div className='tbody'>
+          <div
+            className='tbody'
+            style={{ height: `${foundStashes.length > 5 ? '500' : foundStashes.length * 122}px` }}
+          >
             <Scrollbar>
               {foundStashes?.map((info): React.ReactNode => (
                 <Account
@@ -179,7 +183,6 @@ export default React.memo(styled(Actions)`
       align-items: center;
     }
     .tbody {
-       height: 500px;
        overflow-y: auto;
        overflow-x: hidden;
     }

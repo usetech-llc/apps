@@ -1,6 +1,6 @@
 # Staking
 
-Polkadot has extensive explanations how its (and Kusama’s) staking process works. Here we try to simplify those explanations and give you a solution where you don’t need to spend much time on it.
+Polkadot has extensive explanations how its (and Kusama’s) staking process [works](https://wiki.polkadot.network/docs/en/learn-staking). Here we try to simplify those explanations and give you a solution where you don’t need to spend much time on it.
 
 Validators are professional stakers, who run software needed to produce blocks on Kusama and have a highly available infrastructure that is needed to work well. Kusama has accumulated hundreds of validators (multiple are from the same organizations), and they all compete for Nominators. Nominators are people who own Kusama tokens (KSMs) and want to earn passive income on them. This solution makes it quick and easy to do so. 
 
