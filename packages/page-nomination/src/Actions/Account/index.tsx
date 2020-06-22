@@ -289,6 +289,7 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
           { notOptimal && (
             <SemanticPopup
               content='Your nomination is not optimal. Update please!'
+              style={{ zIndex: 100 }}
               trigger={
                 <TxButton
                   accountId={controllerId}
