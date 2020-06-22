@@ -26,7 +26,7 @@ function BondSection ({ amount, balanceInitialized, setAmountToNominate }: Props
         { balanceInitialized && (
           <InputBalance
             className='small'
-            defaultValue={amount}
+            defaultValue={amount && amount.gtn(0) ? amount : new BN(0)}
             isDecimal
             isFull
             isZeroable

@@ -79,7 +79,7 @@ function NewNomination ({ accountId, accountsAvailable, isKusama, ownStashes, qu
           setIsNominating(false);
         }
       });
-  }, [accountId, api.tx.utility, extrinsicBond, extrinsicNominate, t, queueAction]);
+  }, [accountId, api.tx.utility, extrinsicBond, extrinsicNominate, t, toNomination, queueAction]);
 
   const calculateMaxPreFilledBalance = useCallback((): void => {
     if (!wholeFees || !accountBalance) {
@@ -163,6 +163,7 @@ function NewNomination ({ accountId, accountsAvailable, isKusama, ownStashes, qu
         <Button
           className='start'
           icon='play'
+          isDisabled={!selectedValidators.length || !amount || !amount.gtn(0) || isNominating}
           isLoading={isNominating}
           isPrimary
           label={stashIsCurrent ? t('Add funds') : t('Bond and Nominate')}
