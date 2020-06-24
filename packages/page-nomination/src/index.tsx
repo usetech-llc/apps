@@ -53,6 +53,7 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
   const [accountId, setAccountId] = useState<string | null>(null);
   const [accountsAvailable, setAccountsAvailable] = useState<boolean>(false);
   const currentAccountRef = useRef<string | null>();
+  const [settings] = useState(uiSettings.get());
   const isKusama = uiSettings && uiSettings.apiUrl.includes('kusama');
   const nominationStatus = localStorage.getItem('nominationStatus');
 
@@ -141,6 +142,18 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
       setAccountsAvailable(!!res.length);
     });
   }, []);
+
+  useEffect((): void => {
+    // set settings to Kusama
+    const newApiUrl = 'wss://kusama-rpc.polkadot.io/';
+
+    // uiSettings.set({ ...settings, apiUrl: 'wss://westend-rpc.polkadot.io' });
+    uiSettings.set({ ...settings, apiUrl: newApiUrl });
+
+    if (settings.apiUrl !== newApiUrl) {
+      window.location.reload();
+    }
+  }, [settings]);
 
   /**
    * Set validators list.
