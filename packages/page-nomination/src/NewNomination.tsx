@@ -62,11 +62,14 @@ function NewNomination ({ accountId, accountsAvailable, isKusama, ownStashes, qu
 
     const txs = [extrinsicBond, extrinsicNominate];
 
-    setIsNominating(true);
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     api.tx.utility
       .batch(txs)
       .signAndSend(accountId, ({ status }) => {
+        if (status.isReady) {
+          setIsNominating(true);
+        }
+
         if (status.isInBlock) {
           const message: ActionStatus = {
             action: `included in ${status.asInBlock as unknown as string}`,
