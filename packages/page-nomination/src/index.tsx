@@ -203,7 +203,6 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
 }
 
 export default React.memo(styled(Nomination)`
-   max-width: 800px;
    position: relative;
    
    .nomination-row {
@@ -336,4 +335,21 @@ export default React.memo(styled(Nomination)`
       background-color: #D5D5D5;
       margin-bottom: 16px;
   }
+  
+   @media (max-width: 800px) {
+      min-width: 100%;
+      
+      .table .tbody {
+        overflow-x: auto;
+      }
+      
+      .manage-nomination-row {
+        grid-template-columns: auto;
+      }
+      
+      .telegram-notification {
+        height: auto;
+        text-align: center;
+      }
+   }
 `);

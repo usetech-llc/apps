@@ -140,6 +140,14 @@ function NewNomination ({ accountId, accountsAvailable, isKusama, ownStashes, qu
           />
         )}
         {accountId && (
+          <div className='left-mobile'>
+            <QrSection
+              accountId={accountId}
+              isKusama={isKusama}
+            />
+          </div>
+        )}
+        {accountId && (
           <Available
             className='qr-panel'
             params={accountId}

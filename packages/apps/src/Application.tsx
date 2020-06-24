@@ -54,9 +54,16 @@ export default React.memo(styled(Application)`
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
-  min-height: 100vh;
   padding: 10px;
   justify-content: center;
+  
+    .right {
+      display: block;
+    }
+    
+    .left-mobile {
+      display: none;
+    }
   
    .ui.placeholder.segment {
       border-radius: 0;
@@ -65,16 +72,42 @@ export default React.memo(styled(Application)`
    }
   
   .connecting {
-    width: 800px;
+    min-width: 800px;
     display: flex;
     justify-content: center;
   }
   
   .ui.segment {
-    width: 800px;
+    min-width: 800px;
   }
   
   .success {
     color: #39C707;
+  }
+  
+  @media (max-width: 800px) {
+    .connecting {
+      min-width: 100%;
+    }
+    
+    .ui.segment {
+      min-width: 100%;
+    }
+    
+    .nomination-row {
+      display: block;
+    }
+    
+    .right {
+      display: none;
+    }
+    
+    .left-mobile {
+      display: block;
+      
+      .account-panel {
+        max-width: 200px;
+      }
+    }
   }
 `);
