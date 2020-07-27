@@ -11,30 +11,28 @@ import EraToTime from './EraToTime';
 import InputBalance from './InputBalance';
 
 interface Props {
-  amount: BN | undefined;
-  balanceInitialized: boolean;
+  amountToNominate: BN | undefined | null;
+  maxAmountToNominate: null | undefined | BN;
   setAmountToNominate: (amount: BN | undefined) => void;
 }
 
-function BondSection ({ amount, balanceInitialized, setAmountToNominate }: Props): React.ReactElement<Props> {
+function BondSection ({ amountToNominate, maxAmountToNominate, setAmountToNominate }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
 
   return (
     <section className='bond-section'>
       <div className='bond-section-block'>
         <h2>{t('Amount to bond and nominate:')}</h2>
-        { balanceInitialized && (
-          <InputBalance
-            className='small'
-            defaultValue={amount && amount.gtn(0) ? amount : new BN(0)}
-            isDecimal
-            isFull
-            isZeroable
-            maxValue={amount}
-            onChange={setAmountToNominate}
-            withMax
-          />
-        )}
+        <InputBalance
+          className='small'
+          defaultValue={amountToNominate || new BN(0)}
+          isDecimal
+          isFull
+          isZeroable
+          maxValue={maxAmountToNominate || new BN(0)}
+          onChange={setAmountToNominate}
+          withMax
+        />
       </div>
       <div className='warning-block'>
         {t('Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for ')}

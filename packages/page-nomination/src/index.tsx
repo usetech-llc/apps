@@ -9,7 +9,7 @@ import { ActionStatus, QueueAction$Add, QueueStatus, QueueTx } from '@polkadot/r
 
 // external imports (including those found in the packages/*
 // of this repo)
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import styled from 'styled-components';
 import { useApi, useCall, useOwnStashInfos, useStashIds } from '@polkadot/react-hooks';
 import keyring from '@polkadot/ui-keyring';
@@ -27,6 +27,12 @@ import useValidators from './useValidators';
 interface Validators {
   next?: string[];
   validators?: string[];
+}
+
+declare global {
+  interface Window {
+    injectedWeb3: any;
+  }
 }
 
 interface AppProps {
@@ -52,28 +58,25 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
   const { filteredValidators } = useValidators();
   const [accountId, setAccountId] = useState<string | null>(null);
   const [accountsAvailable, setAccountsAvailable] = useState<boolean>(false);
-  const currentAccountRef = useRef<string | null>();
   const [settings] = useState(uiSettings.get());
   const isKusama = uiSettings && uiSettings.apiUrl.includes('kusama');
-  const nominationStatus = localStorage.getItem('nominationStatus');
 
   const setSigner = useCallback(async (): Promise<void> => {
     if (!accountId) {
       return;
     }
-
     const pair = keyring.getAddress(accountId, null);
 
     if (!pair) {
       return;
     }
-
+    console.log('pair', pair);
     const { meta: { source } } = pair;
 
     if (!source) {
       return;
     }
-
+    console.log('source', source);
     const injected = await web3FromSource(source);
 
     api.setSigner(injected.signer);
@@ -81,12 +84,10 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
 
   const toNomination = useCallback(() => {
     setStatus('manage');
-    localStorage.removeItem('nominationStatus');
   }, []);
 
   const backToWallet = useCallback(() => {
     setStatus('new');
-    localStorage.setItem('nominationStatus', 'new');
   }, []);
 
   useEffect((): void => {
@@ -105,31 +106,26 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
     });
   }, [allStashes, stakingOverview]);
 
-  // show notification when change account
-  useEffect(() => {
-    if (currentAccountRef.current && currentAccountRef.current !== accountId) {
-      const message: ActionStatus = {
-        action: '',
-        message: t('Account was changed!'),
-        status: 'success'
-      };
-
-      queueAction([message]);
-    }
-
-    currentAccountRef.current = accountId;
-  }, [accountId, t, queueAction]);
-
   useEffect(() => {
     // initialize wallet
+    if (Object.keys(window.injectedWeb3).length === 0) {
+      setStatus('none');
+    } else {
+      const polkadotExtension = Object.keys(window.injectedWeb3).find((key) => key === 'polkadot-js');
+
+      if (!polkadotExtension) {
+        setStatus('none');
+      }
+    }
+
     if (ownStashes) {
-      if (ownStashes.length && !nominationStatus) {
+      if (ownStashes.length) {
         setStatus('manage');
       } else {
         setStatus('new');
       }
     }
-  }, [ownStashes, nominationStatus]);
+  }, [ownStashes]);
 
   useEffect((): void => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -178,6 +174,11 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
       <div className='ui placeholder segment'>
         { !status && (
           <Spinner label={t<string>('Initializing wallet')} />
+        )}
+        { status === 'none' && (
+          <div className='error-block'>
+            {t('Error: You have no polkadot extension injected.')}
+          </div>
         )}
         { status === 'new' && (
           <NewNomination
@@ -269,29 +270,6 @@ export default React.memo(styled(Nomination)`
    
    .icon.success {
       font-size: 22px;
-   }
-   
-   .error-block {
-      background: #F8EFEF;
-      border: 1px solid rgba(202, 20, 20, 0.2);
-      border-radius: 4px;
-      text-align: center;
-      color: #CA1414;
-      font-size: 12px;
-      line-height: 24px;
-      margin: 5px 0;
-      padding: 8px 16px;
-   }
-   
-   .warning-block {
-      background: #F7F2EE;
-      border: 1px solid rgba(202, 96, 20, 0.2);
-      box-sizing: border-box;
-      border-radius: 4px;
-      margin: 5px 0;
-      font-size: 12px;
-      line-height: 24px;
-      padding: 8px 16px;
    }
    
    section {

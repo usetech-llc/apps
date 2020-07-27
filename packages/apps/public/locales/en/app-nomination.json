@@ -7,6 +7,7 @@
   "{{blocks}} blocks": "{{blocks}} blocks",
   "Connect to a wallet": "Connect to a wallet",
   "Create New": "Create New",
+  "Error: You have no polkadot extension injected.": "Error: You have no polkadot extension injected.",
   "Funds nominated successfully!": "Funds nominated successfully!",
   "Import": "Import",
   "Manage Nominations": "Manage Nominations",
@@ -27,5 +28,6 @@
   "Your nomination is not optimal. Update please!": "Your nomination is not optimal. Update please!",
   "Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for ": "Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for ",
   "Warning: You have been slashed. You need to update your nomination.": "Warning: You have been slashed. You need to update your nomination.",
+  "Waiting for access...": "Waiting for access...",
   "which is approximately": "which is approximately"
 }

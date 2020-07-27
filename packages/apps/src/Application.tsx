@@ -25,26 +25,31 @@ function Application ({ className }: Props): React.ReactElement<Props> {
   return (
     <div className={`nomination-stand-alone ${className as string}`}>
       <GlobalStyle uiHighlight={defaultColor} />
-      {(!isApiReady || !isApiConnected)
-        ? (
-          <div className='ui placeholder segment'>
-            <div className='connecting'>
-              <Spinner label={t<string>('Initializing connection')}/>
-            </div>
+      {!isApiReady && isApiConnected && (
+        <div className='ui placeholder segment'>
+          <div className='warning-block'>
+            {t('Waiting for access...')}
           </div>
-        )
-        : (
-          <Signer>
-            <AppNomination
-              basePath=''
-              onStatusChange={queueAction}
-              queueAction={queueAction}
-              stqueue={stqueue}
-              txqueue={txqueue}
-            />
-          </Signer>
-        )
-      }
+        </div>
+      )}
+      {!isApiReady && !isApiConnected && (
+        <div className='ui placeholder segment'>
+          <div className='connecting'>
+            <Spinner label={t<string>('Initializing connection')}/>
+          </div>
+        </div>
+      )}
+      {isApiReady && isApiConnected && (
+        <Signer>
+          <AppNomination
+            basePath=''
+            onStatusChange={queueAction}
+            queueAction={queueAction}
+            stqueue={stqueue}
+            txqueue={txqueue}
+          />
+        </Signer>
+      )}
     </div>
   );
 }
@@ -56,6 +61,30 @@ export default React.memo(styled(Application)`
   flex-direction: row;
   padding: 10px;
   justify-content: center;
+  
+  .error-block {
+      background: #F8EFEF;
+      border: 1px solid rgba(202, 20, 20, 0.2);
+      border-radius: 4px;
+      text-align: center;
+      color: #CA1414;
+      font-size: 12px;
+      line-height: 24px;
+      margin: 5px 0;
+      padding: 8px 16px;
+   }
+   
+   .warning-block {
+      text-align: center;
+      background: #F7F2EE;
+      border: 1px solid rgba(202, 96, 20, 0.2);
+      box-sizing: border-box;
+      border-radius: 4px;
+      margin: 5px 0;
+      font-size: 12px;
+      line-height: 24px;
+      padding: 8px 16px;
+   }
   
     .right {
       display: block;

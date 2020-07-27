@@ -55,7 +55,6 @@ function ManageNomination ({ backToWallet, isKusama, next, ownStashes, selectedV
       </Suspense>
       <Button
         className='back'
-        icon='arrow left'
         label={t('New Nomination')}
         onClick={backToWallet}
       />

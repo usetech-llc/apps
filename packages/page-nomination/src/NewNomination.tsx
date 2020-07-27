@@ -7,7 +7,7 @@ import { Balance } from '@polkadot/types/interfaces/runtime';
 import { ActionStatus, QueueAction$Add } from '@polkadot/react-components/Status/types';
 import { StakerState } from '@polkadot/react-hooks/types';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {useState, useEffect, useCallback, useRef} from 'react';
 import styled from 'styled-components';
 import BN from 'bn.js';
 import { useApi } from '@polkadot/react-hooks';
@@ -40,14 +40,14 @@ interface Props {
 function NewNomination ({ accountId, accountsAvailable, isKusama, ownStashes, queueAction, selectedValidators, setAccountId, setWallet, toNomination, wallet, web3Enabled }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const { t } = useTranslation();
-  const [amountToNominate, setAmountToNominate] = useState<BN | undefined>(new BN(0));
-  const [amount, setAmount] = useState<BN | undefined>(new BN(0));
+  const [amountToNominate, setAmountToNominate] = useState<BN | undefined | null>(null);
   const [stashIsCurrent, setStashIsCurrent] = useState<boolean>(false);
   const [isNominating, setIsNominating] = useState<boolean>(false);
   const { wholeFees }: WholeFeesType = useFees(accountId, selectedValidators);
   const accountBalance: Balance | null = useBalanceClear(accountId);
-  const [balanceInitialized, setBalanceInitialized] = useState<boolean>(false);
+  const [maxAmountToNominate, setMaxAmountToNominate] = useState<BN | undefined | null>(null);
   const slashes = useSlashes(accountId);
+  const currentAccountRef = useRef<string | null>();
   const extrinsicBond = (amountToNominate && accountId)
     ? api.tx.staking.bond(accountId, amountToNominate, 2)
     : null;
@@ -85,16 +85,13 @@ function NewNomination ({ accountId, accountsAvailable, isKusama, ownStashes, qu
   }, [accountId, api.tx.utility, extrinsicBond, extrinsicNominate, t, toNomination, queueAction]);
 
   const calculateMaxPreFilledBalance = useCallback((): void => {
-    if (!wholeFees || !accountBalance) {
-      return;
-    }
-
-    if (accountBalance.gtn(0)) {
+    if (maxAmountToNominate) {
       // double wholeFees
-      setBalanceInitialized(false);
-      setAmount(accountBalance.sub(wholeFees).sub(wholeFees));
+      if (!amountToNominate) {
+        setAmountToNominate(maxAmountToNominate);
+      }
     }
-  }, [accountBalance, wholeFees]);
+  }, [amountToNominate, maxAmountToNominate]);
 
   const disableStartButton = useCallback(() => {
     if (!ownStashes) {
@@ -114,11 +111,34 @@ function NewNomination ({ accountId, accountsAvailable, isKusama, ownStashes, qu
     calculateMaxPreFilledBalance();
   }, [calculateMaxPreFilledBalance]);
 
-  // nominate amount initialization
+  // if balance is null or lower than double whole fees
   useEffect(() => {
-    setBalanceInitialized(true);
-  }, [amount]);
+    if (accountBalance && wholeFees) {
+      const maxAmount = accountBalance.sub(wholeFees).sub(wholeFees);
 
+      if (maxAmount.gt(new BN(0))) {
+        setMaxAmountToNominate(maxAmount);
+      } else {
+        setMaxAmountToNominate(null);
+      }
+    }
+  }, [accountBalance, wholeFees]);
+
+  // show notification when change account
+  useEffect(() => {
+    if (currentAccountRef.current && currentAccountRef.current !== accountId) {
+      const message: ActionStatus = {
+        action: '',
+        message: t('Account was changed!'),
+        status: 'success'
+      };
+
+      queueAction([message]);
+    }
+
+    currentAccountRef.current = accountId;
+  }, [accountId, t, queueAction]);
+  console.log('accountBalance', accountBalance);
   return (
     <div className='nomination-row'>
       <div className='left'>
@@ -135,7 +155,7 @@ function NewNomination ({ accountId, accountsAvailable, isKusama, ownStashes, qu
           <AccountSection
             accountId={accountId}
             accountsAvailable={accountsAvailable}
-            amount={amount}
+            amount={accountBalance || new BN(0)}
             setAccountId={setAccountId}
           />
         )}
@@ -153,12 +173,21 @@ function NewNomination ({ accountId, accountsAvailable, isKusama, ownStashes, qu
             params={accountId}
           />
         )}
-        <div className='divider' />
-        <BondSection
-          amount={amount}
-          balanceInitialized={balanceInitialized}
-          setAmountToNominate={setAmountToNominate}
-        />
+        { amountToNominate && maxAmountToNominate && (
+          <>
+            <div className='divider' />
+            <BondSection
+              amountToNominate={amountToNominate}
+              maxAmountToNominate={maxAmountToNominate}
+              setAmountToNominate={setAmountToNominate}
+            />
+          </>
+        )}
+        {/* { !maxAmountToNominate && (
+          <div className='error-block'>
+            {t('You have no enough balance for nomination')}
+          </div>
+        )} */}
         { slashes > 0 &&
         <div className='error-block'>
           {t('Warning: You have been slashed. You need to update your nomination.')}
@@ -174,7 +203,7 @@ function NewNomination ({ accountId, accountsAvailable, isKusama, ownStashes, qu
         <Button
           className='start'
           icon='play'
-          isDisabled={!selectedValidators.length || !amount || !amount.gtn(0) || isNominating}
+          isDisabled={!selectedValidators.length || !amountToNominate || !amountToNominate.gtn(0) || isNominating}
           isLoading={isNominating}
           isPrimary
           label={stashIsCurrent ? t('Add funds') : t('Bond and Nominate')}
