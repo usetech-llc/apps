@@ -13,6 +13,7 @@
       "@polkadot/apps-config/*": [ "packages/apps-config/src/*" ],
       "@polkadot/apps-routing": [ "packages/apps-routing/src" ],
       "@polkadot/apps-routing/*": [ "packages/apps-routing/src/*" ],
+      "@polkadot/app-nft": [ "packages/page-nft/src" ],
       "@polkadot/app-accounts": [ "packages/page-accounts/src" ],
       "@polkadot/app-accounts/*": [ "packages/page-accounts/src/*" ],
       "@polkadot/app-claims": [ "packages/page-claims/src" ],
@@ -66,7 +67,7 @@
       "@polkadot/react-query": [ "packages/react-query/src" ],
       "@polkadot/react-query/*": [ "packages/react-query/src/*" ],
       "@polkadot/react-signer": [ "packages/react-signer/src" ],
-      "@polkadot/react-signer/*": [ "packages/react-signer/src/*" ]
+      "@polkadot/react-signer/*": [ "packages/react-signer/src/*" ],
     },
     "skipLibCheck": true,
     "typeRoots": [

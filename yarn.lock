@@ -1387,7 +1387,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.1, @babel/runtime@npm:^7.10.3, @babel/runtime@npm:^7.10.5, @babel/runtime@npm:^7.3.1, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.9.6":
+"@babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.1, @babel/runtime@npm:^7.10.3, @babel/runtime@npm:^7.10.5, @babel/runtime@npm:^7.3.1, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.9.2, @babel/runtime@npm:^7.9.6":
   version: 7.10.5
   resolution: "@babel/runtime@npm:7.10.5"
   dependencies:
@@ -3134,6 +3134,15 @@ __metadata:
   resolution: "@polkadot/app-js@workspace:packages/page-js"
   dependencies:
     "@babel/runtime": ^7.10.5
+    "@polkadot/react-components": 0.51.0-beta.34
+  languageName: unknown
+  linkType: soft
+
+"@polkadot/app-nft@workspace:packages/page-nft":
+  version: 0.0.0-use.local
+  resolution: "@polkadot/app-nft@workspace:packages/page-nft"
+  dependencies:
+    "@babel/runtime": ^7.9.2
     "@polkadot/react-components": 0.51.0-beta.34
   languageName: unknown
   linkType: soft

@@ -18,6 +18,7 @@ import explorer from './explorer';
 import extrinsics from './extrinsics';
 import genericAsset from './generic-asset';
 import js from './js';
+import nft from './nft';
 import parachains from './parachains';
 import poll from './poll';
 import settings from './settings';
@@ -46,7 +47,8 @@ export default function create (t: <T = string> (key: string, text: string, opti
       council(t),
       // TODO Not sure about the inclusion of treasury, parachains & society here
       null,
-      settings(t)
+      settings(t),
+      nft(t)
     ]
     : [
       // dashboard(t),
@@ -72,6 +74,7 @@ export default function create (t: <T = string> (key: string, text: string, opti
       null,
       settings(t),
       toolbox(t),
-      js(t)
+      js(t),
+      nft(t)
     ];
 }
