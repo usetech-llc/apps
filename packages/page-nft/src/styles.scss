@@ -1,0 +1,49 @@
+.App {
+  text-align: left;
+  padding: 30px;
+
+  .current-tokens {
+    width: 100% !important;
+    padding: 15px;
+
+    .header {
+      background-color: #80808069;
+    }
+  }
+
+  .collection-header {
+    line-height: 36px;
+  }
+
+  .account-balance {
+    display: flex;
+    label {
+      margin-right: 5px;
+    }
+    .balance {
+      font-weight: bold;
+    }
+  }
+}
+
+.nft-wallets {
+  text-align: left;
+}
+
+.wallet-list-item-card {
+  width: 100% !important;
+}
+
+.nft-collection-card {
+  width: 100% !important;
+}
+
+.collection-actions {
+  text-align: right;
+}
+
+/*@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}*/

@@ -7139,6 +7139,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"chokidar@npm:>=2.0.0 <4.0.0, chokidar@npm:^3.4.1":
+  version: 3.4.1
+  resolution: "chokidar@npm:3.4.1"
+  dependencies:
+    anymatch: ~3.1.1
+    braces: ~3.0.2
+    fsevents: ~2.1.2
+    glob-parent: ~5.1.0
+    is-binary-path: ~2.1.0
+    is-glob: ~4.0.1
+    normalize-path: ~3.0.0
+    readdirp: ~3.4.0
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  checksum: 3/fdbeae89bdd7832acb0b7a5192b7d6ec1a81aff915609b0b6ff110e58fa211d793fed16ce41ccd9d4c6c7786db1b97cd88984bfe2b87303f04aa6bf0f31feaaa
+  languageName: node
+  linkType: hard
+
 "chokidar@npm:^1.6.0":
   version: 1.7.0
   resolution: "chokidar@npm:1.7.0"
@@ -7179,25 +7198,6 @@ __metadata:
     fsevents:
       optional: true
   checksum: 3/0758dcc7c6c7ace5924cf3c68088210932d391ab41026376b0adb8e07013ac87232e029f13468dfc9ca4dd59adae62a2b7eaedebb6c4e4f0ba92cbf3ac9e3721
-  languageName: node
-  linkType: hard
-
-"chokidar@npm:^3.4.1":
-  version: 3.4.1
-  resolution: "chokidar@npm:3.4.1"
-  dependencies:
-    anymatch: ~3.1.1
-    braces: ~3.0.2
-    fsevents: ~2.1.2
-    glob-parent: ~5.1.0
-    is-binary-path: ~2.1.0
-    is-glob: ~4.0.1
-    normalize-path: ~3.0.0
-    readdirp: ~3.4.0
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  checksum: 3/fdbeae89bdd7832acb0b7a5192b7d6ec1a81aff915609b0b6ff110e58fa211d793fed16ce41ccd9d4c6c7786db1b97cd88984bfe2b87303f04aa6bf0f31feaaa
   languageName: node
   linkType: hard
 
@@ -18150,6 +18150,8 @@ __metadata:
     i18next-scanner: ^2.11.0
     react: ^16.13.1
     react-dom: ^16.13.1
+    sass: ^1.26.8
+    sass-loader: ^8.0.2
     source-map-explorer: ^2.4.2
     stylelint: ^13.6.1
     stylelint-config-recommended: ^3.0.0
@@ -20570,6 +20572,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sass-loader@npm:^8.0.2":
+  version: 8.0.2
+  resolution: "sass-loader@npm:8.0.2"
+  dependencies:
+    clone-deep: ^4.0.1
+    loader-utils: ^1.2.3
+    neo-async: ^2.6.1
+    schema-utils: ^2.6.1
+    semver: ^6.3.0
+  peerDependencies:
+    fibers: ">= 3.1.0"
+    node-sass: ^4.0.0
+    sass: ^1.3.0
+    webpack: ^4.36.0 || ^5.0.0
+  peerDependenciesMeta:
+    fibers:
+      optional: true
+    node-sass:
+      optional: true
+    sass:
+      optional: true
+  checksum: 3/e23d9b308f0792fb9ca3ebe314d5c9c96dfa833f89f457e4fc9c5026dacbfbb81e65b1e9b924f6aa11d749e2ba033acf7d1767929d6f9628c45525535bceb889
+  languageName: node
+  linkType: hard
+
 "sass-lookup@npm:^3.0.0":
   version: 3.0.0
   resolution: "sass-lookup@npm:3.0.0"
@@ -20578,6 +20605,17 @@ __metadata:
   bin:
     sass-lookup: bin/cli.js
   checksum: 3/e421c8c9ac3cde2fe2bbd76af545835e7a8d2cf8addcffcae9daab02a94c77a8ddde8b9cdcf5423090a05b10510e20ceebde53140b4d8cd156cbf3a4cfa939a5
+  languageName: node
+  linkType: hard
+
+"sass@npm:^1.26.8":
+  version: 1.26.10
+  resolution: "sass@npm:1.26.10"
+  dependencies:
+    chokidar: ">=2.0.0 <4.0.0"
+  bin:
+    sass: sass.js
+  checksum: 3/001da3a0fa57087f92fc48f7fa9a0f832d6c0ac8a4377df485a555c9db4749bba3fe3da8e46eb015439cb4d40bc1add1f704523914152f5a18f2358bd58f51d9
   languageName: node
   linkType: hard
 
@@ -20618,7 +20656,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"schema-utils@npm:^2.6.5, schema-utils@npm:^2.6.6, schema-utils@npm:^2.7.0":
+"schema-utils@npm:^2.6.1, schema-utils@npm:^2.6.5, schema-utils@npm:^2.6.6, schema-utils@npm:^2.7.0":
   version: 2.7.0
   resolution: "schema-utils@npm:2.7.0"
   dependencies:

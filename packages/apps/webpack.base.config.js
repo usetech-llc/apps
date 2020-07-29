@@ -56,7 +56,7 @@ function createWebpack (ENV, context) {
       rules: [
         {
           exclude: /(node_modules)/,
-          test: /\.css$/,
+          test: /\.(s[ac]|c)ss$/,
           use: [
             isProd
               ? MiniCssExtractPlugin.loader
@@ -66,7 +66,8 @@ function createWebpack (ENV, context) {
               options: {
                 importLoaders: 1
               }
-            }
+            },
+            'sass-loader',
           ]
         },
         {

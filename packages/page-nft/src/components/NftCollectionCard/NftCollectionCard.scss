@@ -1,0 +1,9 @@
+.nft-collection-item {
+
+  &.active {
+
+    .card.nft-collection-card {
+      border: 1px solid #94c900;
+    }
+  }
+}
