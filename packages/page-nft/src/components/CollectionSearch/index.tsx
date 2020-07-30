@@ -11,7 +11,6 @@ import useCollection from '../../hooks/useCollection';
 import AccountSelector from '../AccountSelector';
 import NewAccountModal from '../NewAccountModal';
 import FormatBalance from '../FormatBalance';
-import decodeUTF16LE from '../utils/decodeUTF16LE';
 import './CollectionSearch.scss';
 
 interface Props {
@@ -73,7 +72,9 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
   const hasThisCollection = useCallback((collectionId) => {
     return !!collections.find(collection => collection.id === collectionId);
   }, [collections]);
-
+  if (collectionInfo) {
+    console.log('collectionInfo.Name',  decodeURI(String.fromCharCode(...collectionInfo.Name)));
+  }
   return (
     <>
       <Form onSubmit={searchCollection}>
@@ -125,7 +126,7 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
                       <Grid.Row>
                         <Grid.Column width={12}>
                           <Card.Header className='collection-header'>
-                            Collection name: <strong>{decodeUTF16LE(collectionInfo.Name).toString()}</strong>
+                            Collection name: <strong>{String.fromCharCode(...collectionInfo.Name)}</strong>
                           </Card.Header>
                         </Grid.Column>
                         <Grid.Column width={4} className='collection-actions'>
@@ -133,7 +134,7 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
                             basic
                             color='green'
                             disabled={hasThisCollection(collectionId)}
-                            onClick={addCollection.bind(null, collectionId, decodeUTF16LE(collectionInfo.Name).toString())}
+                            onClick={addCollection.bind(null, collectionId, String.fromCharCode(...collectionInfo.Name))}
                           >
                             Add collection
                           </Button>
