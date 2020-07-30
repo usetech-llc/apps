@@ -1,7 +1,6 @@
 // Copyright 2020 UseTech authors & contributors
 import React, { useCallback, useEffect, useState, SyntheticEvent } from 'react';
-import keyring from '@polkadot/ui-keyring';
-import { web3FromSource, web3Accounts } from '@polkadot/extension-dapp';
+import { web3Accounts } from '@polkadot/extension-dapp';
 import Dropdown, {DropdownProps} from 'semantic-ui-react/dist/commonjs/modules/Dropdown';
 
 import useAccounts from '../../hooks/useAccounts';

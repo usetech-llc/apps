@@ -8,7 +8,7 @@ import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 
 import useCollection from '../../hooks/useCollection';
-import AccountsDropdown from '../AccountsDropdown';
+import AccountSelector from '../AccountSelector';
 import NewAccountModal from '../NewAccountModal';
 import FormatBalance from '../FormatBalance';
 import decodeUTF16LE from '../utils/decodeUTF16LE';
@@ -20,7 +20,7 @@ interface Props {
   api: any;
   balance: BN | null;
   collections: Array<{ id: string, name: string }>;
-  setAccount: (account: string) => void;
+  setAccount: (account: string | null) => void;
 }
 
 function CollectionSearch({ api, addCollection, account, balance, collections, setAccount }: Props): React.ReactElement<Props> {
@@ -82,7 +82,8 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
             <Grid.Column width={12}>
               <Form.Field>
                 <label>Choose your account</label>
-                <AccountsDropdown api={api} account={account} setAccount={setAccount} />
+                {/*<AccountsDropdown api={api} account={account} setAccount={setAccount} />*/}
+                <AccountSelector onChange={setAccount} />
               </Form.Field>
             </Grid.Column>
             <Grid.Column width={4}>

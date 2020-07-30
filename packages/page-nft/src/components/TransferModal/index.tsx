@@ -8,8 +8,8 @@ import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button'
 import Input, { InputOnChangeData } from 'semantic-ui-react/dist/commonjs/elements/Input/Input';
 
 import './transferModal.scss';
-import useTransfer from '../../hooks/useTransfer';
 import useBalance from "../../hooks/useBalance";
+import {TxButton} from "@polkadot/react-components/index";
 
 interface Props {
   account: string | null;
@@ -22,19 +22,10 @@ interface Props {
 }
 
 function TransferModal({ account, api, canTransferTokens, collectionId, closeModal, tokenId, pushMessage }: Props): React.ReactElement<Props> {
-  const { transferToken } = useTransfer(account, api);
   const [recipient, setRecipient] = useState<string | null>(null);
   const { balance } = useBalance(recipient, api);
   // @ts-ignore
   const [validationError, setValidationError] = useState<string | null>(null);
-
-  const onTransfer = () => {
-    if (!collectionId || !tokenId || !recipient) {
-      return;
-    }
-    void transferToken(collectionId, tokenId, recipient, pushMessage);
-    closeModal();
-  };
 
   const setRecipientAddress = useCallback((e: ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => {
     // setRecipient
@@ -62,13 +53,13 @@ function TransferModal({ account, api, canTransferTokens, collectionId, closeMod
         <Button color='black' onClick={closeModal}>
           Cancel
         </Button>
-        <Button
-          disabled={!canTransferTokens}
-          positive
-          icon='checkmark'
-          labelPosition='right'
-          content="Submit"
-          onClick={onTransfer}
+        <TxButton
+          accountId={account}
+          isDisabled={!canTransferTokens}
+          label='Submit'
+          onStart={closeModal}
+          params={[collectionId, tokenId, recipient]}
+          tx='nft.transfer'
         />
       </Modal.Actions>
     </Modal>

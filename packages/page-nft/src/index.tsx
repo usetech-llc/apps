@@ -140,6 +140,11 @@ function App ({ className }: Props): React.ReactElement<Props> {
 
   // @todo existential balance?
   // @todo address validation
+  // @todo Костя, кстати, проверь как ты делаешь декодинг UTF-16 строк. Смотри, вот тут:
+  //
+  // https://www.browserling.com/tools/utf16-decode
+  //
+  // если ввести \u{0041} или \u{41}, то декодирует в "A".
   return (
     <div className="App">
       <Container>
