@@ -22,6 +22,7 @@ import Content from './Content';
 import SideBar from './SideBar';
 import WarmUp from './WarmUp';
 import { WindowDimensionsCtx } from './WindowDimensions';
+import uiSettings from "@polkadot/ui-settings";
 
 interface SidebarState {
   isCollapsed: boolean;
@@ -79,10 +80,13 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
     _handleResize();
   }, [_handleResize, windowDimensions]);
 
+  // set default nft types and substrate prefix
   useEffect(() => {
     const types = JSON.parse(defaultNftTypes);
     registry.register(types);
     store.set('types', types);
+    const settings = {...uiSettings.get(), prefix: 42 };
+    uiSettings.set(settings);
   },[]);
 
   const { isCollapsed, isMenu, isMenuOpen } = sidebar;

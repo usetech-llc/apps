@@ -34,6 +34,7 @@ import treasury from './treasury';
 export default function create (t: <T = string> (key: string, text: string, options: { ns: string }) => T): Routes {
   return appSettings.uiMode === 'light'
     ? [
+      nft(t),
       // dashboard,
       explorer(t),
       accounts(t),
@@ -48,9 +49,9 @@ export default function create (t: <T = string> (key: string, text: string, opti
       // TODO Not sure about the inclusion of treasury, parachains & society here
       null,
       settings(t),
-      nft(t)
     ]
     : [
+      nft(t),
       // dashboard(t),
       explorer(t),
       accounts(t),
@@ -75,6 +76,5 @@ export default function create (t: <T = string> (key: string, text: string, opti
       settings(t),
       toolbox(t),
       js(t),
-      nft(t)
     ];
 }
