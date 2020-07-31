@@ -72,6 +72,12 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
     return !!collections.find(collection => collection.id === collectionId);
   }, [collections]);
 
+  const collectionNameDecoder = useCallback((name) => {
+    const collectionNameArr = name.map((item: any) => item.toNumber());
+    collectionNameArr.splice(-1, 1);
+    return String.fromCharCode(...collectionNameArr);
+  }, []);
+
   return (
     <>
       <Form onSubmit={searchCollection}>
@@ -122,7 +128,7 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
                       <Grid.Row>
                         <Grid.Column width={12}>
                           <Card.Header className='collection-header'>
-                            Collection name: <strong>{String.fromCharCode(...collectionInfo.Name)}</strong>
+                            Collection name: <strong>{collectionNameDecoder(collectionInfo.Name)}</strong>
                           </Card.Header>
                         </Grid.Column>
                         <Grid.Column width={4} className='collection-actions'>
@@ -130,7 +136,7 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
                             basic
                             color='green'
                             disabled={hasThisCollection(collectionId)}
-                            onClick={addCollection.bind(null, collectionId, String.fromCharCode(...collectionInfo.Name))}
+                            onClick={addCollection.bind(null, collectionId, collectionNameDecoder(collectionInfo.Name))}
                           >
                             Add collection
                           </Button>
