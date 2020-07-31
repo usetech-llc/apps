@@ -43,7 +43,6 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
       return;
     }
     const collectionInf = await getDetailedCollectionInfo(collectionId, account);
-    console.log('collectionInf', collectionInf, 'owner', collectionInf.Owner.toString());
     if (collectionInf && collectionInf.Owner && collectionInf.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
       setNoResults(false);
       setCollectionInfo(collectionInf);
@@ -72,9 +71,7 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
   const hasThisCollection = useCallback((collectionId) => {
     return !!collections.find(collection => collection.id === collectionId);
   }, [collections]);
-  if (collectionInfo) {
-    console.log('collectionInfo.Name',  decodeURI(String.fromCharCode(...collectionInfo.Name)));
-  }
+
   return (
     <>
       <Form onSubmit={searchCollection}>
@@ -83,7 +80,6 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
             <Grid.Column width={12}>
               <Form.Field>
                 <label>Choose your account</label>
-                {/*<AccountsDropdown api={api} account={account} setAccount={setAccount} />*/}
                 <AccountSelector onChange={setAccount} />
               </Form.Field>
             </Grid.Column>

@@ -149,7 +149,6 @@ function Developer ({ className = '', onStatusChange }: Props): React.ReactEleme
 
   // Trans component
   /* eslint-disable react/jsx-max-props-per-line */
-
   return (
     <div className={className}>
       <div className='ui--row'>

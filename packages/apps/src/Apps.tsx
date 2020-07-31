@@ -7,12 +7,14 @@ import { BareProps as Props } from '@polkadot/react-components/types';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import store from 'store';
 import styled from 'styled-components';
+import { registry } from '@polkadot/react-api';
 import AccountSidebar from '@polkadot/app-accounts/Sidebar';
 import { getSystemChainColor } from '@polkadot/apps-config/ui';
 import { defaultColor } from '@polkadot/apps-config/ui/general';
 import GlobalStyle from '@polkadot/react-components/styles';
 import { useApi } from '@polkadot/react-hooks';
 import Signer from '@polkadot/react-signer';
+import defaultNftTypes from './defaultNftTypes';
 
 import ConnectingOverlay from './overlays/Connecting';
 import { SideBarTransition, SIDEBAR_MENU_THRESHOLD } from './constants';
@@ -76,6 +78,12 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
   useEffect((): void => {
     _handleResize();
   }, [_handleResize, windowDimensions]);
+
+  useEffect(() => {
+    const types = JSON.parse(defaultNftTypes);
+    registry.register(types);
+    store.set('types', types);
+  },[]);
 
   const { isCollapsed, isMenu, isMenuOpen } = sidebar;
 
