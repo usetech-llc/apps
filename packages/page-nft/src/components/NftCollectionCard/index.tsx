@@ -6,7 +6,7 @@ import Card from 'semantic-ui-react/dist/commonjs/views/Card';
 import './NftCollectionCard.scss';
 
 interface Props {
-  collection: { id: string, name: string };
+  collection: { id: string, name: string, prefix: string };
   currentCollectionId: string | null;
   removeCollection: (collection: string) => void;
   selectCollection: (collectionId: string) => void;
@@ -25,6 +25,7 @@ function NftCollectionCard({ collection, currentCollectionId, selectCollection, 
         <Card.Content>
           <Card.Description>
             {collection.name}
+            <strong>({collection.prefix})</strong>
           </Card.Description>
         </Card.Content>
         <Card.Content extra>

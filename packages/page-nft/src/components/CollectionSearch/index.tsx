@@ -15,7 +15,7 @@ import './CollectionSearch.scss';
 
 interface Props {
   account: string | null | undefined;
-  addCollection: (collection: string, collectionName: string) => void;
+  addCollection: (collectionId: string, collectionName: string, collectionPrefix: string) => void;
   api: any;
   balance: BN | null;
   collections: Array<{ id: string, name: string }>;
@@ -72,8 +72,14 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
     return !!collections.find(collection => collection.id === collectionId);
   }, [collections]);
 
-  const collectionNameDecoder = useCallback((name) => {
+  const collectionName16Decoder = useCallback((name) => {
     const collectionNameArr = name.map((item: any) => item.toNumber());
+    collectionNameArr.splice(-1, 1);
+    return String.fromCharCode(...collectionNameArr);
+  }, []);
+
+  const collectionName8Decoder = useCallback((name) => {
+    const collectionNameArr = Array.prototype.slice.call(name);
     collectionNameArr.splice(-1, 1);
     return String.fromCharCode(...collectionNameArr);
   }, []);
@@ -128,7 +134,7 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
                       <Grid.Row>
                         <Grid.Column width={12}>
                           <Card.Header className='collection-header'>
-                            Collection name: <strong>{collectionNameDecoder(collectionInfo.Name)}</strong>
+                            Collection name: <strong>{collectionName16Decoder(collectionInfo.Name)}</strong>
                           </Card.Header>
                         </Grid.Column>
                         <Grid.Column width={4} className='collection-actions'>
@@ -136,7 +142,7 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
                             basic
                             color='green'
                             disabled={hasThisCollection(collectionId)}
-                            onClick={addCollection.bind(null, collectionId, collectionNameDecoder(collectionInfo.Name))}
+                            onClick={addCollection.bind(null, collectionId, collectionName16Decoder(collectionInfo.Name), collectionName8Decoder(collectionInfo.TokenPrefix))}
                           >
                             Add collection
                           </Button>

@@ -30,7 +30,7 @@ function App ({ className }: Props): React.ReactElement<Props> {
   const [openTransfer, setOpenTransfer] = useState<string | null>(null);
   const [account, setAccount] = useState<string | null>(null);
   const { api } = useApi();
-  const [collections, setCollections] = useState<Array<{ id: string, name: string}>>([]);
+  const [collections, setCollections] = useState<Array<{ id: string, name: string, prefix: string}>>([]);
   const [currentCollectionId, setCurrentCollectionId] = useState<string | null>(null);
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
   const [messages, setMessages] = useState<Array<MessageInterface>>([]);
@@ -39,8 +39,8 @@ function App ({ className }: Props): React.ReactElement<Props> {
   const { balance, existentialDeposit } = useBalance(account, api);
   const currentAccount = useRef<string>();
 
-  const addCollection = useCallback((newCollectionId, collectionName) => {
-    setCollections([ ...collections, { id: newCollectionId, name: collectionName } ]);
+  const addCollection = useCallback((collectionId, collectionName, collectionPrefix) => {
+    setCollections([ ...collections, { id: collectionId, name: collectionName, prefix: collectionPrefix } ]);
   }, [collections]);
 
   const removeCollection = useCallback((collectionToRemove) => {
@@ -75,6 +75,7 @@ function App ({ className }: Props): React.ReactElement<Props> {
     setCurrentCollectionId(collectionId);
     if (account) {
       const tokensOfCollection = (await getTokensOfCollection(collectionId, account));
+      console.log('tokensOfCollection', tokensOfCollection);
       setTokensOfCollection(tokensOfCollection);
     }
   }, [account, getTokensOfCollection, setCurrentCollectionId]);

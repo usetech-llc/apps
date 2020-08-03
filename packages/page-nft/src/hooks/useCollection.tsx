@@ -11,7 +11,7 @@ function useCollection(api: PolkadotApiInterface | null) {
     if (!api) {
       return;
     }
-    return (await api.query.nft.addressTokens([collectionId, ownerId]));
+    return (await api.query.nft.addressTokens(collectionId, ownerId));
   };
 
   const getDetailedCollectionInfo = useCallback(async (collectionId, ownerId) => {
@@ -28,7 +28,15 @@ function useCollection(api: PolkadotApiInterface | null) {
     return (await api.query.nft.itemList([collectionId, tokenId]));
   }, [api]);
 
-  return { getTokensOfCollection, getDetailedTokenInfo, getDetailedCollectionInfo };
+  // hardcode http://ipfs-gateway.usetech.com/ipfs/QmUPArQGiDXyLFcxfU3LrctNQNPnD9QP62k2eNJkZgdRPJ/images/punks/punk{id}.png
+  const getCollectionImagesUrl = useCallback( async (collectionId: string) => {
+    if (!api) {
+      return
+    }
+    return (await api.query.nft.offchainSchema(collectionId));
+  }, []);
+
+  return { getTokensOfCollection, getDetailedTokenInfo, getDetailedCollectionInfo, getCollectionImagesUrl };
 }
 
 export default useCollection;
