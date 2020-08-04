@@ -2,7 +2,7 @@
 
 // global app props and types
 import { AppProps as Props } from '@polkadot/react-components/types';
-import { MessageInterface } from './components/types';
+// import { MessageInterface } from './components/types';
 
 // external imports
 import React, { useCallback, useEffect, useState, useRef } from 'react';
@@ -20,7 +20,7 @@ import NftTokenCard from './components/NftTokenCard';
 import NftCollectionCard from './components/NftCollectionCard';
 import useCollection, { NftCollectionInterface } from './hooks/useCollection';
 import CollectionSearch from './components/CollectionSearch';
-import MessageWrapper from './components/MessageWrapper';
+// import MessageWrapper from './components/MessageWrapper';
 import useBalance from './hooks/useBalance';
 import './styles.scss';
 
@@ -33,7 +33,7 @@ function App ({ className }: Props): React.ReactElement<Props> {
   const [collections, setCollections] = useState<Array<NftCollectionInterface>>([]);
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface | null>(null);
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
-  const [messages, setMessages] = useState<Array<MessageInterface>>([]);
+  // const [messages, setMessages] = useState<Array<MessageInterface>>([]);
   const [canTransferTokens, setCanTransferTokens] = useState<boolean>(false);
   const { getTokensOfCollection } = useCollection(api);
   const { balance, existentialDeposit } = useBalance(account, api);
@@ -82,7 +82,7 @@ function App ({ className }: Props): React.ReactElement<Props> {
     }
   }, [account, getTokensOfCollection, setSelectedCollection]);
 
-  const pushMessage = useCallback((newMessage: MessageInterface) => {
+  /* const pushMessage = useCallback((newMessage: MessageInterface) => {
     const pushedMessages = [...messages];
     pushedMessages.push(newMessage);
     setMessages(pushedMessages);
@@ -95,7 +95,7 @@ function App ({ className }: Props): React.ReactElement<Props> {
     const poppedMessages = [...messages];
     poppedMessages.pop();
     setMessages(poppedMessages);
-  }, []);
+  }, []); */
 
   useEffect(() => {
     if (account && account !== currentAccount.current) {
@@ -112,10 +112,10 @@ function App ({ className }: Props): React.ReactElement<Props> {
         setCanTransferTokens(true);
       } else {
         setCanTransferTokens(false);
-        pushMessage({
+        /* pushMessage({
           warning: true,
           messageText: `Your balance is too low to transfer tokens!`
-        });
+        }); */
       }
     }
   }, [balance, existentialDeposit]);
@@ -202,9 +202,9 @@ function App ({ className }: Props): React.ReactElement<Props> {
           )}
         </>
       )}
-      <MessageWrapper
+      {/*<MessageWrapper
         messages={messages}
-      />
+      />*/}
     </div>
   );
 }

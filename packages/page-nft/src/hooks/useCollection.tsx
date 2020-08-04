@@ -21,7 +21,7 @@ function useCollection(api: PolkadotApiInterface | null) {
     return (await api.query.nft.addressTokens(collectionId, ownerId));
   };
 
-  const getDetailedCollectionInfo = useCallback(async (collectionId, ownerId) => {
+  const getDetailedCollectionInfo = useCallback(async (collectionId) => {
     if (!api) {
       return;
     }
