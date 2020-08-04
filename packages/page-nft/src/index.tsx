@@ -2,16 +2,18 @@
 
 // global app props and types
 import { AppProps as Props } from '@polkadot/react-components/types';
+import { ActionStatus } from '@polkadot/react-components/Status/types';
 // import { MessageInterface } from './components/types';
 
 // external imports
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState, useRef, useContext } from 'react';
 import { useApi } from '@polkadot/react-hooks';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 import List from 'semantic-ui-react/dist/commonjs/elements/List/List';
 import Card from 'semantic-ui-react/dist/commonjs/views/Card/Card';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item/Item';
+import { StatusContext } from '@polkadot/react-components';
 
 // local imports and components
 import TransferModal from './components/TransferModal/';
@@ -24,8 +26,8 @@ import CollectionSearch from './components/CollectionSearch';
 import useBalance from './hooks/useBalance';
 import './styles.scss';
 
-
 function App ({ className }: Props): React.ReactElement<Props> {
+  const { queueAction } = useContext(StatusContext);
   const [openDetailedInformation, setOpenDetailedInformation] = useState<string | null>(null);
   const [openTransfer, setOpenTransfer] = useState<string | null>(null);
   const [account, setAccount] = useState<string | null>(null);
@@ -112,6 +114,13 @@ function App ({ className }: Props): React.ReactElement<Props> {
         setCanTransferTokens(true);
       } else {
         setCanTransferTokens(false);
+        const message: ActionStatus = {
+          action: `low balance`,
+          message: 'Your balance is too low to transfer tokens!',
+          status: 'error'
+        };
+
+        queueAction([message]);
         /* pushMessage({
           warning: true,
           messageText: `Your balance is too low to transfer tokens!`
