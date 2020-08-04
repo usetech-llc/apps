@@ -3,10 +3,11 @@ import React, {useCallback} from 'react';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Card from 'semantic-ui-react/dist/commonjs/views/Card';
 
+import { NftCollectionInterface } from '../../hooks/useCollection';
 import './NftCollectionCard.scss';
 
 interface Props {
-  collection: { id: string, name: string, prefix: string };
+  collection: NftCollectionInterface;
   currentCollectionId: string | null;
   removeCollection: (collection: string) => void;
   selectCollection: (collectionId: string) => void;
@@ -24,8 +25,8 @@ function NftCollectionCard({ collection, currentCollectionId, selectCollection, 
       <Card className='nft-collection-card'>
         <Card.Content>
           <Card.Description>
-            {collection.name}
-            <strong>({collection.prefix})</strong>
+            <h3>{collection.name} ({collection.prefix})</h3>
+            <p>{collection.description}</p>
           </Card.Description>
         </Card.Content>
         <Card.Content extra>

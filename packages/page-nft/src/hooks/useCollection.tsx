@@ -5,6 +5,13 @@ interface PolkadotApiInterface {
   query: any;
 }
 
+export interface NftCollectionInterface {
+  id: string;
+  name: string;
+  prefix: string;
+  description: string;
+}
+
 // @todo api.query.nft.collection(id)
 function useCollection(api: PolkadotApiInterface | null) {
   const getTokensOfCollection = async (collectionId: number, ownerId: string) => {
@@ -28,12 +35,13 @@ function useCollection(api: PolkadotApiInterface | null) {
     return (await api.query.nft.itemList([collectionId, tokenId]));
   }, [api]);
 
-  // hardcode http://ipfs-gateway.usetech.com/ipfs/QmUPArQGiDXyLFcxfU3LrctNQNPnD9QP62k2eNJkZgdRPJ/images/punks/punk{id}.png
+  // hardcode
   const getCollectionImagesUrl = useCallback( async (collectionId: string) => {
     if (!api) {
       return
     }
-    return (await api.query.nft.offchainSchema(collectionId));
+    return 'http://ipfs-gateway.usetech.com/ipfs/QmUPArQGiDXyLFcxfU3LrctNQNPnD9QP62k2eNJkZgdRPJ/images/punks';
+    // return (await api.query.nft.offchainSchema(collectionId));
   }, []);
 
   return { getTokensOfCollection, getDetailedTokenInfo, getDetailedCollectionInfo, getCollectionImagesUrl };

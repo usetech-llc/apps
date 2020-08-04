@@ -18,7 +18,7 @@ import TransferModal from './components/TransferModal/';
 import TokenDetailsModal from './components/TokenDetailsModal/';
 import NftTokenCard from './components/NftTokenCard';
 import NftCollectionCard from './components/NftCollectionCard';
-import useCollection from './hooks/useCollection';
+import useCollection, { NftCollectionInterface } from './hooks/useCollection';
 import CollectionSearch from './components/CollectionSearch';
 import MessageWrapper from './components/MessageWrapper';
 import useBalance from './hooks/useBalance';
@@ -30,8 +30,8 @@ function App ({ className }: Props): React.ReactElement<Props> {
   const [openTransfer, setOpenTransfer] = useState<string | null>(null);
   const [account, setAccount] = useState<string | null>(null);
   const { api } = useApi();
-  const [collections, setCollections] = useState<Array<{ id: string, name: string, prefix: string}>>([]);
-  const [currentCollectionId, setCurrentCollectionId] = useState<string | null>(null);
+  const [collections, setCollections] = useState<Array<NftCollectionInterface>>([]);
+  const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface | null>(null);
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
   const [messages, setMessages] = useState<Array<MessageInterface>>([]);
   const [canTransferTokens, setCanTransferTokens] = useState<boolean>(false);
@@ -39,13 +39,13 @@ function App ({ className }: Props): React.ReactElement<Props> {
   const { balance, existentialDeposit } = useBalance(account, api);
   const currentAccount = useRef<string>();
 
-  const addCollection = useCallback((collectionId, collectionName, collectionPrefix) => {
-    setCollections([ ...collections, { id: collectionId, name: collectionName, prefix: collectionPrefix } ]);
+  const addCollection = useCallback(({ id, name, prefix, description }: NftCollectionInterface) => {
+    setCollections([ ...collections, { id, name, prefix, description } ]);
   }, [collections]);
 
   const removeCollection = useCallback((collectionToRemove) => {
-    if (currentCollectionId === collectionToRemove) {
-      setCurrentCollectionId(null);
+    if (selectedCollection && selectedCollection.id === collectionToRemove) {
+      setSelectedCollection(null);
     }
     setCollections(collections.filter(item => item.id !== collectionToRemove));
   }, [collections]);
@@ -72,13 +72,15 @@ function App ({ className }: Props): React.ReactElement<Props> {
   }, []);
 
   const selectCollection = useCallback(async (collectionId) => {
-    setCurrentCollectionId(collectionId);
+    const currentCollection = collections.find(collectionItem => collectionItem.id === collectionId);
+    if (currentCollection) {
+      setSelectedCollection(currentCollection);
+    }
     if (account) {
       const tokensOfCollection = (await getTokensOfCollection(collectionId, account));
-      console.log('tokensOfCollection', tokensOfCollection);
       setTokensOfCollection(tokensOfCollection);
     }
-  }, [account, getTokensOfCollection, setCurrentCollectionId]);
+  }, [account, getTokensOfCollection, setSelectedCollection]);
 
   const pushMessage = useCallback((newMessage: MessageInterface) => {
     const pushedMessages = [...messages];
@@ -99,7 +101,7 @@ function App ({ className }: Props): React.ReactElement<Props> {
     if (account && account !== currentAccount.current) {
       setCollections([]);
       setTokensOfCollection([]);
-      setCurrentCollectionId(null);
+      setSelectedCollection(null);
       currentAccount.current = account;
     }
   }, [account]);
@@ -148,7 +150,7 @@ function App ({ className }: Props): React.ReactElement<Props> {
                     <List.Item key={collection.id}>
                       <NftCollectionCard
                         collection={collection}
-                        currentCollectionId={currentCollectionId}
+                        currentCollectionId={collection.id}
                         selectCollection={selectCollection}
                         removeCollection={removeCollection}
                       />
@@ -158,11 +160,12 @@ function App ({ className }: Props): React.ReactElement<Props> {
               </Grid.Column>
               <Grid.Column width={10}>
                 <Header as='h2'>List of NFT tokens</Header>
-                { (tokensOfCollection && tokensOfCollection.length > 0) && (
+                { (selectedCollection && tokensOfCollection && tokensOfCollection.length > 0) && (
                   <Item.Group divided className='nft-wallets'>
                     { tokensOfCollection.map((token) => (
                       <NftTokenCard
                         canTransferTokens={canTransferTokens}
+                        collectionPrefix={selectedCollection.prefix}
                         key={token}
                         openTransferModal={openTransferModal}
                         openDetailedInformationModal={openDetailedInformationModal}
@@ -176,24 +179,28 @@ function App ({ className }: Props): React.ReactElement<Props> {
           </Grid>
         </Card>
       </>
-      { (openDetailedInformation && currentCollectionId) && (
-        <TokenDetailsModal
-          api={api}
-          collectionId={currentCollectionId}
-          closeModal={closeDetailedInformationModal}
-          tokenId={openDetailedInformation}
-        />
-      )}
-      {(openTransfer && currentCollectionId) && (
-        <TransferModal
-          account={account}
-          api={api}
-          canTransferTokens={canTransferTokens}
-          closeModal={closeTransferModal}
-          collectionId={currentCollectionId}
-          tokenId={openTransfer}
-          pushMessage={pushMessage}
-        />
+      { (selectedCollection && selectedCollection.id) && (
+        <>
+          { openDetailedInformation && (
+            <TokenDetailsModal
+              api={api}
+              collectionId={selectedCollection.id}
+              closeModal={closeDetailedInformationModal}
+              tokenId={openDetailedInformation}
+            />
+          )}
+          { openTransfer && (
+            <TransferModal
+              account={account}
+              api={api}
+              canTransferTokens={canTransferTokens}
+              closeModal={closeTransferModal}
+              collectionId={selectedCollection.id}
+              tokenId={openTransfer}
+              pushMessage={pushMessage}
+            />
+          )}
+        </>
       )}
       <MessageWrapper
         messages={messages}

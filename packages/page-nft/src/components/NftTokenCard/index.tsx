@@ -8,21 +8,18 @@ import favicon from '../../images/favicon.png';
 
 interface Props {
   canTransferTokens: boolean;
+  collectionPrefix: string;
   openTransferModal: (tokenId: string) => void;
   openDetailedInformationModal: (tokenId: string) => void;
   tokenId: string;
 }
 
-function NftTokenCard({ canTransferTokens, openTransferModal, openDetailedInformationModal, tokenId }: Props): React.ReactElement<Props> {
+function NftTokenCard({ canTransferTokens, collectionPrefix, openTransferModal, openDetailedInformationModal, tokenId }: Props): React.ReactElement<Props> {
   return (
     <Item className='nft-token-card'>
       <Item.Image size='mini' src={favicon} />
       <Item.Content verticalAlign='middle'>
-        <Item.Header as='a'>NFT token id</Item.Header>
-        <Item.Meta>{tokenId.toString()}</Item.Meta>
-        <Item.Description>
-          NFT token description
-        </Item.Description>
+        <Item.Header as='a'>{collectionPrefix} #{tokenId.toString()}</Item.Header>
         <Item.Extra>
           <Button onClick={openDetailedInformationModal.bind(null, tokenId)}>Show detail information</Button>
           <Button disabled={!canTransferTokens} onClick={openTransferModal.bind(null, tokenId)} primary>Transfer token</Button>

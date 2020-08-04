@@ -7,15 +7,14 @@ import Card from 'semantic-ui-react/dist/commonjs/views/Card';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 
-import useCollection from '../../hooks/useCollection';
+import useCollection, { NftCollectionInterface } from '../../hooks/useCollection';
 import AccountSelector from '../AccountSelector';
-import NewAccountModal from '../NewAccountModal';
 import FormatBalance from '../FormatBalance';
 import './CollectionSearch.scss';
 
 interface Props {
   account: string | null | undefined;
-  addCollection: (collectionId: string, collectionName: string, collectionPrefix: string) => void;
+  addCollection: (item: NftCollectionInterface) => void;
   api: any;
   balance: BN | null;
   collections: Array<{ id: string, name: string }>;
@@ -23,8 +22,6 @@ interface Props {
 }
 
 function CollectionSearch({ api, addCollection, account, balance, collections, setAccount }: Props): React.ReactElement<Props> {
-  const [openAddAccount, setOpenAddAccount] = useState<boolean>(false);
-  const [openImportAccount, setOpenImportAccount] = useState<boolean>(false);
   const [collectionInfo, setCollectionInfo] = useState<any>(null);
   const [collectionId, setCollectionId] = useState<string | null>(null);
   const [noResults, setNoResults] = useState<boolean>(false);
@@ -43,6 +40,7 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
       return;
     }
     const collectionInf = await getDetailedCollectionInfo(collectionId, account);
+    console.log('collectionInf', collectionInf);
     if (collectionInf && collectionInf.Owner && collectionInf.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
       setNoResults(false);
       setCollectionInfo(collectionInf);
@@ -51,22 +49,6 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
       setNoResults(true);
     }
   }, [collectionId]);
-
-  const openCreateAccountModal = useCallback(() => {
-    setOpenAddAccount(true);
-  }, []);
-
-  const closeCreateAccountModal = useCallback(() => {
-    setOpenAddAccount(false);
-  }, []);
-
-  const openImportAccountModal = useCallback(() => {
-    setOpenImportAccount(true);
-  }, []);
-
-  const closeImportAccountModal = useCallback(() => {
-    setOpenImportAccount(false);
-  }, []);
 
   const hasThisCollection = useCallback((collectionId) => {
     return !!collections.find(collection => collection.id === collectionId);
@@ -89,20 +71,10 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
       <Form onSubmit={searchCollection}>
         <Grid>
           <Grid.Row>
-            <Grid.Column width={12}>
+            <Grid.Column width={16}>
               <Form.Field>
                 <label>Choose your account</label>
                 <AccountSelector onChange={setAccount} />
-              </Form.Field>
-            </Grid.Column>
-            <Grid.Column width={4}>
-              <Form.Field>
-                <label>No accounts?</label>
-                <Button.Group>
-                  <Button onClick={openCreateAccountModal}>Create new</Button>
-                  <Button.Or />
-                  <Button onClick={openImportAccountModal}>Import</Button>
-                </Button.Group>
               </Form.Field>
             </Grid.Column>
           </Grid.Row>
@@ -142,7 +114,12 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
                             basic
                             color='green'
                             disabled={hasThisCollection(collectionId)}
-                            onClick={addCollection.bind(null, collectionId, collectionName16Decoder(collectionInfo.Name), collectionName8Decoder(collectionInfo.TokenPrefix))}
+                            onClick={addCollection.bind(null, {
+                              id: collectionId,
+                              description: collectionName16Decoder(collectionInfo.Description),
+                              name: collectionName16Decoder(collectionInfo.Name),
+                              prefix: collectionName8Decoder(collectionInfo.TokenPrefix)
+                            })}
                           >
                             Add collection
                           </Button>
@@ -159,17 +136,6 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
           </Grid.Row>
         </Grid>
       </Form>
-      <NewAccountModal
-        closeModal={closeImportAccountModal}
-        goal='import'
-        isModalOpened={openImportAccount}
-      />
-
-      <NewAccountModal
-        closeModal={closeCreateAccountModal}
-        goal='create'
-        isModalOpened={openAddAccount}
-      />
     </>
   )
 }
