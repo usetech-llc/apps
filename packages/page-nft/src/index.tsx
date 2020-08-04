@@ -206,7 +206,6 @@ function App ({ className }: Props): React.ReactElement<Props> {
               closeModal={closeTransferModal}
               collectionId={selectedCollection.id}
               tokenId={openTransfer}
-              pushMessage={pushMessage}
             />
           )}
         </>

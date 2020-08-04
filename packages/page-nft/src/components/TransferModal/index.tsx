@@ -1,5 +1,4 @@
 // Copyright 2020 UseTech authors & contributors
-import { MessageInterface } from '../types';
 
 import React, { useState, useCallback, ChangeEvent } from 'react';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
@@ -18,10 +17,9 @@ interface Props {
   collectionId: string | null;
   closeModal: () => void;
   tokenId: string | null;
-  pushMessage: (message: MessageInterface) => void;
 }
 
-function TransferModal({ account, api, canTransferTokens, collectionId, closeModal, tokenId, pushMessage }: Props): React.ReactElement<Props> {
+function TransferModal({ account, api, canTransferTokens, collectionId, closeModal, tokenId }: Props): React.ReactElement<Props> {
   const [recipient, setRecipient] = useState<string | null>(null);
   const { balance } = useBalance(recipient, api);
   // @ts-ignore
