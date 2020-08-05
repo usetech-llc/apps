@@ -4,7 +4,6 @@ import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
 import './NftTokenCard.scss';
-import favicon from '../../images/favicon.png';
 
 interface Props {
   canTransferTokens: boolean;

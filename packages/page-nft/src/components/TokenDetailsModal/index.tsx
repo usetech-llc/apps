@@ -4,17 +4,15 @@ import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 import { Button } from '@polkadot/react-components';
 
 import './tokenDetailsModal.scss';
-// import arrayBufferToBase64 from '../utils/arrayBufferToBase64';
 
 interface Props {
-  api: any;
   collectionId: string;
   closeModal: () => void;
   tokenId: string;
   tokenImageUrl: string;
 }
 
-function TokenDetailsModal({ api, collectionId, closeModal, tokenId, tokenImageUrl }: Props): React.ReactElement<Props> {
+function TokenDetailsModal({ collectionId, closeModal, tokenId, tokenImageUrl }: Props): React.ReactElement<Props> {
 
   const getTokenDetails = useCallback(async () => {
     if ((!collectionId && collectionId !== '0') || (!tokenId && tokenId !== '0')) {

@@ -196,7 +196,6 @@ function App ({ className }: Props): React.ReactElement<Props> {
         <>
           { openDetailedInformation && (
             <TokenDetailsModal
-              api={api}
               collectionId={selectedCollection.id}
               closeModal={closeDetailedInformationModal}
               tokenId={openDetailedInformation}

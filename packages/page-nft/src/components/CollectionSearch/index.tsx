@@ -1,5 +1,5 @@
 // Copyright 2020 UseTech authors & contributors
-import BN from 'bn.js';
+
 import React, { ChangeEvent, useCallback, useState } from 'react';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Input, { InputOnChangeData } from 'semantic-ui-react/dist/commonjs/elements/Input';
