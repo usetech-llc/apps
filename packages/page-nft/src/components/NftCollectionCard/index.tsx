@@ -25,7 +25,11 @@ function NftCollectionCard({ collection, currentCollectionId, selectCollection, 
       <Card className='nft-collection-card'>
         <Card.Content>
           <Card.Description>
-            <h3>{collection.name} ({collection.prefix})</h3>
+            <h3>{collection.name}
+            {collection.prefix &&
+              <span>({collection.prefix})</span>
+            }
+            </h3>
             <p>{collection.description}</p>
           </Card.Description>
         </Card.Content>

@@ -22,7 +22,8 @@ import NftTokenCard from './components/NftTokenCard';
 import NftCollectionCard from './components/NftCollectionCard';
 import useCollection, { NftCollectionInterface } from './hooks/useCollection';
 import CollectionSearch from './components/CollectionSearch';
-// import MessageWrapper from './components/MessageWrapper';
+import AccountSelector from './components/AccountSelector';
+import FormatBalance from './components/FormatBalance';
 import useBalance from './hooks/useBalance';
 import './styles.scss';
 
@@ -41,8 +42,9 @@ function App ({ className }: Props): React.ReactElement<Props> {
   const { balance, existentialDeposit } = useBalance(account, api);
   const currentAccount = useRef<string>();
 
-  const addCollection = useCallback(({ id, name, prefix, description }: NftCollectionInterface) => {
-    setCollections([ ...collections, { id, name, prefix, description } ]);
+  const addCollection = useCallback(({ id, name, prefix, description, offchainSchema }: NftCollectionInterface) => {
+    console.log('offchainSchema', offchainSchema);
+    setCollections([ ...collections, { id, name, prefix, description, offchainSchema } ]);
   }, [collections]);
 
   const removeCollection = useCallback((collectionToRemove) => {
@@ -83,21 +85,6 @@ function App ({ className }: Props): React.ReactElement<Props> {
       setTokensOfCollection(tokensOfCollection);
     }
   }, [account, getTokensOfCollection, setSelectedCollection]);
-
-  /* const pushMessage = useCallback((newMessage: MessageInterface) => {
-    const pushedMessages = [...messages];
-    pushedMessages.push(newMessage);
-    setMessages(pushedMessages);
-    setTimeout(() => {
-      popMessage();
-    }, 10000);
-  }, []);
-
-  const popMessage = useCallback(() => {
-    const poppedMessages = [...messages];
-    poppedMessages.pop();
-    setMessages(poppedMessages);
-  }, []); */
 
   useEffect(() => {
     if (account && account !== currentAccount.current) {
@@ -140,13 +127,29 @@ function App ({ className }: Props): React.ReactElement<Props> {
     <div className="App">
       <>
         <Header as='h1'>Usetech NFT wallet</Header>
+        <Card className='account-selector'>
+          <Grid>
+            <Grid.Row>
+              <Grid.Column width={12}>
+                <label>Choose your account</label>
+                <AccountSelector onChange={setAccount} />
+              </Grid.Column>
+              <Grid.Column width={4}>
+                { balance && (
+                  <div className='balance-block'>
+                    <label>Your account balance is:</label>
+                    <FormatBalance value={balance.free} className='balance' />
+                  </div>
+                )}
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        </Card>
         <CollectionSearch
           account={account}
           addCollection={addCollection}
           api={api}
-          balance={balance ? balance.free : null}
           collections={collections}
-          setAccount={setAccount}
         />
         <br />
         <Card className='current-tokens'>
@@ -179,6 +182,7 @@ function App ({ className }: Props): React.ReactElement<Props> {
                         openTransferModal={openTransferModal}
                         openDetailedInformationModal={openDetailedInformationModal}
                         tokenId={token}
+                        tokenImageUrl={selectedCollection.offchainSchema.replace('image{id}.pn', `image${token}.png`)}
                       />
                     ))}
                   </Item.Group>
@@ -196,6 +200,7 @@ function App ({ className }: Props): React.ReactElement<Props> {
               collectionId={selectedCollection.id}
               closeModal={closeDetailedInformationModal}
               tokenId={openDetailedInformation}
+              tokenImageUrl={selectedCollection.offchainSchema.replace('image{id}.pn', `image${openDetailedInformation}.png`)}
             />
           )}
           { openTransfer && (

@@ -3,7 +3,7 @@
 import React, { useState, useCallback, ChangeEvent } from 'react';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
-import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button'
+import { Button } from '@polkadot/react-components';
 import Input, { InputOnChangeData } from 'semantic-ui-react/dist/commonjs/elements/Input/Input';
 
 import './transferModal.scss';
@@ -48,15 +48,17 @@ function TransferModal({ account, api, canTransferTokens, collectionId, closeMod
         </Form>
       </Modal.Content>
       <Modal.Actions>
-        <Button color='black' onClick={closeModal}>
-          Cancel
-        </Button>
+        <Button
+          icon='times'
+          label='Cancel'
+          onClick={closeModal}
+        />
         <TxButton
           accountId={account}
           isDisabled={!canTransferTokens}
           label='Submit'
           onStart={closeModal}
-          params={[collectionId, tokenId, recipient]}
+          params={[recipient, collectionId, tokenId, 0]}
           tx='nft.transfer'
         />
       </Modal.Actions>

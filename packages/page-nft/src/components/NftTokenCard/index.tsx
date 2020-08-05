@@ -12,12 +12,13 @@ interface Props {
   openTransferModal: (tokenId: string) => void;
   openDetailedInformationModal: (tokenId: string) => void;
   tokenId: string;
+  tokenImageUrl: string;
 }
 
-function NftTokenCard({ canTransferTokens, collectionPrefix, openTransferModal, openDetailedInformationModal, tokenId }: Props): React.ReactElement<Props> {
+function NftTokenCard({ canTransferTokens, collectionPrefix, openTransferModal, openDetailedInformationModal, tokenId, tokenImageUrl }: Props): React.ReactElement<Props> {
   return (
     <Item className='nft-token-card'>
-      <Item.Image size='mini' src={favicon} />
+      <Item.Image size='mini' src={tokenImageUrl} />
       <Item.Content verticalAlign='middle'>
         <Item.Header as='a'>{collectionPrefix} #{tokenId.toString()}</Item.Header>
         <Item.Extra>

@@ -1,3 +1,4 @@
+// https://github.com/usetech-llc/nft_parachain#ui-custom-types
 const defaultNftTypes = `{
   "Schedule": {
     "version": "u32",
@@ -22,20 +23,22 @@ const defaultNftTypes = `{
     "enable_println": "bool",
     "max_subject_len": "u32"
   },
+  "CollectionMode": {
+    "_enum": {
+      "Invalid": null,
+      "NFT": "u32",
+      "Fungible": "u32",
+      "ReFungible": "(u32, u32)"
+    }
+  },
   "NftItemType": {
     "Collection": "u64",
     "Owner": "AccountId",
     "Data": "Vec<u8>"
   },
-  "CollectionMode": [
-    "Invalid",
-    "NFT",
-    "ReFungible",
-    "Invalid"
-  ],
   "CollectionType": {
     "Owner": "AccountId",
-    "Mode": "u8",
+    "Mode": "CollectionMode",
     "Access": "u8",
     "NextItemId": "u64",
     "DecimalPoints": "u32",
@@ -43,9 +46,11 @@ const defaultNftTypes = `{
     "Description": "Vec<u16>",
     "TokenPrefix": "Vec<u8>",
     "CustomDataSize": "u32",
+    "OffchainSchema": "Vec<u8>",
     "Sponsor": "AccountId",
     "UnconfirmedSponsor": "AccountId"
   },
+  "RawData": "Vec<u8>",
   "Address": "AccountId",
   "LookupSource": "AccountId",
   "Weight": "u64"

@@ -8,20 +8,16 @@ import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 
 import useCollection, { NftCollectionInterface } from '../../hooks/useCollection';
-import AccountSelector from '../AccountSelector';
-import FormatBalance from '../FormatBalance';
 import './CollectionSearch.scss';
 
 interface Props {
   account: string | null | undefined;
   addCollection: (item: NftCollectionInterface) => void;
   api: any;
-  balance: BN | null;
   collections: Array<{ id: string, name: string }>;
-  setAccount: (account: string | null) => void;
 }
 
-function CollectionSearch({ api, addCollection, account, balance, collections, setAccount }: Props): React.ReactElement<Props> {
+function CollectionSearch({ api, addCollection, account, collections }: Props): React.ReactElement<Props> {
   const [collectionInfo, setCollectionInfo] = useState<any>(null);
   const [collectionId, setCollectionId] = useState<string | null>(null);
   const [noResults, setNoResults] = useState<boolean>(false);
@@ -39,8 +35,9 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
     if (!collectionId) {
       return;
     }
-    const collectionInf = await getDetailedCollectionInfo(collectionId, account);
-    console.log('collectionInf', collectionInf);
+
+    const collectionInf = await getDetailedCollectionInfo(collectionId);
+
     if (collectionInf && collectionInf.Owner && collectionInf.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
       setNoResults(false);
       setCollectionInfo(collectionInf);
@@ -67,17 +64,9 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
   }, []);
 
   return (
-    <>
+    <Card className='collection-search'>
       <Form onSubmit={searchCollection}>
         <Grid>
-          <Grid.Row>
-            <Grid.Column width={16}>
-              <Form.Field>
-                <label>Choose your account</label>
-                <AccountSelector onChange={setAccount} />
-              </Form.Field>
-            </Grid.Column>
-          </Grid.Row>
           { account && (
             <Grid.Row>
               <Grid.Column width={16}>
@@ -90,12 +79,6 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
                 </Form.Field>
               </Grid.Column>
             </Grid.Row>
-          )}
-          { balance && (
-            <div className='account-balance'>
-              <label>Your account balance is</label>
-              <FormatBalance value={balance} className='balance' />
-            </div>
           )}
           <Grid.Row>
             <Grid.Column width={16}>
@@ -118,6 +101,7 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
                               id: collectionId,
                               description: collectionName16Decoder(collectionInfo.Description),
                               name: collectionName16Decoder(collectionInfo.Name),
+                              offchainSchema: collectionName8Decoder(collectionInfo.OffchainSchema),
                               prefix: collectionName8Decoder(collectionInfo.TokenPrefix)
                             })}
                           >
@@ -136,7 +120,7 @@ function CollectionSearch({ api, addCollection, account, balance, collections, s
           </Grid.Row>
         </Grid>
       </Form>
-    </>
+    </Card>
   )
 }
 

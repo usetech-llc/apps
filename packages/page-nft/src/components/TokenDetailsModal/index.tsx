@@ -1,12 +1,9 @@
 // Copyright 2020 UseTech authors & contributors
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
-import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
-import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
-import Dimmer from 'semantic-ui-react/dist/commonjs/modules/Dimmer';
+import { Button } from '@polkadot/react-components';
 
 import './tokenDetailsModal.scss';
-import useCollection from '../../hooks/useCollection';
 // import arrayBufferToBase64 from '../utils/arrayBufferToBase64';
 
 interface Props {
@@ -14,19 +11,15 @@ interface Props {
   collectionId: string;
   closeModal: () => void;
   tokenId: string;
+  tokenImageUrl: string;
 }
 
-function TokenDetailsModal({ api, collectionId, closeModal, tokenId }: Props): React.ReactElement<Props> {
-  const { getCollectionImagesUrl } = useCollection(api);
-  const [tokenDetails, setTokenDetails] = useState<string | null>(null);
+function TokenDetailsModal({ api, collectionId, closeModal, tokenId, tokenImageUrl }: Props): React.ReactElement<Props> {
 
   const getTokenDetails = useCallback(async () => {
     if ((!collectionId && collectionId !== '0') || (!tokenId && tokenId !== '0')) {
       return;
     }
-    // const details = (await getDetailedTokenInfo(collectionId, tokenId));
-    const details = (await getCollectionImagesUrl(collectionId)) as string;
-    setTokenDetails(details);
   }, [collectionId, tokenId]);
 
   useEffect(() => {
@@ -38,20 +31,12 @@ function TokenDetailsModal({ api, collectionId, closeModal, tokenId }: Props): R
     <Modal size='tiny' open onClose={closeModal}>
       <Modal.Header>NFT Token Details</Modal.Header>
       <Modal.Content image>
-        { tokenDetails && (
-          <img className='token-image' id="ItemPreview" src={`${tokenDetails}/punk${tokenId}.png`} />
-        ) || (
-          <Dimmer active>
-            <Loader>Loading token details...</Loader>
-          </Dimmer>
-        )}
+        <img className='token-image' id="ItemPreview" src={tokenImageUrl} />
       </Modal.Content>
       <Modal.Actions>
         <Button
-          positive
-          icon='checkmark'
-          labelPosition='right'
-          content="Ok"
+          icon='check'
+          label='Ok'
           onClick={closeModal}
         />
       </Modal.Actions>

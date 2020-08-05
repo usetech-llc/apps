@@ -1,11 +1,29 @@
 .App {
   text-align: left;
   padding: 30px;
+  width: 1280px;
+
+  .card {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .account-balance {
+    .row {
+      padding: 0;
+    }
+  }
+
+  .balance-block {
+    padding-top: 20px;
+    line-height: 25px;
+
+    .balance {
+      font-size: 30px;
+    }
+  }
 
   .current-tokens {
-    width: 100% !important;
-    padding: 15px;
-
     .header {
       background-color: #80808069;
     }
