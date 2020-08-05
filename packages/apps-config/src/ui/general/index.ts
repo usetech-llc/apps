@@ -9,6 +9,7 @@ const chainKulupu = '#003366';
 const chainPolkadot = '#e6007a';
 const chainKusama = '#000'; // '#d32e79';
 const chainWestend = '#da68a7';
+const nftTestnet = '#A2DD18';
 
 const nodeCentrifuge = '#fcc367';
 const nodeEdgeware = '#0a95df';
@@ -23,7 +24,8 @@ const chainColors: Record<string, any> = [
   ['Kusama CC3', chainKusama],
   ['Polkadot', chainPolkadot],
   ['Polkadot CC1', chainPolkadot],
-  ['Westend', chainWestend]
+  ['Westend', chainWestend],
+  ['NFT Testnet', nftTestnet]
 ].reduce((colors, [chain, color]): Record<string, any> => ({
   ...colors,
   [chain.toLowerCase()]: color
