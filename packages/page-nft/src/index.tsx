@@ -3,7 +3,6 @@
 // global app props and types
 import { AppProps as Props } from '@polkadot/react-components/types';
 import { ActionStatus } from '@polkadot/react-components/Status/types';
-// import { MessageInterface } from './components/types';
 
 // external imports
 import React, { useCallback, useEffect, useState, useRef, useContext } from 'react';
@@ -36,14 +35,12 @@ function App ({ className }: Props): React.ReactElement<Props> {
   const [collections, setCollections] = useState<Array<NftCollectionInterface>>([]);
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface | null>(null);
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
-  // const [messages, setMessages] = useState<Array<MessageInterface>>([]);
   const [canTransferTokens, setCanTransferTokens] = useState<boolean>(false);
   const { getTokensOfCollection } = useCollection(api);
   const { balance, existentialDeposit } = useBalance(account, api);
   const currentAccount = useRef<string>();
 
   const addCollection = useCallback(({ id, name, prefix, description, offchainSchema }: NftCollectionInterface) => {
-    console.log('offchainSchema', offchainSchema);
     setCollections([ ...collections, { id, name, prefix, description, offchainSchema } ]);
   }, [collections]);
 
@@ -214,9 +211,6 @@ function App ({ className }: Props): React.ReactElement<Props> {
           )}
         </>
       )}
-      {/*<MessageWrapper
-        messages={messages}
-      />*/}
     </div>
   );
 }

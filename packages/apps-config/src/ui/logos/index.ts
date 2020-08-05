@@ -6,6 +6,7 @@
 
 // anything for a specific chain, most would probably fit into the node category (but allow for chain-specific)
 import chainKusama from './chains/kusama-128.gif';
+import chainUseTech from './chains/usetech.svg';
 
 // defaults for the node type, assuming we don't have a specific chain, but rather match on the implementation
 import nodeAcala from './nodes/acala-circle.svg';
@@ -29,7 +30,8 @@ const chainLogos: Record<string, any> = [
   ['Kusama', chainKusama], // new name after CC3
   ['Kusama CC1', chainKusama],
   ['Kusama CC2', chainKusama],
-  ['Kusama CC3', chainKusama]
+  ['Kusama CC3', chainKusama],
+  ['NFT Testnet', chainUseTech]
 ].reduce((logos, [chain, logo]): Record<string, any> => ({
   ...logos,
   [(chain as string).toLowerCase()]: logo
