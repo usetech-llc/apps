@@ -13,12 +13,13 @@ interface Props {
   account: string | null;
   api?: any;
   canTransferTokens: boolean;
-  collectionId: number | null;
+  collectionId: number;
   closeModal: () => void;
-  tokenId: string | null;
+  tokenId: string;
+  updateTokens: (collectionId: number) => void;
 }
 
-function TransferModal({ account, api, canTransferTokens, collectionId, closeModal, tokenId }: Props): React.ReactElement<Props> {
+function TransferModal({ account, api, canTransferTokens, collectionId, closeModal, tokenId, updateTokens }: Props): React.ReactElement<Props> {
   const [recipient, setRecipient] = useState<string | null>(null);
   const { balance } = useBalance(recipient, api);
   // @ts-ignore
@@ -66,6 +67,7 @@ function TransferModal({ account, api, canTransferTokens, collectionId, closeMod
           isDisabled={!canTransferTokens}
           label='Submit'
           onStart={closeModal}
+          onSuccess={updateTokens.bind(null, collectionId)}
           params={[recipient, collectionId, tokenId, 0]}
           tx='nft.transfer'
         />

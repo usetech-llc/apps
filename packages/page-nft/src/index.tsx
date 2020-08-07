@@ -28,6 +28,7 @@ function App ({ className }: Props): React.ReactElement<Props> {
   const [openDetailedInformation, setOpenDetailedInformation] = useState<{ collection: NftCollectionInterface, tokenId: string } | null>(null);
   const [openTransfer, setOpenTransfer] = useState<{ collectionId: number, tokenId: string } | null>(null);
   const [account, setAccount] = useState<string | null>(null);
+  const [shouldUpdateTokens, setShouldUpdateTokens] = useState<number | null>(null);
   const { api } = useApi();
   const [collections, setCollections] = useState<Array<NftCollectionInterface>>(collectionsStorage);
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface | null>(null);
@@ -71,6 +72,10 @@ function App ({ className }: Props): React.ReactElement<Props> {
     }
     return '';
   },  []);
+
+  const updateTokens = useCallback((collectionId) => {
+    setShouldUpdateTokens(collectionId );
+  }, []);
 
   useEffect(() => {
     if (currentAccount.current && account !== currentAccount.current) {
@@ -144,6 +149,8 @@ function App ({ className }: Props): React.ReactElement<Props> {
                 openTransferModal={openTransferModal}
                 openDetailedInformationModal={openDetailedInformationModal}
                 removeCollection={removeCollection}
+                setShouldUpdateTokens={setShouldUpdateTokens}
+                shouldUpdateTokens={shouldUpdateTokens}
                 tokenUrl={tokenUrl}
               />
             </td>
@@ -158,7 +165,7 @@ function App ({ className }: Props): React.ReactElement<Props> {
           tokenUrl={tokenUrl}
         />
       )}
-      { openTransfer && (
+      { openTransfer && openTransfer.tokenId && openTransfer.collectionId && (
         <TransferModal
           account={account}
           api={api}
@@ -166,6 +173,7 @@ function App ({ className }: Props): React.ReactElement<Props> {
           closeModal={closeTransferModal}
           collectionId={openTransfer.collectionId}
           tokenId={openTransfer.tokenId}
+          updateTokens={updateTokens}
         />
       )}
     </main>

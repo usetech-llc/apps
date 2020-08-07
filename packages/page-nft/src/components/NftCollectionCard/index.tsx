@@ -15,23 +15,32 @@ interface Props {
   removeCollection: (collection: number) => void;
   openTransferModal: (collectionId: number, tokenId: string) => void;
   openDetailedInformationModal: (collection: NftCollectionInterface, tokenId: string) => void;
+  setShouldUpdateTokens: (collectionId: number | null) => void;
+  shouldUpdateTokens: number | null;
   tokenUrl: (collection: NftCollectionInterface, tokenId: string) => string;
 }
 
-function NftCollectionCard({ account, canTransferTokens, collection, removeCollection, openTransferModal, openDetailedInformationModal, tokenUrl }: Props): React.ReactElement<Props> {
+function NftCollectionCard({ account, canTransferTokens, collection, removeCollection, openTransferModal, openDetailedInformationModal, setShouldUpdateTokens, shouldUpdateTokens, tokenUrl }: Props): React.ReactElement<Props> {
   const [opened, setOpened] = useState(false);
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
   const { api } = useApi();
   const { getTokensOfCollection } = useCollection(api);
   const currentAccount = useRef<string | null | undefined>();
 
-  const openCollection = useCallback(async () => {
-    if (!opened && account) {
-      const tokensOfCollection = (await getTokensOfCollection(collection.id, account));
-      setTokensOfCollection(tokensOfCollection);
+  const openCollection = useCallback(() => {
+    if (!opened) {
+      void updateTokens();
     }
     setOpened(!opened);
   }, [account, opened, setTokensOfCollection]);
+
+  const updateTokens = useCallback(async () => {
+    if (!account) {
+      return;
+    }
+    const tokensOfCollection = (await getTokensOfCollection(collection.id, account));
+    setTokensOfCollection(tokensOfCollection);
+  }, [account, collection, setTokensOfCollection]);
 
   // clear search results if account changed
   useEffect(() => {
@@ -41,6 +50,13 @@ function NftCollectionCard({ account, canTransferTokens, collection, removeColle
     }
     currentAccount.current = account;
   }, [account, currentAccount, setOpened, setTokensOfCollection]);
+
+  useEffect(() => {
+    if (shouldUpdateTokens && shouldUpdateTokens === collection.id) {
+      void updateTokens();
+      setShouldUpdateTokens(null);
+    }
+  }, [shouldUpdateTokens]);
 
   return (
     <ExpanderWithCallBack
