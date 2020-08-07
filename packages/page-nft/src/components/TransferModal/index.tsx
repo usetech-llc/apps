@@ -1,10 +1,9 @@
 // Copyright 2020 UseTech authors & contributors
 
-import React, { useState, useCallback, ChangeEvent } from 'react';
+import React, { useState, useCallback } from 'react';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
-import { Button } from '@polkadot/react-components';
-import Input, { InputOnChangeData } from 'semantic-ui-react/dist/commonjs/elements/Input/Input';
+import { Button, Input } from '@polkadot/react-components';
 
 import './transferModal.scss';
 import useBalance from "../../hooks/useBalance";
@@ -14,7 +13,7 @@ interface Props {
   account: string | null;
   api?: any;
   canTransferTokens: boolean;
-  collectionId: string | null;
+  collectionId: number | null;
   closeModal: () => void;
   tokenId: string | null;
 }
@@ -25,25 +24,34 @@ function TransferModal({ account, api, canTransferTokens, collectionId, closeMod
   // @ts-ignore
   const [validationError, setValidationError] = useState<string | null>(null);
 
-  const setRecipientAddress = useCallback((e: ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => {
+  const setRecipientAddress = useCallback((value) => {
     // setRecipient
-    if (!data.value) {
+    if (!value) {
       console.log('setRecipientAddress error');
     }
-    if(data.value.length !== '5D73wtH5pqN99auP4b6KQRQAbketaSj4StkBJxACPBUAUdiq'.length) {
+    if(value.length !== '5D73wtH5pqN99auP4b6KQRQAbketaSj4StkBJxACPBUAUdiq'.length) {
       setValidationError('Wrong address');
     }
-    setRecipient(data.value);
+    setRecipient(value);
   }, []);
   console.log('balance', balance);
+
+  // @todo address validation
+
   return (
     <Modal size='tiny' open onClose={closeModal}>
-      <Modal.Header>Transfer NFT Token</Modal.Header>
+      <Modal.Header>
+        <h2>Transfer NFT Token</h2>
+      </Modal.Header>
       <Modal.Content image>
         <Form className='transfer-form'>
           <Form.Field>
-            <label>Please enter an address you want to transfer</label>
-            <Input onChange={setRecipientAddress} placeholder='Recipient address' />
+            <Input
+              className='label-small'
+              label='Please enter an address you want to transfer'
+              onChange={setRecipientAddress}
+              placeholder='Recipient address'
+            />
           </Form.Field>
         </Form>
       </Modal.Content>

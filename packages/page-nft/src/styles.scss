@@ -1,7 +1,14 @@
-.App {
+.nft--App {
   text-align: left;
-  padding: 30px;
   width: 1280px;
+
+  header {
+    padding: 2em 0;
+  }
+
+  .collection-actions {
+    width: 200px;
+  }
 
   .card {
     width: 100%;
@@ -15,7 +22,6 @@
   }
 
   .balance-block {
-    padding-top: 20px;
     line-height: 25px;
 
     .balance {

@@ -1,9 +1,17 @@
 .nft-collection-item {
 
-  &.active {
+  .table {
+    margin: 15px 0;
 
-    .card.nft-collection-card {
-      border: 1px solid #94c900;
+    .token-row {
+
+      .token-image {
+        width: 60px;
+      }
+
+      .token-actions {
+        width: 200px;
+      }
     }
   }
 }

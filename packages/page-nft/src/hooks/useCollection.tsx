@@ -6,7 +6,7 @@ interface PolkadotApiInterface {
 }
 
 export interface NftCollectionInterface {
-  id: string;
+  id: number;
   name: string;
   prefix: string;
   description: string;
@@ -33,6 +33,19 @@ function useCollection(api: PolkadotApiInterface | null) {
     if (!api) {
       return;
     }
+    // ReFungibleItemList for re-fungible
+    /*
+      "ReFungibleItemType": {
+        "Collection": "u64",
+        "Owner": "Vec<Ownership<AccountId>>",
+        "Data": "Vec<u8>"
+      },
+
+      "Ownership": {
+          "owner": "AccountId",
+          "fraction": "u128"
+       },
+     */
     return (await api.query.nft.itemList([collectionId, tokenId]));
   }, [api]);
 

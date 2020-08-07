@@ -39,6 +39,7 @@ export { default as Editor } from './Editor';
 export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as Event } from './Event';
 export { default as Expander } from './Expander';
+export { default as ExpanderWithCallBack } from './ExpanderWithCallBack';
 export { default as Extrinsic } from './Extrinsic';
 export { default as FilterOverlay } from './FilterOverlay';
 export { default as Forget } from './Forget';

@@ -36,11 +36,19 @@ const defaultNftTypes = `{
     "Owner": "AccountId",
     "Data": "Vec<u8>"
   },
+  "Ownership": {
+    "owner": "AccountId",
+    "fraction": "u128"
+  },
+  "ReFungibleItemType": {
+    "Collection": "u64",
+    "Owner": "Vec<Ownership<AccountId>>",
+    "Data": "Vec<u8>"
+  },
   "CollectionType": {
     "Owner": "AccountId",
     "Mode": "CollectionMode",
     "Access": "u8",
-    "NextItemId": "u64",
     "DecimalPoints": "u32",
     "Name": "Vec<u16>",
     "Description": "Vec<u16>",
