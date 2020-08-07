@@ -3,33 +3,33 @@ import React, { useCallback, useEffect } from 'react';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 import { Button } from '@polkadot/react-components';
 
+import { NftCollectionInterface } from '../../hooks/useCollection';
 import './tokenDetailsModal.scss';
 
 interface Props {
-  collectionId: string;
+  collection: NftCollectionInterface;
   closeModal: () => void;
   tokenId: string;
-  tokenImageUrl: string;
+  tokenUrl: (collection: NftCollectionInterface, tokenId: string) => string;
 }
 
-function TokenDetailsModal({ collectionId, closeModal, tokenId, tokenImageUrl }: Props): React.ReactElement<Props> {
+function TokenDetailsModal({ collection, closeModal, tokenId, tokenUrl }: Props): React.ReactElement<Props> {
 
   const getTokenDetails = useCallback(async () => {
-    if ((!collectionId && collectionId !== '0') || (!tokenId && tokenId !== '0')) {
+    if ((!collection.id && collection.id !== 0) || (!tokenId && tokenId !== '0')) {
       return;
     }
-  }, [collectionId, tokenId]);
+  }, [collection.id, tokenId]);
 
   useEffect(() => {
     void getTokenDetails();
   }, []);
 
-  // {/*<img className='token-image' id="ItemPreview" src={`data:image/png;base64,${arrayBufferToBase64(tokenDetails.Data)}`} />*/}
   return (
     <Modal size='tiny' open onClose={closeModal}>
       <Modal.Header>NFT Token Details</Modal.Header>
       <Modal.Content image>
-        <img className='token-image' id="ItemPreview" src={tokenImageUrl} />
+        <img className='token-image' id="ItemPreview" src={tokenUrl(collection, tokenId)} />
       </Modal.Content>
       <Modal.Actions>
         <Button

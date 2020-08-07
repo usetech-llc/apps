@@ -14,9 +14,11 @@ interface Props {
   collection: NftCollectionInterface;
   removeCollection: (collection: number) => void;
   openTransferModal: (collectionId: number, tokenId: string) => void;
+  openDetailedInformationModal: (collection: NftCollectionInterface, tokenId: string) => void;
+  tokenUrl: (collection: NftCollectionInterface, tokenId: string) => string;
 }
 
-function NftCollectionCard({ account, canTransferTokens, collection, removeCollection, openTransferModal }: Props): React.ReactElement<Props> {
+function NftCollectionCard({ account, canTransferTokens, collection, removeCollection, openTransferModal, openDetailedInformationModal, tokenUrl }: Props): React.ReactElement<Props> {
   const [opened, toggleOpened] = useState(false);
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
   const { api } = useApi();
@@ -30,16 +32,6 @@ function NftCollectionCard({ account, canTransferTokens, collection, removeColle
     }
     toggleOpened(!opened);
   }, []);
-
-  const tokenUrl = useCallback((tokenId: string) => {
-    if (collection.offchainSchema.indexOf('image{id}.pn') !== -1) {
-      return collection.offchainSchema.replace('image{id}.pn', `image${tokenId}.png`)
-    }
-    if (collection.offchainSchema.indexOf('image{id}.jp') !== -1) {
-      return collection.offchainSchema.replace('image{id}.jp', `image${tokenId}.jpg`)
-    }
-    return '';
-  },  []);
 
   // clear search results if account changed
   useEffect(() => {
@@ -72,7 +64,9 @@ function NftCollectionCard({ account, canTransferTokens, collection, removeColle
         { tokensOfCollection.map(token => (
             <tr className='token-row' key={token}>
               <td className='token-image'>
-                <Item.Image size='mini' src={tokenUrl(token)} />
+                <a onClick={openDetailedInformationModal.bind(null, collection, token)}>
+                  <Item.Image size='mini' src={tokenUrl(collection, token)} />
+                </a>
               </td>
               <td className='token-name'>
                 {collection.prefix} #{token.toString()}

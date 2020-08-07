@@ -13,6 +13,7 @@ import { StatusContext, Table } from '@polkadot/react-components';
 
 // local imports and components
 import TransferModal from './components/TransferModal/';
+import TokenDetailsModal from './components/TokenDetailsModal/';
 import NftCollectionCard from './components/NftCollectionCard';
 import { NftCollectionInterface } from './hooks/useCollection';
 import CollectionSearch from './components/CollectionSearch';
@@ -23,10 +24,12 @@ import './styles.scss';
 
 function App ({ className }: Props): React.ReactElement<Props> {
   const { queueAction } = useContext(StatusContext);
+  const collectionsStorage = JSON.parse(localStorage.getItem('tokenCollections') || '[]');
+  const [openDetailedInformation, setOpenDetailedInformation] = useState<{ collection: NftCollectionInterface, tokenId: string } | null>(null);
   const [openTransfer, setOpenTransfer] = useState<{ collectionId: number, tokenId: string } | null>(null);
   const [account, setAccount] = useState<string | null>(null);
   const { api } = useApi();
-  const [collections, setCollections] = useState<Array<NftCollectionInterface>>([]);
+  const [collections, setCollections] = useState<Array<NftCollectionInterface>>(collectionsStorage);
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface | null>(null);
   const [canTransferTokens, setCanTransferTokens] = useState<boolean>(false);
   const { balance, existentialDeposit } = useBalance(account, api);
@@ -51,12 +54,34 @@ function App ({ className }: Props): React.ReactElement<Props> {
     setOpenTransfer(null);
   }, []);
 
+  const openDetailedInformationModal = useCallback((collection: NftCollectionInterface, tokenId: string) => {
+    setOpenDetailedInformation({ collection, tokenId });
+  }, []);
+
+  const closeDetailedInformationModal = useCallback(() => {
+    setOpenDetailedInformation(null);
+  }, []);
+
+  const tokenUrl = useCallback((collection, tokenId: string): string => {
+    if (collection.offchainSchema.indexOf('image{id}.pn') !== -1) {
+      return collection.offchainSchema.replace('image{id}.pn', `image${tokenId}.png`)
+    }
+    if (collection.offchainSchema.indexOf('image{id}.jp') !== -1) {
+      return collection.offchainSchema.replace('image{id}.jp', `image${tokenId}.jpg`)
+    }
+    return '';
+  },  []);
+
   useEffect(() => {
-    if (account && account !== currentAccount.current) {
+    if (currentAccount.current && account !== currentAccount.current) {
       setCollections([]);
     }
     currentAccount.current = account;
   }, [account]);
+
+  useEffect(() => {
+    localStorage.setItem('tokenCollections', JSON.stringify(collections));
+  }, [collections]);
 
   useEffect(() => {
     if (existentialDeposit && balance) {
@@ -117,12 +142,22 @@ function App ({ className }: Props): React.ReactElement<Props> {
                 canTransferTokens={canTransferTokens}
                 collection={collection}
                 openTransferModal={openTransferModal}
+                openDetailedInformationModal={openDetailedInformationModal}
                 removeCollection={removeCollection}
+                tokenUrl={tokenUrl}
               />
             </td>
           </tr>
         ))}
       </Table>
+      { openDetailedInformation && (
+        <TokenDetailsModal
+          collection={openDetailedInformation.collection}
+          closeModal={closeDetailedInformationModal}
+          tokenId={openDetailedInformation.tokenId}
+          tokenUrl={tokenUrl}
+        />
+      )}
       { openTransfer && (
         <TransferModal
           account={account}
