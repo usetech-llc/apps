@@ -26,7 +26,7 @@ function TokenDetailsModal({ collection, closeModal, tokenId, tokenUrl }: Props)
   }, []);
 
   return (
-    <Modal size='tiny' open onClose={closeModal}>
+    <Modal className="token-details" size='tiny' open onClose={closeModal}>
       <Modal.Header>NFT Token Details</Modal.Header>
       <Modal.Content image>
         <img className='token-image' id="ItemPreview" src={tokenUrl(collection, tokenId)} />

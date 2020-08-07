@@ -19,7 +19,7 @@ interface Props {
 }
 
 function NftCollectionCard({ account, canTransferTokens, collection, removeCollection, openTransferModal, openDetailedInformationModal, tokenUrl }: Props): React.ReactElement<Props> {
-  const [opened, toggleOpened] = useState(false);
+  const [opened, setOpened] = useState(false);
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
   const { api } = useApi();
   const { getTokensOfCollection } = useCollection(api);
@@ -30,17 +30,17 @@ function NftCollectionCard({ account, canTransferTokens, collection, removeColle
       const tokensOfCollection = (await getTokensOfCollection(collection.id, account));
       setTokensOfCollection(tokensOfCollection);
     }
-    toggleOpened(!opened);
-  }, []);
+    setOpened(!opened);
+  }, [account, opened, setTokensOfCollection]);
 
   // clear search results if account changed
   useEffect(() => {
     if (currentAccount.current && currentAccount.current !== account) {
-      toggleOpened(false);
+      setOpened(false);
       setTokensOfCollection([]);
     }
     currentAccount.current = account;
-  }, [account]);
+  }, [account, currentAccount, setOpened, setTokensOfCollection]);
 
   return (
     <ExpanderWithCallBack
