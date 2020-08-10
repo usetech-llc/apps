@@ -4,23 +4,27 @@ import React, { useState, useCallback } from 'react';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
 import { Button, Input } from '@polkadot/react-components';
+import { TxButton } from '@polkadot/react-components/index';
 
 import './transferModal.scss';
-import useBalance from "../../hooks/useBalance";
-import {TxButton} from "@polkadot/react-components/index";
+import useBalance from '../../hooks/useBalance';
+import { NftCollectionInterface } from '../../hooks/useCollection';
 
 interface Props {
   account: string | null;
   api?: any;
   canTransferTokens: boolean;
-  collectionId: number;
+  collection: NftCollectionInterface;
   closeModal: () => void;
   tokenId: string;
   updateTokens: (collectionId: number) => void;
 }
 
-function TransferModal({ account, api, canTransferTokens, collectionId, closeModal, tokenId, updateTokens }: Props): React.ReactElement<Props> {
+function TransferModal({ account, api, canTransferTokens, collection, closeModal, tokenId, updateTokens }: Props): React.ReactElement<Props> {
   const [recipient, setRecipient] = useState<string | null>(null);
+  const [tokenPart, setTokenPart] = useState<number | undefined>(0);
+  const [isError, setIsError] = useState<boolean>(false);
+  // @ts-ignore
   const { balance } = useBalance(recipient, api);
   // @ts-ignore
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -34,11 +38,22 @@ function TransferModal({ account, api, canTransferTokens, collectionId, closeMod
       setValidationError('Wrong address');
     }
     setRecipient(value);
+  }, [setValidationError, setRecipient]);
+
+  const setTokenPartToTransfer = useCallback((value) => {
+    if (!value) {
+      console.log('token part error');
+    }
+    if (value > 1 || value < (1 / Math.pow(10, collection.decimalPoints))) {
+      setIsError(true);
+    } else {
+      setIsError(false);
+    }
+    setTokenPart(parseFloat(value));
   }, []);
-  console.log('balance', balance);
 
   // @todo address validation
-
+  console.log('tokenPart', tokenPart, 'decimalPoints', collection.decimalPoints, 1 / Math.pow(10, collection.decimalPoints));
   return (
     <Modal size='tiny' open onClose={closeModal}>
       <Modal.Header>
@@ -54,6 +69,19 @@ function TransferModal({ account, api, canTransferTokens, collectionId, closeMod
               placeholder='Recipient address'
             />
           </Form.Field>
+          { collection.isReFungible && (
+            <Form.Field>
+              <Input
+                className='label-small'
+                min={1 / (collection.decimalPoints * 10)}
+                isError={isError}
+                label='Please enter part of token you want to transfer'
+                onChange={setTokenPartToTransfer}
+                placeholder='Part of re-fungible address'
+                type='number'
+              />
+            </Form.Field>
+          )}
         </Form>
       </Modal.Content>
       <Modal.Actions>
@@ -62,13 +90,14 @@ function TransferModal({ account, api, canTransferTokens, collectionId, closeMod
           label='Cancel'
           onClick={closeModal}
         />
+        {/* if tokenPart === 0 - it will transfer all parts of token */}
         <TxButton
           accountId={account}
-          isDisabled={!canTransferTokens}
+          isDisabled={!canTransferTokens || !recipient || isError}
           label='Submit'
           onStart={closeModal}
-          onSuccess={updateTokens.bind(null, collectionId)}
-          params={[recipient, collectionId, tokenId, 0]}
+          onSuccess={updateTokens.bind(null, collection.id)}
+          params={[recipient, collection.id, tokenId, tokenPart]}
           tx='nft.transfer'
         />
       </Modal.Actions>

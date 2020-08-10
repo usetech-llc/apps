@@ -7,6 +7,7 @@ import { VoidFn } from './types';
 import React, { useCallback, useState } from 'react';
 import SUIInput from 'semantic-ui-react/dist/commonjs/elements/Input/Input';
 import { isFunction, isUndefined } from '@polkadot/util';
+import styled from 'styled-components';
 
 import Labelled from './Labelled';
 
@@ -210,7 +211,15 @@ function Input ({ autoFocus = false, children, className, defaultValue, help, ic
   );
 }
 
-export default React.memo(Input);
+export default React.memo(styled(Input)`
+  .ui.input.error>input, .ui.input.error>input[type=number] {
+    background-color: #fff6f6;
+    border-color: #e0b4b4;
+    color: #9f3a38;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+`);
 
 export {
   isCopy,

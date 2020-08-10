@@ -61,6 +61,21 @@ function CollectionSearch({ api, addCollection, account, collections }: Props): 
     return String.fromCharCode(...collectionNameArr);
   }, []);
 
+  const addCollectionToAccount = useCallback(() => {
+    if (!collectionId || !collectionInfo) {
+      return;
+    }
+    addCollection({
+      id: collectionId,
+      decimalPoints: collectionInfo.DecimalPoints.toNumber(),
+      description: collectionName16Decoder(collectionInfo.Description),
+      name: collectionName16Decoder(collectionInfo.Name),
+      offchainSchema: collectionName8Decoder(collectionInfo.OffchainSchema),
+      prefix: collectionName8Decoder(collectionInfo.TokenPrefix),
+      isReFungible: collectionInfo.Mode.isReFungible,
+    })
+  }, [addCollection, collectionId, collectionInfo]);
+
   const header = useMemo(() => [
     ['Search results', 'start'],
     [],
@@ -115,13 +130,7 @@ function CollectionSearch({ api, addCollection, account, collections }: Props): 
                   isDisabled={hasThisCollection(collectionInfo)}
                   icon='plus'
                   label='Add collection'
-                  onClick={addCollection.bind(null, {
-                    id: collectionId,
-                    description: collectionName16Decoder(collectionInfo.Description),
-                    name: collectionName16Decoder(collectionInfo.Name),
-                    offchainSchema: collectionName8Decoder(collectionInfo.OffchainSchema),
-                    prefix: collectionName8Decoder(collectionInfo.TokenPrefix)
-                  })}
+                  onClick={addCollectionToAccount}
                 />
               </td>
             </tr>

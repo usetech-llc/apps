@@ -7,10 +7,12 @@ interface PolkadotApiInterface {
 
 export interface NftCollectionInterface {
   id: number;
-  name: string;
-  prefix: string;
+  decimalPoints: number;
   description: string;
+  isReFungible: boolean;
+  name: string;
   offchainSchema: string;
+  prefix: string;
 }
 
 // @todo api.query.nft.collection(id)

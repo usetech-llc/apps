@@ -26,7 +26,7 @@ function App ({ className }: Props): React.ReactElement<Props> {
   const { queueAction } = useContext(StatusContext);
   const collectionsStorage = JSON.parse(localStorage.getItem('tokenCollections') || '[]');
   const [openDetailedInformation, setOpenDetailedInformation] = useState<{ collection: NftCollectionInterface, tokenId: string } | null>(null);
-  const [openTransfer, setOpenTransfer] = useState<{ collectionId: number, tokenId: string } | null>(null);
+  const [openTransfer, setOpenTransfer] = useState<{ collection: NftCollectionInterface, tokenId: string } | null>(null);
   const [account, setAccount] = useState<string | null>(null);
   const [shouldUpdateTokens, setShouldUpdateTokens] = useState<number | null>(null);
   const { api } = useApi();
@@ -36,8 +36,11 @@ function App ({ className }: Props): React.ReactElement<Props> {
   const { balance, existentialDeposit } = useBalance(account, api);
   const currentAccount = useRef<string | null | undefined>();
 
-  const addCollection = useCallback(({ id, name, prefix, description, offchainSchema }: NftCollectionInterface) => {
-    setCollections([ ...collections, { id, name, prefix, description, offchainSchema } ]);
+  const addCollection = useCallback((collection: NftCollectionInterface) => {
+    setCollections([
+      ...collections,
+      collection
+    ]);
   }, [collections]);
 
   const removeCollection = useCallback((collectionToRemove) => {
@@ -47,8 +50,8 @@ function App ({ className }: Props): React.ReactElement<Props> {
     setCollections(collections.filter(item => item.id !== collectionToRemove));
   }, [collections]);
 
-  const openTransferModal = useCallback((collectionId, tokenId) => {
-    setOpenTransfer({ collectionId, tokenId });
+  const openTransferModal = useCallback((collection, tokenId) => {
+    setOpenTransfer({ collection, tokenId });
   }, []);
 
   const closeTransferModal = useCallback(() => {
@@ -165,13 +168,13 @@ function App ({ className }: Props): React.ReactElement<Props> {
           tokenUrl={tokenUrl}
         />
       )}
-      { openTransfer && openTransfer.tokenId && openTransfer.collectionId && (
+      { openTransfer && openTransfer.tokenId && openTransfer.collection && (
         <TransferModal
           account={account}
           api={api}
           canTransferTokens={canTransferTokens}
           closeModal={closeTransferModal}
-          collectionId={openTransfer.collectionId}
+          collection={openTransfer.collection}
           tokenId={openTransfer.tokenId}
           updateTokens={updateTokens}
         />

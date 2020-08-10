@@ -13,7 +13,7 @@ interface Props {
   canTransferTokens: boolean;
   collection: NftCollectionInterface;
   removeCollection: (collection: number) => void;
-  openTransferModal: (collectionId: number, tokenId: string) => void;
+  openTransferModal: (collection: NftCollectionInterface, tokenId: string) => void;
   openDetailedInformationModal: (collection: NftCollectionInterface, tokenId: string) => void;
   setShouldUpdateTokens: (collectionId: number | null) => void;
   shouldUpdateTokens: number | null;
@@ -57,7 +57,7 @@ function NftCollectionCard({ account, canTransferTokens, collection, removeColle
       setShouldUpdateTokens(null);
     }
   }, [shouldUpdateTokens]);
-
+  console.log('collection', collection, 'tokensOfCollection', tokensOfCollection);
   return (
     <ExpanderWithCallBack
       className='nft-collection-item'
@@ -88,7 +88,7 @@ function NftCollectionCard({ account, canTransferTokens, collection, removeColle
                 {collection.prefix} #{token.toString()}
               </td>
               <td className='token-actions'>
-                <Button disabled={!canTransferTokens} onClick={openTransferModal.bind(null, collection.id, token)} primary>Transfer token</Button>
+                <Button disabled={!canTransferTokens} onClick={openTransferModal.bind(null, collection, token)} primary>Transfer token</Button>
               </td>
             </tr>
         ))}
