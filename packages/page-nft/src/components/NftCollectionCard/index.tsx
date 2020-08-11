@@ -88,6 +88,7 @@ function NftCollectionCard({ account, canTransferTokens, collection, removeColle
               key={token}
               openTransferModal={openTransferModal}
               openDetailedInformationModal={openDetailedInformationModal}
+              shouldUpdateTokens={shouldUpdateTokens}
               token={token}
               tokenUrl={tokenUrl}
             />

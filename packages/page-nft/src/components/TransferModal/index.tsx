@@ -21,7 +21,7 @@ interface Props {
 
 function TransferModal({ account, balance, canTransferTokens, collection, closeModal, tokenId, updateTokens }: Props): React.ReactElement<Props> {
   const [recipient, setRecipient] = useState<string | null>(null);
-  const [tokenPart, setTokenPart] = useState<number | undefined>(0);
+  const [tokenPart, setTokenPart] = useState<number>(0);
   const [isError, setIsError] = useState<boolean>(false);
   // @ts-ignore
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -94,7 +94,7 @@ function TransferModal({ account, balance, canTransferTokens, collection, closeM
           label='Submit'
           onStart={closeModal}
           onSuccess={updateTokens.bind(null, collection.id)}
-          params={[recipient, collection.id, tokenId, tokenPart]}
+          params={[recipient, collection.id, tokenId, (tokenPart * Math.pow(10, collection.decimalPoints))]}
           tx='nft.transfer'
         />
       </Modal.Actions>

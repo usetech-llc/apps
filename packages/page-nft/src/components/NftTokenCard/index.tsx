@@ -13,11 +13,12 @@ interface Props {
   collection: NftCollectionInterface;
   openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
   openDetailedInformationModal: (collection: NftCollectionInterface, tokenId: string) => void;
+  shouldUpdateTokens: number | null;
   token: string;
   tokenUrl: (collection: NftCollectionInterface, tokenId: string) => string;
 }
 
-function NftTokenCard({ account, canTransferTokens, collection, openTransferModal, openDetailedInformationModal, token, tokenUrl }: Props): React.ReactElement<Props> {
+function NftTokenCard({ account, canTransferTokens, collection, openTransferModal, openDetailedInformationModal, shouldUpdateTokens, token, tokenUrl }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const { getDetailedRefungibleTokenInfo } = useCollection(api);
   const [balance, setBalance] = useState<number>(0);
@@ -35,6 +36,12 @@ function NftTokenCard({ account, canTransferTokens, collection, openTransferModa
       console.error('token balance calculation error', e);
     }
   }, []);
+
+  useEffect(() => {
+    if (shouldUpdateTokens && shouldUpdateTokens === collection.id) {
+      void getTokenDetails();
+    }
+  }, [shouldUpdateTokens]);
 
   useEffect(() => {
     void getTokenDetails();

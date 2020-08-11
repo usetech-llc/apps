@@ -78,7 +78,7 @@ function App ({ className }: Props): React.ReactElement<Props> {
   },  []);
 
   const updateTokens = useCallback((collectionId) => {
-    setShouldUpdateTokens(collectionId );
+    setShouldUpdateTokens(collectionId);
   }, []);
 
   useEffect(() => {
