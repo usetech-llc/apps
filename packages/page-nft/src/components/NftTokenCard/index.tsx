@@ -1,31 +1,68 @@
 // Copyright 2020 UseTech authors & contributors
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
+import useCollection, { NftCollectionInterface } from '../../hooks/useCollection';
 import './NftTokenCard.scss';
+import {useApi} from "@polkadot/react-hooks/index";
 
 interface Props {
+  account: string;
   canTransferTokens: boolean;
-  collectionPrefix: string;
-  openTransferModal: (tokenId: string) => void;
-  openDetailedInformationModal: (tokenId: string) => void;
-  tokenId: string;
-  tokenImageUrl: string;
+  collection: NftCollectionInterface;
+  openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
+  openDetailedInformationModal: (collection: NftCollectionInterface, tokenId: string) => void;
+  token: string;
+  tokenUrl: (collection: NftCollectionInterface, tokenId: string) => string;
 }
 
-function NftTokenCard({ canTransferTokens, collectionPrefix, openTransferModal, openDetailedInformationModal, tokenId, tokenImageUrl }: Props): React.ReactElement<Props> {
+function NftTokenCard({ account, canTransferTokens, collection, openTransferModal, openDetailedInformationModal, token, tokenUrl }: Props): React.ReactElement<Props> {
+  const { api } = useApi();
+  const { getDetailedRefungibleTokenInfo } = useCollection(api);
+  const [balance, setBalance] = useState<number>(0);
+
+  const getTokenDetails = useCallback(async () => {
+    try {
+      const tokenDetails = (await getDetailedRefungibleTokenInfo(collection.id, token));
+      const owner = tokenDetails.Owner.find((item: any) => item.owner.toString() === account);
+      if (!owner) {
+        return;
+      }
+      const balance = owner.fraction.toNumber() / Math.pow(10, collection.decimalPoints);
+      setBalance(balance);
+    } catch (e) {
+      console.error('token balance calculation error', e);
+    }
+  }, []);
+
+  useEffect(() => {
+    void getTokenDetails();
+  }, []);
+
+  if (!balance) {
+    return <></>;
+  }
+
   return (
-    <Item className='nft-token-card'>
-      <Item.Image size='mini' src={tokenImageUrl} />
-      <Item.Content verticalAlign='middle'>
-        <Item.Header as='a'>{collectionPrefix} #{tokenId.toString()}</Item.Header>
-        <Item.Extra>
-          <Button onClick={openDetailedInformationModal.bind(null, tokenId)}>Show detail information</Button>
-          <Button disabled={!canTransferTokens} onClick={openTransferModal.bind(null, tokenId)} primary>Transfer token</Button>
-        </Item.Extra>
-      </Item.Content>
-    </Item>
+    <tr className='token-row' key={token}>
+      <td className='token-image'>
+        <a onClick={openDetailedInformationModal.bind(null, collection, token)}>
+          <Item.Image size='mini' src={tokenUrl(collection, token)} />
+        </a>
+      </td>
+      <td className='token-name'>
+        {collection.prefix} #{token.toString()}
+      </td>
+      { collection.isReFungible && (
+        <td className='token-balance'>
+          Balance: {balance}
+        </td>
+      )}
+      <td className='token-actions'>
+        <Button disabled={!canTransferTokens} onClick={openTransferModal.bind(null, collection, token, balance)} primary>Transfer token</Button>
+      </td>
+    </tr>
   )
 }
 

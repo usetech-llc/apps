@@ -1,11 +1,11 @@
 // Copyright 2020 UseTech authors & contributors
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
-import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 import { ExpanderWithCallBack } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks';
 
 import useCollection, { NftCollectionInterface } from '../../hooks/useCollection';
+import NftTokenCard from '../NftTokenCard';
 import './NftCollectionCard.scss';
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
   canTransferTokens: boolean;
   collection: NftCollectionInterface;
   removeCollection: (collection: number) => void;
-  openTransferModal: (collection: NftCollectionInterface, tokenId: string) => void;
+  openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
   openDetailedInformationModal: (collection: NftCollectionInterface, tokenId: string) => void;
   setShouldUpdateTokens: (collectionId: number | null) => void;
   shouldUpdateTokens: number | null;
@@ -57,7 +57,7 @@ function NftCollectionCard({ account, canTransferTokens, collection, removeColle
       setShouldUpdateTokens(null);
     }
   }, [shouldUpdateTokens]);
-  console.log('collection', collection, 'tokensOfCollection', tokensOfCollection);
+
   return (
     <ExpanderWithCallBack
       className='nft-collection-item'
@@ -77,20 +77,17 @@ function NftCollectionCard({ account, canTransferTokens, collection, removeColle
     >
       <table className='table'>
         <tbody>
-        { tokensOfCollection.map(token => (
-            <tr className='token-row' key={token}>
-              <td className='token-image'>
-                <a onClick={openDetailedInformationModal.bind(null, collection, token)}>
-                  <Item.Image size='mini' src={tokenUrl(collection, token)} />
-                </a>
-              </td>
-              <td className='token-name'>
-                {collection.prefix} #{token.toString()}
-              </td>
-              <td className='token-actions'>
-                <Button disabled={!canTransferTokens} onClick={openTransferModal.bind(null, collection, token)} primary>Transfer token</Button>
-              </td>
-            </tr>
+        { account && tokensOfCollection.map(token => (
+            <NftTokenCard
+              account={account}
+              canTransferTokens={canTransferTokens}
+              collection={collection}
+              key={token}
+              openTransferModal={openTransferModal}
+              openDetailedInformationModal={openDetailedInformationModal}
+              token={token}
+              tokenUrl={tokenUrl}
+            />
         ))}
         </tbody>
       </table>

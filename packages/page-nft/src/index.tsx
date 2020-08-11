@@ -26,7 +26,7 @@ function App ({ className }: Props): React.ReactElement<Props> {
   const { queueAction } = useContext(StatusContext);
   const collectionsStorage = JSON.parse(localStorage.getItem('tokenCollections') || '[]');
   const [openDetailedInformation, setOpenDetailedInformation] = useState<{ collection: NftCollectionInterface, tokenId: string } | null>(null);
-  const [openTransfer, setOpenTransfer] = useState<{ collection: NftCollectionInterface, tokenId: string } | null>(null);
+  const [openTransfer, setOpenTransfer] = useState<{ collection: NftCollectionInterface, tokenId: string, balance: number } | null>(null);
   const [account, setAccount] = useState<string | null>(null);
   const [shouldUpdateTokens, setShouldUpdateTokens] = useState<number | null>(null);
   const { api } = useApi();
@@ -50,8 +50,8 @@ function App ({ className }: Props): React.ReactElement<Props> {
     setCollections(collections.filter(item => item.id !== collectionToRemove));
   }, [collections]);
 
-  const openTransferModal = useCallback((collection, tokenId) => {
-    setOpenTransfer({ collection, tokenId });
+  const openTransferModal = useCallback((collection, tokenId, balance) => {
+    setOpenTransfer({ collection, tokenId, balance });
   }, []);
 
   const closeTransferModal = useCallback(() => {
@@ -171,7 +171,7 @@ function App ({ className }: Props): React.ReactElement<Props> {
       { openTransfer && openTransfer.tokenId && openTransfer.collection && (
         <TransferModal
           account={account}
-          api={api}
+          balance={openTransfer.balance}
           canTransferTokens={canTransferTokens}
           closeModal={closeTransferModal}
           collection={openTransfer.collection}

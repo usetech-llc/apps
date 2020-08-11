@@ -4,15 +4,14 @@ import React, { useState, useCallback } from 'react';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
 import { Button, Input } from '@polkadot/react-components';
-import { TxButton } from '@polkadot/react-components/index';
+import { TxButton } from '@polkadot/react-components';
 
 import './transferModal.scss';
-import useBalance from '../../hooks/useBalance';
 import { NftCollectionInterface } from '../../hooks/useCollection';
 
 interface Props {
   account: string | null;
-  api?: any;
+  balance: number;
   canTransferTokens: boolean;
   collection: NftCollectionInterface;
   closeModal: () => void;
@@ -20,12 +19,10 @@ interface Props {
   updateTokens: (collectionId: number) => void;
 }
 
-function TransferModal({ account, api, canTransferTokens, collection, closeModal, tokenId, updateTokens }: Props): React.ReactElement<Props> {
+function TransferModal({ account, balance, canTransferTokens, collection, closeModal, tokenId, updateTokens }: Props): React.ReactElement<Props> {
   const [recipient, setRecipient] = useState<string | null>(null);
   const [tokenPart, setTokenPart] = useState<number | undefined>(0);
   const [isError, setIsError] = useState<boolean>(false);
-  // @ts-ignore
-  const { balance } = useBalance(recipient, api);
   // @ts-ignore
   const [validationError, setValidationError] = useState<string | null>(null);
 
@@ -41,10 +38,11 @@ function TransferModal({ account, api, canTransferTokens, collection, closeModal
   }, [setValidationError, setRecipient]);
 
   const setTokenPartToTransfer = useCallback((value) => {
-    if (!value) {
+    const numberValue = parseFloat(value);
+    if (!numberValue) {
       console.log('token part error');
     }
-    if (value > 1 || value < (1 / Math.pow(10, collection.decimalPoints))) {
+    if (numberValue > balance || numberValue > 1 || numberValue < (1 / Math.pow(10, collection.decimalPoints))) {
       setIsError(true);
     } else {
       setIsError(false);
@@ -53,7 +51,6 @@ function TransferModal({ account, api, canTransferTokens, collection, closeModal
   }, []);
 
   // @todo address validation
-  console.log('tokenPart', tokenPart, 'decimalPoints', collection.decimalPoints, 1 / Math.pow(10, collection.decimalPoints));
   return (
     <Modal size='tiny' open onClose={closeModal}>
       <Modal.Header>
@@ -75,7 +72,7 @@ function TransferModal({ account, api, canTransferTokens, collection, closeModal
                 className='label-small'
                 min={1 / (collection.decimalPoints * 10)}
                 isError={isError}
-                label='Please enter part of token you want to transfer'
+                label={`Please enter part of token you want to transfer, your token balance is: ${balance}`}
                 onChange={setTokenPartToTransfer}
                 placeholder='Part of re-fungible address'
                 type='number'

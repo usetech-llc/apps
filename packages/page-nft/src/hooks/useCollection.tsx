@@ -17,12 +17,13 @@ export interface NftCollectionInterface {
 
 // @todo api.query.nft.collection(id)
 function useCollection(api: PolkadotApiInterface | null) {
-  const getTokensOfCollection = async (collectionId: number, ownerId: string) => {
+
+  const getTokensOfCollection = useCallback(async (collectionId: number, ownerId: string) => {
     if (!api) {
       return;
     }
     return (await api.query.nft.addressTokens(collectionId, ownerId));
-  };
+  }, [api]);
 
   const getDetailedCollectionInfo = useCallback(async (collectionId) => {
     if (!api) {
@@ -35,32 +36,17 @@ function useCollection(api: PolkadotApiInterface | null) {
     if (!api) {
       return;
     }
-    // ReFungibleItemList for re-fungible
-    /*
-      "ReFungibleItemType": {
-        "Collection": "u64",
-        "Owner": "Vec<Ownership<AccountId>>",
-        "Data": "Vec<u8>"
-      },
-
-      "Ownership": {
-          "owner": "AccountId",
-          "fraction": "u128"
-       },
-     */
     return (await api.query.nft.itemList([collectionId, tokenId]));
   }, [api]);
 
-  // hardcode
- /* const getCollectionImagesUrl = useCallback( async (collectionId: string) => {
+  const getDetailedRefungibleTokenInfo = useCallback(async (collectionId: number, tokenId: string) => {
     if (!api) {
-      return
+      return;
     }
-    // return 'http://ipfs-gateway.usetech.com/ipfs/QmUPArQGiDXyLFcxfU3LrctNQNPnD9QP62k2eNJkZgdRPJ/images/punks';
-    return (await api.query.nft.offchainSchema([collectionId]));
-  }, []); */
+    return (await api.query.nft.reFungibleItemList(collectionId, tokenId));
+  }, [api]);
 
-  return { getTokensOfCollection, getDetailedTokenInfo, getDetailedCollectionInfo };
+  return { getTokensOfCollection, getDetailedTokenInfo, getDetailedCollectionInfo, getDetailedRefungibleTokenInfo };
 }
 
 export default useCollection;
