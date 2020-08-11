@@ -15,7 +15,6 @@ export interface NftCollectionInterface {
   prefix: string;
 }
 
-// @todo api.query.nft.collection(id)
 function useCollection(api: PolkadotApiInterface | null) {
 
   const getTokensOfCollection = useCallback(async (collectionId: number, ownerId: string) => {

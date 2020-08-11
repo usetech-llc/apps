@@ -71,6 +71,9 @@ function NftCollectionCard({ account, canTransferTokens, collection, removeColle
             {collection.description &&
             <span> {collection.description}</span>
             }
+            {collection.isReFungible &&
+            <strong>, re-fungible</strong>
+            }
           </>
         }
       toggleOpen={openCollection}
