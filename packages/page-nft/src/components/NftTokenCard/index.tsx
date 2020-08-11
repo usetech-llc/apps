@@ -40,7 +40,7 @@ function NftTokenCard({ account, canTransferTokens, collection, openTransferModa
     void getTokenDetails();
   }, []);
 
-  if (!balance) {
+  if (!balance && collection.isReFungible) {
     return <></>;
   }
 

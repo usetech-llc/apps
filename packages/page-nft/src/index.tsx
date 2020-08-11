@@ -2,14 +2,14 @@
 
 // global app props and types
 import { AppProps as Props } from '@polkadot/react-components/types';
-import { ActionStatus } from '@polkadot/react-components/Status/types';
+// import { ActionStatus } from '@polkadot/react-components/Status/types';
 
 // external imports
-import React, { useCallback, useEffect, useState, useRef, useContext } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useApi } from '@polkadot/react-hooks';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
-import { StatusContext, Table } from '@polkadot/react-components';
+import { Table } from '@polkadot/react-components';
 
 // local imports and components
 import TransferModal from './components/TransferModal/';
@@ -23,7 +23,7 @@ import useBalance from './hooks/useBalance';
 import './styles.scss';
 
 function App ({ className }: Props): React.ReactElement<Props> {
-  const { queueAction } = useContext(StatusContext);
+  // const { queueAction } = useContext(StatusContext);
   const collectionsStorage = JSON.parse(localStorage.getItem('tokenCollections') || '[]');
   const [openDetailedInformation, setOpenDetailedInformation] = useState<{ collection: NftCollectionInterface, tokenId: string } | null>(null);
   const [openTransfer, setOpenTransfer] = useState<{ collection: NftCollectionInterface, tokenId: string, balance: number } | null>(null);
@@ -32,7 +32,8 @@ function App ({ className }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const [collections, setCollections] = useState<Array<NftCollectionInterface>>(collectionsStorage);
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface | null>(null);
-  const [canTransferTokens, setCanTransferTokens] = useState<boolean>(false);
+  const [canTransferTokens] = useState<boolean>(true);
+  // @ts-ignore
   const { balance, existentialDeposit } = useBalance(account, api);
   const currentAccount = useRef<string | null | undefined>();
 
@@ -91,7 +92,7 @@ function App ({ className }: Props): React.ReactElement<Props> {
     localStorage.setItem('tokenCollections', JSON.stringify(collections));
   }, [collections]);
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (existentialDeposit && balance) {
       if (balance.free.sub(existentialDeposit).gtn(0)) {
         setCanTransferTokens(true);
@@ -106,7 +107,7 @@ function App ({ className }: Props): React.ReactElement<Props> {
         queueAction([message]);
       }
     }
-  }, [balance, existentialDeposit]);
+  }, [balance, existentialDeposit]); */
 
   return (
     <main className="nft--App">
