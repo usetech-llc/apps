@@ -20,7 +20,7 @@ export default function useBalance (accountId: string | null) {
       setBalanceError(false);
       const existentialDeposit = api.consts.balances.existentialDeposit;
       setExistentialDeposit(existentialDeposit);
-      // @todo add transfer fees
+      // add transfer fees
       // const transferFees = await api.tx.nft.transfer('0', '0', accountId).paymentInfo(accountId);
       // console.log('transferFees', transferFees);
     } catch (e) {
