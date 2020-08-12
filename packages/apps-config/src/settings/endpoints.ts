@@ -30,6 +30,12 @@ function createDev (t: TFunction): LinkOption[] {
 function createLive (t: TFunction): LinkOption[] {
   return [
     {
+      dnslink: 'nftTestnet',
+      info: 'nftTestnet',
+      text: t<string>('rpc.polkadot.parity', 'NFT Testnet (Live, hosted by UseTech)', { ns: 'apps-config' }),
+      value: 'wss://unique.usetech.com'
+    },
+    {
       dnslink: 'polkadot',
       info: 'polkadot',
       text: t<string>('rpc.polkadot.parity', 'Polkadot (Live, hosted by Parity)', { ns: 'apps-config' }),
