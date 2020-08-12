@@ -71,7 +71,7 @@ function General ({ className = '', isModalContent, onClose }: Props): React.Rea
 
   const { i18nLang, icon, ledgerConn, prefix, uiMode } = settings;
   const networkSelector = <SelectUrl onChange={_handleChange('apiUrl')} />;
-  console.log('settings', settings);
+
   return (
     <div className={className}>
       {isModalContent

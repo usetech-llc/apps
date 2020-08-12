@@ -2,7 +2,6 @@
 
 // global app props and types
 import { AppProps as Props } from '@polkadot/react-components/types';
-// import { ActionStatus } from '@polkadot/react-components/Status/types';
 
 // external imports
 import React, { useCallback, useEffect, useState, useRef } from 'react';
@@ -23,7 +22,6 @@ import useBalance from './hooks/useBalance';
 import './styles.scss';
 
 function App ({ className }: Props): React.ReactElement<Props> {
-  // const { queueAction } = useContext(StatusContext);
   const collectionsStorage = JSON.parse(localStorage.getItem('tokenCollections') || '[]');
   const [openDetailedInformation, setOpenDetailedInformation] = useState<{ collection: NftCollectionInterface, tokenId: string } | null>(null);
   const [openTransfer, setOpenTransfer] = useState<{ collection: NftCollectionInterface, tokenId: string, balance: number } | null>(null);
@@ -34,7 +32,7 @@ function App ({ className }: Props): React.ReactElement<Props> {
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface | null>(null);
   const [canTransferTokens] = useState<boolean>(true);
   // @ts-ignore
-  const { balance, existentialDeposit } = useBalance(account, api);
+  const { balance, existentialDeposit } = useBalance(account);
   const currentAccount = useRef<string | null | undefined>();
 
   const addCollection = useCallback((collection: NftCollectionInterface) => {
@@ -91,23 +89,6 @@ function App ({ className }: Props): React.ReactElement<Props> {
   useEffect(() => {
     localStorage.setItem('tokenCollections', JSON.stringify(collections));
   }, [collections]);
-
-  /* useEffect(() => {
-    if (existentialDeposit && balance) {
-      if (balance.free.sub(existentialDeposit).gtn(0)) {
-        setCanTransferTokens(true);
-      } else {
-        setCanTransferTokens(false);
-        const message: ActionStatus = {
-          action: `low balance`,
-          message: 'Your balance is too low to transfer tokens!',
-          status: 'error'
-        };
-
-        queueAction([message]);
-      }
-    }
-  }, [balance, existentialDeposit]); */
 
   return (
     <main className="nft--App">

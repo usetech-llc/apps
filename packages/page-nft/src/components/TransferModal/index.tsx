@@ -23,6 +23,7 @@ function TransferModal({ account, balance, canTransferTokens, collection, closeM
   const [recipient, setRecipient] = useState<string | null>(null);
   const [tokenPart, setTokenPart] = useState<number>(0);
   const [isError, setIsError] = useState<boolean>(false);
+  // const { balance as recipientBalance } = useBalance(recipient);
   // @ts-ignore
   const [validationError, setValidationError] = useState<string | null>(null);
 

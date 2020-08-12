@@ -3,9 +3,10 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import { useEffect, useState, useCallback } from 'react';
+import { useApi } from '@polkadot/react-hooks';
 
-export default function useBalance (accountId: string | null, api: any) {
-  // @ts-ignore
+export default function useBalance (accountId: string | null) {
+  const { api } = useApi();
   const [balance, setBalance] = useState<any | null>(null);
   const [balanceError, setBalanceError] = useState<boolean>(false);
   const [existentialDeposit, setExistentialDeposit] = useState<any | null>(null);
@@ -14,8 +15,8 @@ export default function useBalance (accountId: string | null, api: any) {
       if (!accountId || !api) {
         return;
       }
-      const { data: balance } = await api.query.system.account(accountId);
-      setBalance(balance);
+      const accountBalance: any = await api.query.system.account(accountId);
+      setBalance(accountBalance.data);
       setBalanceError(false);
       const existentialDeposit = api.consts.balances.existentialDeposit;
       setExistentialDeposit(existentialDeposit);
