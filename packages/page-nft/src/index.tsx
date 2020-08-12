@@ -72,6 +72,12 @@ function App ({ className }: Props): React.ReactElement<Props> {
     if (collection.offchainSchema.indexOf('image{id}.jp') !== -1) {
       return collection.offchainSchema.replace('image{id}.jp', `image${tokenId}.jpg`)
     }
+    if (collection.offchainSchema.indexOf('image/{id}.jp') !== -1) {
+      return collection.offchainSchema.replace('{id}.jp', `${tokenId}.jpg`)
+    }
+    if (collection.offchainSchema.indexOf('image/{id}.pn') !== -1) {
+      return collection.offchainSchema.replace('{id}.pn', `${tokenId}.png`)
+    }
     return '';
   },  []);
 
