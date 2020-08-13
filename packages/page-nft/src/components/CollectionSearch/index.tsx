@@ -100,7 +100,7 @@ function CollectionSearch({ api, addCollection, account, collections }: Props): 
               <Form.Field>
                 <Input
                   className='explorer--query label-small'
-                  label={<span>Find and add your token collection. For example, you can add tokens from <a href='https://ipfs-gateway.usetech.com/ipfs/Qma9jCnAUKQ9avhjt3F2h4yaA2gwXpSUa5PMoBd6gxWwKa/' target='_blank' rel='noopener noreferrer'>CryptoPunks</a></span>}
+                  label={<span>Find and add your token collection. For example, you can add tokens from <a href='https://ipfs-gateway.usetech.com/ipns/QmaMtDqE9nhMX9RQLTpaCboqg7bqkb6Gi67iCKMe8NDpCE/' target='_blank' rel='noopener noreferrer'>SubstraPunks</a></span>}
                   onChange={setCollection}
                   value={searchString}
                   placeholder='Search...'
