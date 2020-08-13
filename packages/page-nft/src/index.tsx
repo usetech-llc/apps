@@ -5,7 +5,6 @@ import { AppProps as Props } from '@polkadot/react-components/types';
 
 // external imports
 import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { useApi } from '@polkadot/react-hooks';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 import { Table } from '@polkadot/react-components';
@@ -27,7 +26,6 @@ function App ({ className }: Props): React.ReactElement<Props> {
   const [openTransfer, setOpenTransfer] = useState<{ collection: NftCollectionInterface, tokenId: string, balance: number } | null>(null);
   const [account, setAccount] = useState<string | null>(null);
   const [shouldUpdateTokens, setShouldUpdateTokens] = useState<number | null>(null);
-  const { api } = useApi();
   const [collections, setCollections] = useState<Array<NftCollectionInterface>>(collectionsStorage);
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface | null>(null);
   const [canTransferTokens] = useState<boolean>(true);
@@ -117,11 +115,10 @@ function App ({ className }: Props): React.ReactElement<Props> {
           </Grid.Column>
         </Grid.Row>
       </Grid>
-      <Header as='h2'>Find token</Header>
+      <Header as='h2'>Find token collection</Header>
       <CollectionSearch
         account={account}
         addCollection={addCollection}
-        api={api}
         collections={collections}
       />
       <br />
