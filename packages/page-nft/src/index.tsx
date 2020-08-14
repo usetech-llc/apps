@@ -7,7 +7,7 @@ import { AppProps as Props } from '@polkadot/react-components/types';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
-import { Table } from '@polkadot/react-components';
+import { Table, LabelHelp } from '@polkadot/react-components';
 
 // local imports and components
 import TransferModal from './components/TransferModal/';
@@ -115,14 +115,19 @@ function App ({ className }: Props): React.ReactElement<Props> {
           </Grid.Column>
         </Grid.Row>
       </Grid>
-      <Header as='h2'>Find token collection</Header>
       <CollectionSearch
         account={account}
         addCollection={addCollection}
         collections={collections}
       />
       <br />
-      <Header as='h2'>My collections</Header>
+      <Header as='h2'>
+        My collections
+        <LabelHelp
+          className='small-help'
+          help={'Your tokens are here'}
+        />
+      </Header>
       <Table
         empty={'No collections added'}
         header={[]}

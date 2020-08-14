@@ -1,9 +1,10 @@
 // Copyright 2020 UseTech authors & contributors
 
-import React, { useCallback, useMemo, useState, useRef, useEffect } from 'react';
+import React, { useCallback, useState, useRef, useEffect } from 'react';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
-import { Button, Input, Table } from '@polkadot/react-components';
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
+import { Button, Input, Table, Label, LabelHelp } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks';
 
 import useCollection, { NftCollectionInterface, NftCollectionBigInterface } from '../../hooks/useCollection';
@@ -71,11 +72,6 @@ function CollectionSearch({ addCollection, account, collections }: Props): React
     }
   }, []);
 
-  const header = useMemo(() => [
-    ['Search results', 'start'],
-    [],
-  ], []);
-
   // clear search results if account changed
   useEffect(() => {
     if (currentAccount.current && currentAccount.current !== account) {
@@ -89,54 +85,83 @@ function CollectionSearch({ addCollection, account, collections }: Props): React
     void getCollections();
   }, [api]);
 
+  const searchHelp = (
+    <div style={{ textAlign: 'left' }}>
+      Enter the collection number, here's the list of collections we know:
+      <ul>
+        <li>
+          Test
+        </li>
+        <li>
+          Enter the collection number or name
+        </li>
+      </ul>
+    </div>
+  );
+
   return (
-    <Form className='collection-search' onSubmit={searchCollection}>
-      <Grid>
-        { account && (
-          <Grid.Row>
-            <Grid.Column width={16}>
-              <Form.Field>
-                <Input
-                  className='explorer--query label-small'
-                  isDisabled={!collectionsAvailable.length}
-                  label={<span>Find and add your token collection. For example, you can add tokens from <a href='https://ipfs-gateway.usetech.com/ipns/QmaMtDqE9nhMX9RQLTpaCboqg7bqkb6Gi67iCKMe8NDpCE/' target='_blank' rel='noopener noreferrer'>SubstraPunks</a></span>}
-                  onChange={setSearchString}
-                  value={searchString}
-                  placeholder='Search...'
-                  withLabel
-                >
+    <>
+      <Header as='h2'>
+        Find token collection
+        <LabelHelp
+          className='small-help'
+          help={searchHelp}
+        />
+      </Header>
+      <Form className='collection-search' onSubmit={searchCollection}>
+        <Grid>
+          { account && (
+            <Grid.Row>
+              <Grid.Column width={16}>
+                <Form.Field>
+                  <Input
+                    className='explorer--query label-small'
+                    isDisabled={!collectionsAvailable.length}
+                    label={<span>Find and add your token collection. For example, you can add tokens from <a href='https://ipfs-gateway.usetech.com/ipns/QmaMtDqE9nhMX9RQLTpaCboqg7bqkb6Gi67iCKMe8NDpCE/' target='_blank' rel='noopener noreferrer'>SubstraPunks</a></span>}
+                    onChange={setSearchString}
+                    value={searchString}
+                    placeholder='Search...'
+                    withLabel
+                  >
+                    <Button
+                      icon='play'
+                      onClick={searchCollection}
+                    />
+                  </Input>
+                </Form.Field>
+              </Grid.Column>
+            </Grid.Row>
+          )}
+          <Label
+            className='small-help-label'
+            help={'Add the collection you want'}
+            label={'Search results'}
+          />
+          <Table
+            empty={'No results'}
+            header={[]}
+          >
+            {collectionsMatched.map((item) => (
+              <tr className='collection-row' key={item.id}>
+                <td className='collection-name'>
+                  Collection name: <strong>{collectionName16Decoder(item.Name)}</strong>
+                </td>
+                <td className='collection-actions'>
                   <Button
-                    icon='play'
-                    onClick={searchCollection}
+                    isBasic
+                    isDisabled={hasThisCollection(item)}
+                    icon='plus'
+                    label='Add collection'
+                    onClick={addCollectionToAccount.bind(null, item)}
                   />
-                </Input>
-              </Form.Field>
-            </Grid.Column>
-          </Grid.Row>
-        )}
-        <Table
-          empty={'No results'}
-          header={header}
-        >
-          {collectionsMatched.map((item) => (
-            <tr className='collection-row' key={item.id}>
-              <td className='collection-name'>
-                Collection name: <strong>{collectionName16Decoder(item.Name)}</strong>
-              </td>
-              <td className='collection-actions'>
-                <Button
-                  isBasic
-                  isDisabled={hasThisCollection(item)}
-                  icon='plus'
-                  label='Add collection'
-                  onClick={addCollectionToAccount.bind(null, item)}
-                />
-              </td>
-            </tr>
-          ))}
-        </Table>
-      </Grid>
-    </Form>
+                </td>
+              </tr>
+            ))}
+          </Table>
+        </Grid>
+      </Form>
+    </>
+
   )
 }
 
