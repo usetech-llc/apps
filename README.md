@@ -18,6 +18,8 @@ Also, this UI includes [custom UI types](https://github.com/usetech-llc/nft_para
 
 This UI is meant to work with Unique Network, which currently has TestNet deployed with public node available at wss://unique.usetech.com
 
+Please see the complete [Hackusama Walk-Through Guide](https://github.com/usetech-llc/nft_parachain/blob/master/doc/hackusama_walk_through.md) for demonstration of all features of Unique Network.
+
 ## Hackusama Update
 
 All changes to the originally forked AppsUI were made for Hackusama submission.
