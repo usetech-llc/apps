@@ -85,27 +85,13 @@ function CollectionSearch({ addCollection, account, collections }: Props): React
     void getCollections();
   }, [api]);
 
-  const searchHelp = (
-    <div style={{ textAlign: 'left' }}>
-      Enter the collection number, here's the list of collections we know:
-      <ul>
-        <li>
-          Test
-        </li>
-        <li>
-          Enter the collection number or name
-        </li>
-      </ul>
-    </div>
-  );
-
   return (
     <>
       <Header as='h2'>
         Find token collection
         <LabelHelp
           className='small-help'
-          help={searchHelp}
+          help={'Enter the collection number or name'}
         />
       </Header>
       <Form className='collection-search' onSubmit={searchCollection}>
