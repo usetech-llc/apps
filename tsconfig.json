@@ -46,6 +46,8 @@
       "@polkadot/app-society/*": [ "packages/page-society/src/*" ],
       "@polkadot/app-staking": [ "packages/page-staking/src" ],
       "@polkadot/app-staking/*": [ "packages/page-staking/src/*" ],
+      "@polkadot/app-nomination": [ "packages/page-nomination/src" ],
+      "@polkadot/app-nomination/*": [ "packages/page-nomination/src/*" ],
       "@polkadot/app-storage": [ "packages/page-storage/src" ],
       "@polkadot/app-storage/*": [ "packages/page-storage/src/*" ],
       "@polkadot/app-sudo": [ "packages/page-sudo/src" ],
