@@ -4,7 +4,7 @@
 
 import React from 'react';
 
-import { useTranslation } from './translate';
+import { useTranslation } from '../translate';
 
 interface Props {
   isInElection?: boolean;

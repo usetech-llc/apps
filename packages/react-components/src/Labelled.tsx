@@ -3,7 +3,6 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import React from 'react';
-import styled from 'styled-components';
 
 import LabelHelp from './LabelHelp';
 import { classes } from './util';
@@ -26,8 +25,9 @@ const defaultLabel: React.ReactNode = (
   <div>&nbsp;</div>
 );
 
-const Wrapper = styled.div`
-  display: block;
+/*
+const Wrapper = styled.div``;
+display: block;
   position: relative;
 
   .withEllipsis {
@@ -130,7 +130,7 @@ const Wrapper = styled.div`
       }
     }
   }
-`;
+ */
 
 function Labelled ({ className = '', children, help, isFull, isHidden, isOuter, isSmall, label = defaultLabel, labelExtra, withEllipsis, withLabel = true }: Props): React.ReactElement<Props> | null {
   if (isHidden) {
@@ -142,7 +142,7 @@ function Labelled ({ className = '', children, help, isFull, isHidden, isOuter, 
   }
 
   return (
-    <Wrapper className={classes('ui--Labelled', isSmall && 'label-small', isFull && 'label-full', isOuter && 'label-outer', className)}>
+    <div className={classes('ui--Labelled', isSmall && 'label-small', isFull && 'label-full', isOuter && 'label-outer', className)}>
       <label>
         {
           withEllipsis
@@ -154,7 +154,7 @@ function Labelled ({ className = '', children, help, isFull, isHidden, isOuter, 
       <div className='ui--Labelled-content'>
         {children}
       </div>
-    </Wrapper>
+    </div>
   );
 }
 

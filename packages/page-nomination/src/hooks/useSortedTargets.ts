@@ -4,7 +4,7 @@
 
 import { DeriveSessionIndexes, DeriveStakingElected } from '@polkadot/api-derive/types';
 import { Balance, ValidatorPrefs, ValidatorPrefsTo196 } from '@polkadot/types/interfaces';
-import { SortedTargets, TargetSortBy, ValidatorInfo } from './types';
+import { SortedTargets, TargetSortBy, ValidatorInfo } from '../types';
 
 import BN from 'bn.js';
 import { useEffect, useState } from 'react';
@@ -13,7 +13,7 @@ import { useAccounts, useApi, useCall, useDebounce, useFavorites } from '@polkad
 import { Option } from '@polkadot/types';
 import { formatBalance } from '@polkadot/util';
 
-import { STORE_FAVS_BASE } from './constants';
+import { STORE_FAVS_BASE } from '../constants';
 
 const PERBILL = new BN(1_000_000_000);
 

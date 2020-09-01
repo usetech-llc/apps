@@ -1,0 +1,246 @@
+@font-face {
+  font-family: 'Roboto';
+  src: url('./fonts/roboto/Roboto-Thin.woff2') format('woff2'), url('./fonts/roboto/Roboto-Thin.woff') format('woff');
+  font-weight: 100;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto-Thin';
+  src: url('./fonts/roboto/Roboto-Thin.woff2') format('woff2'), url('./fonts/roboto/Roboto-Thin.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('./fonts/roboto/Roboto-ThinItalic.woff2') format('woff2'), url('./fonts/roboto/Roboto-ThinItalic.woff') format('woff');
+  font-weight: 100;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Roboto-ThinItalic';
+  src: url('./fonts/roboto/Roboto-ThinItalic.woff2') format('woff2'), url('./fonts/roboto/Roboto-ThinItalic.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('./fonts/roboto/Roboto-Light.woff2') format('woff2'), url('./fonts/roboto/Roboto-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto-Light';
+  src: url('./fonts/roboto/Roboto-Light.woff2') format('woff2'), url('./fonts/roboto/Roboto-Light.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('./fonts/roboto/Roboto-LightItalic.woff2') format('woff2'), url('./fonts/roboto/Roboto-LightItalic.woff') format('woff');
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Roboto-LightItalic';
+  src: url('./fonts/roboto/Roboto-LightItalic.woff2') format('woff2'), url('./fonts/roboto/Roboto-LightItalic.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('./fonts/roboto/Roboto-Regular.woff2') format('woff2'), url('./fonts/roboto/Roboto-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto-Regular';
+  src: url('./fonts/roboto/Roboto-Regular.woff2') format('woff2'), url('./fonts/roboto/Roboto-Regular.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('./fonts/roboto/Roboto-RegularItalic.woff2') format('woff2'), url('./fonts/roboto/Roboto-RegularItalic.woff') format('woff');
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Roboto-RegularItalic';
+  src: url('./fonts/roboto/Roboto-RegularItalic.woff2') format('woff2'), url('./fonts/roboto/Roboto-RegularItalic.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('./fonts/roboto/Roboto-Medium.woff2') format('woff2'), url('./fonts/roboto/Roboto-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto-Medium';
+  src: url('./fonts/roboto/Roboto-Medium.woff2') format('woff2'), url('./fonts/roboto/Roboto-Medium.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('./fonts/roboto/Roboto-MediumItalic.woff2') format('woff2'), url('./fonts/roboto/Roboto-MediumItalic.woff') format('woff');
+  font-weight: 500;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Roboto-MediumItalic';
+  src: url('./fonts/roboto/Roboto-MediumItalic.woff2') format('woff2'), url('./fonts/roboto/Roboto-MediumItalic.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('./fonts/roboto/Roboto-Bold.woff2') format('woff2'), url('./fonts/roboto/Roboto-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto-Bold';
+  src: url('./fonts/roboto/Roboto-Bold.woff2') format('woff2'), url('./fonts/roboto/Roboto-Bold.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('./fonts/roboto/Roboto-BoldItalic.woff2') format('woff2'), url('./fonts/roboto/Roboto-BoldItalic.woff') format('woff');
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Roboto-BoldItalic';
+  src: url('./fonts/roboto/Roboto-BoldItalic.woff2') format('woff2'), url('./fonts/roboto/Roboto-BoldItalic.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('./fonts/roboto/Roboto-Black.woff2') format('woff2'), url('./fonts/roboto/Roboto-Black.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto-Black';
+  src: url('./fonts/roboto/Roboto-Black.woff2') format('woff2'), url('./fonts/roboto/Roboto-Black.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('./fonts/roboto/Roboto-BlackItalic.woff2') format('woff2'), url('./fonts/roboto/Roboto-BlackItalic.woff') format('woff');
+  font-weight: 900;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Roboto-BlackItalic';
+  src: url('./fonts/roboto/Roboto-BlackItalic.woff2') format('woff2'), url('./fonts/roboto/Roboto-BlackItalic.woff') format('woff');
+}
+
+$nomination_blue_color: #0087cb;
+$nomination_warning_color: #CA6014;
+$nomination_warning_light_color: #F7F2EE;
+
+* {
+  font-family: Roboto, Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+
+.nomination-stand-alone {
+  box-sizing: border-box;
+  width: 800px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 10px;
+
+  h1 {
+    font-family: Roboto, Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 28px;
+    line-height: 40px;
+    text-transform: none;
+    margin: 30px 0;
+  }
+
+  .nomination-card {
+    background: #FFFFFF;
+    border: 1px solid #E4E4E4;
+    box-sizing: border-box;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+    padding: 24px;
+  }
+
+  .warning-block {
+    color: $nomination_warning_color;
+    background-color: $nomination_warning_light_color;
+    font-size: 14px;
+    line-height: 21px;
+    display: flex;
+    flex-direction: column;
+    padding: 8px 16px;
+  }
+
+  .ui.secondary.pointing.menu {
+
+    .right.menu {
+      .item {
+        margin-right: 0;
+      }
+    }
+
+    .item {
+      padding: 1em 0;
+      margin-right: 2em;
+
+      a {
+        color: black;
+      }
+
+      &.active {
+        border-color: $nomination_blue_color;
+
+        a {
+          color: $nomination_blue_color;
+        }
+      }
+    }
+  }
+
+  .connecting {
+    width: 800px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .success {
+    color: #39C707;
+  }
+
+  a.telegram-notification {
+    background-color: $nomination_blue_color;
+    border-radius: 4px;
+    padding: 0 10px;
+    display: block;
+    height: 24px;
+    color: white !important;
+
+    img {
+      width: 24px;
+      height: 24px;
+      vertical-align: middle;
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .telegram-notification {
+    height: auto;
+    text-align: center;
+  }
+}

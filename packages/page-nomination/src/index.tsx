@@ -1,4 +1,4 @@
-// Copyright 2017-2020 @polkadot/app-nomination authors & contributors
+// Copyright 2020-2021 UseTech authors & contributors
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
@@ -9,8 +9,8 @@ import { ActionStatus, QueueAction$Add, QueueStatus, QueueTx } from '@polkadot/r
 
 // external imports (including those found in the packages/*
 // of this repo)
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import styled from 'styled-components';
+import React, { useState, useCallback, useEffect } from 'react';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import { useApi, useCall, useOwnStashInfos, useStashIds } from '@polkadot/react-hooks';
 import keyring from '@polkadot/ui-keyring';
 import { Spinner } from '@polkadot/react-components';
@@ -18,15 +18,21 @@ import { web3FromSource, web3Accounts, web3Enable } from '@polkadot/extension-da
 import uiSettings from '@polkadot/ui-settings';
 
 // local imports and components
-import NewNomination from './NewNomination';
+import NewNomination from './components/NewNomination';
 import { useTranslation } from './translate';
-import Status from './Status';
-import ManageNominations from './ManageNominations';
-import useValidators from './useValidators';
+import Status from './components/Status';
+import ManageNominations from './components/ManageNominations';
+import useValidators from './hooks/useValidators';
 
 interface Validators {
   next?: string[];
   validators?: string[];
+}
+
+declare global {
+  interface Window {
+    injectedWeb3: any;
+  }
 }
 
 interface AppProps {
@@ -41,7 +47,6 @@ interface AppProps {
 function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
-  const [wallet, setWallet] = useState<string | null>(null);
   const [web3Enabled, setWeb3Enabled] = useState<boolean>(false);
   const [status, setStatus] = useState<string | null>(null);
   const ownStashes = useOwnStashInfos();
@@ -52,40 +57,36 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
   const { filteredValidators } = useValidators();
   const [accountId, setAccountId] = useState<string | null>(null);
   const [accountsAvailable, setAccountsAvailable] = useState<boolean>(false);
-  const currentAccountRef = useRef<string | null>();
+  const [settings] = useState(uiSettings.get());
   const isKusama = uiSettings && uiSettings.apiUrl.includes('kusama');
-  const nominationStatus = localStorage.getItem('nominationStatus');
 
   const setSigner = useCallback(async (): Promise<void> => {
     if (!accountId) {
       return;
     }
-
     const pair = keyring.getAddress(accountId, null);
 
     if (!pair) {
       return;
     }
-
+    console.log('pair', pair);
     const { meta: { source } } = pair;
 
     if (!source) {
       return;
     }
-
-    const injected = await web3FromSource(source);
+    console.log('source', source);
+    const injected = await web3FromSource(source as string);
 
     api.setSigner(injected.signer);
   }, [accountId, api]);
 
   const toNomination = useCallback(() => {
     setStatus('manage');
-    localStorage.removeItem('nominationStatus');
   }, []);
 
   const backToWallet = useCallback(() => {
     setStatus('new');
-    localStorage.setItem('nominationStatus', 'new');
   }, []);
 
   useEffect((): void => {
@@ -104,31 +105,26 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
     });
   }, [allStashes, stakingOverview]);
 
-  // show notification when change account
-  useEffect(() => {
-    if (currentAccountRef.current && currentAccountRef.current !== accountId) {
-      const message: ActionStatus = {
-        action: '',
-        message: t('Account was changed!'),
-        status: 'success'
-      };
-
-      queueAction([message]);
-    }
-
-    currentAccountRef.current = accountId;
-  }, [accountId, t, queueAction]);
-
   useEffect(() => {
     // initialize wallet
+    if (Object.keys(window.injectedWeb3).length === 0) {
+      setStatus('none');
+    } else {
+      const polkadotExtension = Object.keys(window.injectedWeb3).find((key) => key === 'polkadot-js');
+
+      if (!polkadotExtension) {
+        setStatus('none');
+      }
+    }
+
     if (ownStashes) {
-      if (ownStashes.length && !nominationStatus) {
+      if (ownStashes.length) {
         setStatus('manage');
       } else {
         setStatus('new');
       }
     }
-  }, [ownStashes, nominationStatus]);
+  }, [ownStashes]);
 
   useEffect((): void => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -141,6 +137,18 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
       setAccountsAvailable(!!res.length);
     });
   }, []);
+
+  useEffect((): void => {
+    // set settings to Kusama
+    const newApiUrl = 'wss://kusama-rpc.polkadot.io/';
+
+    // uiSettings.set({ ...settings, apiUrl: 'wss://westend-rpc.polkadot.io' });
+    uiSettings.set({ ...settings, apiUrl: newApiUrl });
+
+    if (settings.apiUrl !== newApiUrl) {
+      window.location.reload();
+    }
+  }, [settings]);
 
   /**
    * Set validators list.
@@ -162,25 +170,53 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
     // in all apps, the main wrapper is setup to allow the padding
     // and margins inside the application. (Just from a consistent pov)
     <main className={`nomination-app ${className || ''}`}>
-      <div className='ui placeholder segment'>
-        { !status && (
-          <Spinner label={t<string>('Initializing wallet')} />
-        )}
+      { !status && (
+        <Spinner label={t<string>('Initializing wallet')} />
+      )}
+      { status === 'none' && (
+        <div className='error-block'>
+          {t('Error: You have no polkadot extension injected.')}
+        </div>
+      )}
+      <Switch>
+        <Route
+          exact
+          key='newNomination'
+          path='/new'
+          render={() => (
+            <NewNomination
+              accountId={accountId}
+              accountsAvailable={accountsAvailable}
+              ownStashes={ownStashes}
+              queueAction={queueAction}
+              selectedValidators={selectedValidators}
+              setAccountId={setAccountId}
+              stakingOverview={stakingOverview}
+              toNomination={toNomination}
+              web3Enabled={web3Enabled}
+            />
+          )}
+        />
+        <Route
+          exact
+          key='manageNominations'
+          path='/manage'
+          render={() => (
+            <ManageNominations
+              backToWallet={backToWallet}
+              isKusama={isKusama}
+              next={next}
+              ownStashes={ownStashes}
+              selectedValidators={selectedValidators}
+              validators={validators}
+            />
+          )}
+        />
+        <Redirect to={'new'} />
+      </Switch>
+      {/*<div className='ui placeholder segment'>
         { status === 'new' && (
-          <NewNomination
-            accountId={accountId}
-            accountsAvailable={accountsAvailable}
-            isKusama={isKusama}
-            ownStashes={ownStashes}
-            queueAction={queueAction}
-            selectedValidators={selectedValidators}
-            setAccountId={setAccountId}
-            setWallet={setWallet}
-            stakingOverview={stakingOverview}
-            toNomination={toNomination}
-            wallet={wallet}
-            web3Enabled={web3Enabled}
-          />
+
         )}
         { status === 'manage' && (
           <ManageNominations
@@ -192,7 +228,7 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
             validators={validators}
           />
         )}
-      </div>
+      </div>*/}
       <Status
         queueAction={queueAction}
         stqueue={stqueue}
@@ -202,46 +238,34 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
   );
 }
 
-export default React.memo(styled(Nomination)`
-   max-width: 800px;
-   position: relative;
-   
+export default React.memo(Nomination);
+
+/*
+ position: relative;
+
    .nomination-row {
       display: grid;
       grid-template-columns: 500px 210px;
       grid-column-gap: 32px;
    }
-   
+
    .manage-nomination-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       grid-column-gap: 32px;
-      
+
       .right {
         display: flex;
         align-items: center;
         justify-content: flex-end;
       }
    }
-   
+
    .help-button-block {
       margin-left: 16px;
    }
-   
-   .telegram-notification {
-      background-color: #0087cb;
-      border-radius: 4px;
-      padding: 0 10px;
-      color: white;
-      display: block;
-      height: 24px;
-      
-      img {
-        width: 24px;
-        height: 24px;
-        vertical-align: middle;
-      }
-   }
+
+
 
    .qr-center {
      margin: 0 auto;
@@ -254,45 +278,22 @@ export default React.memo(styled(Nomination)`
    .text-center {
       text-align: center;
    }
-   
+
    .icon.success {
       font-size: 22px;
    }
-   
-   .error-block {
-      background: #F8EFEF;
-      border: 1px solid rgba(202, 20, 20, 0.2);
-      border-radius: 4px;
-      text-align: center;
-      color: #CA1414;
-      font-size: 12px;
-      line-height: 24px;
-      margin: 5px 0;
-      padding: 8px 16px;
-   }
-   
-   .warning-block {
-      background: #F7F2EE;
-      border: 1px solid rgba(202, 96, 20, 0.2);
-      box-sizing: border-box;
-      border-radius: 4px;
-      margin: 5px 0;
-      font-size: 12px;
-      line-height: 24px;
-      padding: 8px 16px;
-   }
-   
+
    section {
       margin: 8px 0;
    }
-   
+
    .header-qr {
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      margin-bottom: 30px;  
+      margin-bottom: 30px;
    }
-   
+
    .close-window {
       font-family: 'Roboto';
       font-style: normal;
@@ -302,11 +303,11 @@ export default React.memo(styled(Nomination)`
       color: #464E5F;
       margin-left: 28px;
    }
-   
+
    .bond-section {
       margin-bottom: 20px;
    }
-   
+
    .account-panel, .bond-section-block {
       background: white;
       border: 1px solid #DDDDDD;
@@ -315,25 +316,38 @@ export default React.memo(styled(Nomination)`
       border-radius: 4px;
       padding: 24px;
    }
-   
+
    .account-panel {
        text-align: center;
    }
-   
+
    .button.back {
       float: left;
    }
-   
+
    .nomination-active {
       .button.back {
         margin-top: 26px;
       }
    }
-   
+
    .divider {
       width: 100%;
       height: 1px;
       background-color: #D5D5D5;
       margin-bottom: 16px;
   }
-`);
+
+   @media (max-width: 800px) {
+      min-width: 100%;
+
+      .table .tbody {
+        overflow-x: auto;
+      }
+
+      .manage-nomination-row {
+        grid-template-columns: auto;
+      }
+
+   }
+ */

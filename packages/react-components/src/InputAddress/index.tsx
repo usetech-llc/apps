@@ -7,7 +7,6 @@ import { Option } from './types';
 
 import React from 'react';
 import store from 'store';
-import styled from 'styled-components';
 import { withMulti, withObservable } from '@polkadot/react-api/hoc';
 import keyring from '@polkadot/ui-keyring';
 import keyringOption from '@polkadot/ui-keyring/options';
@@ -275,8 +274,9 @@ class InputAddress extends React.PureComponent<Props, State> {
 }
 
 const ExportedComponent = withMulti(
-  styled(InputAddress)`
-    .ui.dropdown .text {
+  InputAddress,
+  /*
+  .ui.dropdown .text {
       width: 100%;
     }
 
@@ -314,7 +314,8 @@ const ExportedComponent = withMulti(
       flex: 0;
       max-width: 0;
     }
-  `,
+  `
+   */
   withObservable(keyringOption.optionsSubject, {
     propName: 'optionsAll',
     transform: (optionsAll: KeyringOptions): Record<string, (Option | React.ReactNode)[]> =>

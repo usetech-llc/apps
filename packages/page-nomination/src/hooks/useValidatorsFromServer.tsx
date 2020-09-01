@@ -1,5 +1,5 @@
 // Copyright 2017-2020 @polkadot/app-nomination authors & contributors
-import { ValidatorInfo } from './types';
+import { ValidatorInfo } from '../types';
 
 import { useState, useEffect, useCallback } from 'react';
 import { of } from 'rxjs';

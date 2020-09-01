@@ -28,7 +28,7 @@ export function useBalanceClear (address?: string | null): Balance | null {
 }
 
 export type WholeFeesType = {
-  wholeFees: Balance;
+  wholeFees: BN | null;
   feesLoading: boolean;
 }
 
@@ -42,7 +42,7 @@ export type WholeFeesType = {
 export function useFees (accountId?: string | null, validators?: string[]): WholeFeesType {
   const [amount, setAmount] = useState<BN>(new BN(1));
   const [feesLoading, setFeesLoading] = useState<boolean>(false);
-  const [wholeFees, setWholeFees] = useState<any>(null);
+  const [wholeFees, setWholeFees] = useState<BN | null>(null);
   const api = useApi();
   const existentialDeposit = api.api.consts.balances.existentialDeposit;
 
@@ -61,7 +61,7 @@ export function useFees (accountId?: string | null, validators?: string[]): Whol
     if (!wholeFees && accountId && validators) {
       setFeesLoading(true);
       const fessGetter = forkJoin({
-        payment: api.api.tx.balances.transfer(accountId, amount).paymentInfo(accountId),
+        withdraw: api.api.tx.staking.withdrawUnbonded(0).paymentInfo(accountId),
         startNomination: api.api.tx.staking.nominate(validators).paymentInfo(accountId),
         stopNomination: api.api.tx.staking.chill().paymentInfo(accountId),
         unbond: api.api.tx.staking.unbond(amount).paymentInfo(accountId)
@@ -71,14 +71,14 @@ export function useFees (accountId?: string | null, validators?: string[]): Whol
         return of(error);
       }));
 
-      fessGetter.subscribe(({ payment, startNomination, stopNomination, unbond }) => {
+      fessGetter.subscribe(({ withdraw, startNomination, stopNomination, unbond }) => {
         setFeesLoading(false);
-        const paymentFees = payment ? payment.partialFee : new BN(0);
+        const withdrawalFees: BN = withdraw ? withdraw.partialFee : new BN(0);
         const startNominationFees = startNomination ? startNomination.partialFee : new BN(0);
         const stopNominationFees = stopNomination ? stopNomination.partialFee : new BN(0);
         const unbondFees = unbond ? unbond.partialFee : new BN(0);
 
-        const whole = paymentFees
+        const whole = withdrawalFees
           .add(existentialDeposit)
           .add(startNominationFees)
           .add(stopNominationFees)

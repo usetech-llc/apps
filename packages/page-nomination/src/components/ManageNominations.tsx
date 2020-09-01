@@ -2,17 +2,17 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 import { StakerState } from '@polkadot/react-hooks/types';
+import { ElectionStatus } from '@polkadot/types/interfaces';
 
 import React, { Suspense } from 'react';
 import styled from 'styled-components';
-import { ElectionStatus } from '@polkadot/types/interfaces';
-
-import CloseBlock from './CloseBlock';
 import { Button, Spinner } from '@polkadot/react-components';
-import { useTranslation } from './translate';
 import { useApi, useCall } from '@polkadot/react-hooks';
 
-const Actions = React.lazy(() => import('./Actions'));
+import CloseBlock from './CloseBlock';
+import { useTranslation } from '../translate';
+
+const Actions = React.lazy(() => import('../Actions'));
 
 interface Props {
   backToWallet: () => void;
@@ -55,8 +55,7 @@ function ManageNomination ({ backToWallet, isKusama, next, ownStashes, selectedV
       </Suspense>
       <Button
         className='back'
-        icon='arrow left'
-        label={t('Back to wallet section')}
+        label={t('New Nomination')}
         onClick={backToWallet}
       />
     </div>

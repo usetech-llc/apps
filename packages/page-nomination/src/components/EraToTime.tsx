@@ -11,7 +11,7 @@ import { DeriveSessionProgress } from '@polkadot/api-derive/types';
 import { BlockToTime } from '@polkadot/react-query';
 import { formatNumber } from '@polkadot/util';
 
-import { useTranslation } from './translate';
+import { useTranslation } from '../translate';
 
 interface EraToTimeInterface extends BareProps{
   showBlocks?: boolean;

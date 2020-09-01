@@ -9,6 +9,7 @@ import '@polkadot/react-components/i18n';
 
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
+import { HashRouter } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import { Api } from '@polkadot/react-api';
 import Queue from '@polkadot/react-components/Status/Queue';
@@ -31,7 +32,9 @@ ReactDOM.render(
         <Api url={settings.apiUrl}>
           <BlockAuthors>
             <Events>
-              <Application />
+              <HashRouter>
+                <Application />
+              </HashRouter>
             </Events>
           </BlockAuthors>
         </Api>

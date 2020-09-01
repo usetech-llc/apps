@@ -7,7 +7,7 @@ import { from } from 'rxjs';
 import { useEffect, useState, useCallback } from 'react';
 import { useAccounts, useApi, useDebounce, useFavorites } from '@polkadot/react-hooks';
 import { DeriveStakingElected, DeriveSessionIndexes } from '@polkadot/api-derive/types';
-import { ValidatorInfo, TargetSortBy } from './types';
+import { ValidatorInfo, TargetSortBy } from '../types';
 import { extractInfo } from './useSortedTargets';
 import { STORE_FAVS_BASE } from '@polkadot/app-staking/constants';
 import useValidatorsFilter from './useValidatorsFilter';

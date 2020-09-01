@@ -5,9 +5,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import BN from 'bn.js';
-import AccountSelector from '@polkadot/app-nomination/AccountSelector';
 
-import { useTranslation } from './translate';
+import AccountSelector from './AccountSelector';
+import { useTranslation } from '../translate';
 
 interface Props {
   setAccountId: (accountId: string | null) => void;

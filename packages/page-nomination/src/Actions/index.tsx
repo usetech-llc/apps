@@ -13,7 +13,7 @@ import { FormatBalance } from '@polkadot/react-query';
 import { Option } from '@polkadot/types';
 import Spinner from '@polkadot/react-components/Spinner';
 
-import ElectionBanner from '../ElectionBanner';
+import ElectionBanner from '../components/ElectionBanner';
 import { useTranslation } from '../translate';
 import Account from './Account';
 import NewStake from './NewStake';

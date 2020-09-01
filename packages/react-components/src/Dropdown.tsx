@@ -3,7 +3,6 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
 import SUIButton from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import SUIDropdown, { DropdownProps } from 'semantic-ui-react/dist/commonjs/modules/Dropdown/Dropdown';
 import { isUndefined } from '@polkadot/util';
@@ -123,8 +122,10 @@ function BaseDropdown<Option> ({ allowAdd = false, className = '', defaultValue,
     );
 }
 
-const Dropdown = React.memo(styled(BaseDropdown)`
-  .ui--Dropdown-item {
+const Dropdown = React.memo(BaseDropdown) as unknown as IDropdown<any>;
+
+/*
+.ui--Dropdown-item {
     position: relative;
     white-space: nowrap;
 
@@ -159,7 +160,7 @@ const Dropdown = React.memo(styled(BaseDropdown)`
       }
     }
   }
-`) as unknown as IDropdown<any>;
+ */
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 (Dropdown as any).Header = SUIDropdown.Header;

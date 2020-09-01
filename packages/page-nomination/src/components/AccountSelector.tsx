@@ -6,8 +6,6 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { InputAddress } from '@polkadot/react-components';
 
-// import { useTranslation } from './translate';
-
 interface Props {
   value?: string | null;
   className?: string;

@@ -12,7 +12,7 @@ import { useApi, useCall } from '@polkadot/react-hooks';
 import { FormatBalance } from '@polkadot/react-query';
 import { Spinner } from '@polkadot/react-components';
 
-import { useTranslation } from './translate';
+import { useTranslation } from '../translate';
 
 interface Props extends BareProps {
   label?: React.ReactNode;
