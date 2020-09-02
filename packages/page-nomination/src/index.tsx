@@ -170,9 +170,6 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
     // in all apps, the main wrapper is setup to allow the padding
     // and margins inside the application. (Just from a consistent pov)
     <main className={`nomination-app ${className || ''}`}>
-      { !status && (
-        <Spinner label={t<string>('Initializing wallet')} />
-      )}
       { status === 'none' && (
         <div className='error-block'>
           {t('Error: You have no polkadot extension injected.')}

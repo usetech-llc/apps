@@ -6,7 +6,8 @@ import { ElectionStatus } from '@polkadot/types/interfaces';
 
 import React, { Suspense } from 'react';
 import styled from 'styled-components';
-import { Button, Spinner } from '@polkadot/react-components';
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
+import { Spinner } from '@polkadot/react-components';
 import { useApi, useCall } from '@polkadot/react-hooks';
 
 import CloseBlock from './CloseBlock';
@@ -34,7 +35,9 @@ function ManageNomination ({ backToWallet, isKusama, next, ownStashes, selectedV
     <div className='nomination-active'>
       <div className='manage-nomination-row'>
         <div className='left'>
-          <h1>{t('Manage Nominations')}</h1>
+          <Header as={'h1'}>
+            {t('Manage Nominations')}
+          </Header>
         </div>
         <div className='right'>
           <CloseBlock
@@ -53,11 +56,6 @@ function ManageNomination ({ backToWallet, isKusama, next, ownStashes, selectedV
           validators={validators}
         />
       </Suspense>
-      <Button
-        className='back'
-        label={t('New Nomination')}
-        onClick={backToWallet}
-      />
     </div>
   );
 }

@@ -8,9 +8,10 @@ import { AccountId, AccountIndex, Address } from '@polkadot/types/interfaces';
 
 import React from 'react';
 import styled from 'styled-components';
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import { useApi, useCall } from '@polkadot/react-hooks';
 import { FormatBalance } from '@polkadot/react-query';
-import { Spinner } from '@polkadot/react-components';
+import {LabelHelp, Spinner} from '@polkadot/react-components';
 
 import { useTranslation } from '../translate';
 
@@ -30,9 +31,13 @@ function AvailableDisplay ({ className, label, params }: Props): React.ReactElem
         ? <Spinner />
         : (
           <>
-            <div className={`${className as string} label`}>
-              {t('Your available balance')}
-            </div>
+            <Header as={'h2'}>
+              {t('Your available balance:')}
+              <LabelHelp
+                className='small-help'
+                help={t('Your available balance')}
+              />
+            </Header>
             <div className='value'>
               <FormatBalance
                 className={className}

@@ -8,6 +8,7 @@ import BN from 'bn.js';
 
 import AccountSelector from './AccountSelector';
 import { useTranslation } from '../translate';
+import Available from './Available';
 
 interface Props {
   setAccountId: (accountId: string | null) => void;
@@ -32,6 +33,13 @@ function AccountSection ({ accountId, accountsAvailable, amount, setAccountId }:
       {amount && !amount.gtn(0) &&
       <div className='error-block'>{t('Your account`s balance is insufficient for nomination')}</div>
       }
+      <div className='divider' />
+      {accountId && (
+        <Available
+          className='available-balance'
+          params={accountId}
+        />
+      )}
     </section>
   );
 }

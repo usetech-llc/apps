@@ -3,7 +3,6 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import React, { useState } from 'react';
-import styled from 'styled-components';
 
 import Icon from './Icon';
 import { classes } from './util';
@@ -22,7 +21,7 @@ function LabelHelp ({ className = '', help }: Props): React.ReactElement<Props> 
   return (
     <div className={classes('ui--LabelHelp', className)}>
       <Icon
-        icon='question-circle'
+        icon={'question-circle'}
         tooltip={trigger}
       />
       <Tooltip
@@ -33,9 +32,4 @@ function LabelHelp ({ className = '', help }: Props): React.ReactElement<Props> 
   );
 }
 
-export default React.memo(styled(LabelHelp)`
-  cursor: help;
-  display: inline-block;
-  line-height: 1rem;
-  margin: 0 0 0 0.25rem;
-`);
+export default React.memo(LabelHelp);

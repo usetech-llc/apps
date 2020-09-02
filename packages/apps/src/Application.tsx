@@ -30,32 +30,36 @@ function Application ({ className }: Props): React.ReactElement<Props> {
   return (
     <div className={`nomination-stand-alone ${className as string || ''}`}>
       <Menu pointing secondary>
-        <Menu.Item
-          link
-          active={location.pathname === '/new'}
-          name='home'
-        >
-          <Link to={'/new'}>{t('New nomination')}</Link>
-        </Menu.Item>
-        <Menu.Item
-          link
-          active={location.pathname === '/manage'}
-          name='home'
-        >
-          <Link to={'/manage'}>{t('Manage nominations')}</Link>
-        </Menu.Item>
-        <Menu.Menu position='right'>
-          <Menu.Item>
-            <TelegramNotifications isKusama={isKusama} />
+        <div className='center'>
+          <Menu.Item
+            link
+            active={location.pathname === '/new'}
+            name='home'
+          >
+            <Link to={'/new'}>{t('New nomination')}</Link>
           </Menu.Item>
-        </Menu.Menu>
+          <Menu.Item
+            link
+            active={location.pathname === '/manage'}
+            name='home'
+          >
+            <Link to={'/manage'}>{t('Manage nominations')}</Link>
+          </Menu.Item>
+          <Menu.Menu position='right'>
+            <Menu.Item>
+              <TelegramNotifications isKusama={isKusama} />
+            </Menu.Item>
+          </Menu.Menu>
+        </div>
       </Menu>
 
       <GlobalStyle uiHighlight={defaultColor} />
 
       {!isApiReady && isApiConnected && (
-        <div className='warning-block'>
-          {t('Waiting for access...')}
+        <div className='connecting'>
+          <div className='warning-block'>
+            {t('Waiting for access...')}
+          </div>
         </div>
       )}
 

@@ -4,7 +4,6 @@
 
 import BN from 'bn.js';
 import React, { useState } from 'react';
-import styled from 'styled-components';
 import { Compact } from '@polkadot/types';
 import { formatBalance } from '@polkadot/util';
 
@@ -55,8 +54,9 @@ function FormatBalance ({ children, className = '', isShort, label, labelPost, v
   );
 }
 
-export default React.memo(styled(FormatBalance)`
-  display: inline-block;
+export default React.memo(FormatBalance);
+/*
+display: inline-block;
   vertical-align: baseline;
   white-space: nowrap;
 
@@ -89,4 +89,4 @@ export default React.memo(styled(FormatBalance)`
   .ui--Icon+.ui--FormatBalance-value {
     margin-left: 0.375rem;
   }
-`);
+ */

@@ -8,16 +8,17 @@ import { ActionStatus, QueueAction$Add } from '@polkadot/react-components/Status
 import { StakerState } from '@polkadot/react-hooks/types';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import BN from 'bn.js';
 import { useApi } from '@polkadot/react-hooks';
-import { Button } from '@polkadot/react-components';
+import { Icon } from '@polkadot/react-components';
 
 import AccountSection from './AccountSection';
 import BondSection from './BondSection';
 import { useBalanceClear, useFees, WholeFeesType } from '../hooks/useBalance';
 import { useTranslation } from '../translate';
 import { useSlashes } from '../hooks/useShalses';
-import Available from './Available';
 
 interface Props {
   accountId: string | null;
@@ -135,7 +136,7 @@ function NewNomination ({ accountId, accountsAvailable, ownStashes, queueAction,
 
   return (
     <div className='nomination-row'>
-      <h1>{t('New nomination')}</h1>
+      <Header as='h1'>{t('New nomination')}</Header>
       <div className='nomination-card'>
         {!web3Enabled &&
         <div className='error-block'>{t('Please enable the polkadot.js extension!')}</div>
@@ -146,12 +147,6 @@ function NewNomination ({ accountId, accountsAvailable, ownStashes, queueAction,
             accountsAvailable={accountsAvailable}
             amount={accountBalance || new BN(0)}
             setAccountId={setAccountId}
-          />
-        )}
-        {accountId && (
-          <Available
-            className='qr-panel'
-            params={accountId}
           />
         )}
         { amountToNominate && maxAmountToNominate && (
@@ -174,15 +169,20 @@ function NewNomination ({ accountId, accountsAvailable, ownStashes, queueAction,
           {t('Warning: You have been slashed. You need to update your nomination.')}
         </div>
         }
-        <Button
-          className='start'
-          icon='play'
-          isDisabled={!selectedValidators.length || !amountToNominate || !amountToNominate.gtn(0) || isNominating}
-          isLoading={isNominating}
-          isPrimary
-          label={stashIsCurrent ? t('Add funds') : t('Bond and Nominate')}
-          onClick={startNomination}
-        />
+        <div className='button-block right'>
+          <Button
+            icon
+            disabled={!selectedValidators.length || !amountToNominate || !amountToNominate.gtn(0) || isNominating}
+            isLoading={isNominating}
+            onClick={startNomination}
+            primary
+          >
+            {stashIsCurrent ? t('Add funds') : t('Bond and Nominate')}
+            <Icon
+              icon={'play'}
+            />
+          </Button>
+        </div>
       </div>
     </div>
   );

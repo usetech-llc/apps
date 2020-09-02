@@ -5,7 +5,6 @@
 import { ButtonProps } from './types';
 
 import React, { useCallback } from 'react';
-import styled from 'styled-components';
 
 import Icon from '../Icon';
 import Spinner from '../Spinner';
@@ -35,10 +34,12 @@ function Button ({ children, className = '', icon, isBasic, isBusy, isCircular, 
   );
 }
 
-const ICON_PADDING = 0.5;
+// const ICON_PADDING = 0.5;
 
-export default React.memo(styled(Button)`
-  background: transparent;
+export default React.memo(Button);
+
+/*
+background: transparent;
   border: none;
   color: inherit;
   cursor: pointer;
@@ -132,4 +133,4 @@ export default React.memo(styled(Button)`
   &.isDisabled {
     color: #bcbbba;
   }
-`);
+ */

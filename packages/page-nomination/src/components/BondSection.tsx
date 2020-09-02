@@ -5,10 +5,12 @@
 import React from 'react';
 import styled from 'styled-components';
 import BN from 'bn.js';
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 
 import { useTranslation } from '../translate';
 import EraToTime from './EraToTime';
 import InputBalance from './InputBalance';
+import {LabelHelp} from "@polkadot/react-components/index";
 
 interface Props {
   amountToNominate: BN | undefined | null;
@@ -22,7 +24,13 @@ function BondSection ({ amountToNominate, maxAmountToNominate, setAmountToNomina
   return (
     <section className='bond-section'>
       <div className='bond-section-block'>
-        <h2>{t('Amount to bond and nominate:')}</h2>
+        <Header as='h2'>
+          {t('Amount to bond and nominate:')}
+          <LabelHelp
+            className='small-help'
+            help={t('Amount to bond and nominate:')}
+          />
+        </Header>
         <InputBalance
           className='small'
           defaultValue={amountToNominate || new BN(0)}

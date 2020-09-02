@@ -132,7 +132,7 @@ display: block;
   }
  */
 
-function Labelled ({ className = '', children, help, isFull, isHidden, isOuter, isSmall, label = defaultLabel, labelExtra, withEllipsis, withLabel = true }: Props): React.ReactElement<Props> | null {
+function Labelled ({ className = '', children, help, isFull, isHidden, isOuter, isSmall, label, labelExtra, withEllipsis, withLabel = true }: Props): React.ReactElement<Props> | null {
   if (isHidden) {
     return null;
   } else if (!withLabel) {
@@ -143,13 +143,15 @@ function Labelled ({ className = '', children, help, isFull, isHidden, isOuter, 
 
   return (
     <div className={classes('ui--Labelled', isSmall && 'label-small', isFull && 'label-full', isOuter && 'label-outer', className)}>
+      {label &&
       <label>
         {
           withEllipsis
             ? <div className='withEllipsis'>{label}</div>
             : label
-        }{help && <LabelHelp help={help} />}
+        }{help && <LabelHelp help={help}/>}
       </label>
+      }
       {labelExtra && <div className='labelExtra'>{labelExtra}</div>}
       <div className='ui--Labelled-content'>
         {children}

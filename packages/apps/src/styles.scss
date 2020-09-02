@@ -145,19 +145,24 @@
 $nomination_blue_color: #0087cb;
 $nomination_warning_color: #CA6014;
 $nomination_warning_light_color: #F7F2EE;
+$nomination_error_light_color: #F8EFEF;
+$nomination_error_color: #CA1414;
 
 * {
   font-family: Roboto, Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
 }
 
+body {
+  color: #000000;
+}
+
 .nomination-stand-alone {
   box-sizing: border-box;
-  width: 800px;
   margin: 0 auto;
   min-height: 100vh;
   padding: 10px;
 
-  h1 {
+  h1.ui.header {
     font-family: Roboto, Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
     font-style: normal;
     font-weight: 500;
@@ -165,6 +170,31 @@ $nomination_warning_light_color: #F7F2EE;
     line-height: 40px;
     text-transform: none;
     margin: 30px 0;
+    color: #000000;
+  }
+
+  h2.ui.header {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    margin: 0;
+    color: #000000;
+  }
+
+  .ui--LabelHelp {
+    cursor: help;
+    display: inline-block;
+    line-height: 1rem;
+    margin: 0 0 0 0.25rem;
+    vertical-align: middle;
+
+    &.small-help {
+      svg {
+        width: 15px;
+      }
+    }
   }
 
   .nomination-card {
@@ -177,16 +207,56 @@ $nomination_warning_light_color: #F7F2EE;
   }
 
   .warning-block {
+    width: 100%;
     color: $nomination_warning_color;
     background-color: $nomination_warning_light_color;
+    border: 1px solid rgba(202, 96, 20, 0.2);
+    border-radius: 4px;
     font-size: 14px;
     line-height: 21px;
     display: flex;
     flex-direction: column;
     padding: 8px 16px;
+    margin: 8px auto;
+  }
+
+  .error-block {
+    color: $nomination_error_color;
+    background-color: $nomination_error_light_color;
+    border: 1px solid rgba(202, 20, 20, 0.2);
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 24px;
+    padding: 8px 16px;
+    text-align: center;
+    margin: 8px 0;
+  }
+
+  .available-balance {
+    color: #000000;
+    .ui--FormatBalance-value {
+      font-weight: bold;
+      font-size: 40px;
+      line-height: 60px;
+    }
+  }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+    background-color: #D5D5D5;
+    margin: 16px 0;
   }
 
   .ui.secondary.pointing.menu {
+    border: none;
+    box-shadow: 0px 4px 10px -4px rgba(0, 0, 0, 0.15);
+
+    .center {
+      width: 800px;
+      display: flex;
+      margin: 0 auto;
+    }
 
     .right.menu {
       .item {
@@ -212,10 +282,16 @@ $nomination_warning_light_color: #F7F2EE;
     }
   }
 
+  .nomination-app {
+    width: 800px;
+    margin: 0 auto;
+  }
+
   .connecting {
     width: 800px;
     display: flex;
     justify-content: center;
+    margin: 0 auto;
   }
 
   .success {
@@ -234,6 +310,19 @@ $nomination_warning_light_color: #F7F2EE;
       width: 24px;
       height: 24px;
       vertical-align: middle;
+    }
+  }
+
+  .ui.icon.primary.button {
+    svg {
+      margin-left: 10px;
+    }
+  }
+
+  .button-block {
+    &.right {
+      margin-top: 30px;
+      text-align: right;
     }
   }
 }
