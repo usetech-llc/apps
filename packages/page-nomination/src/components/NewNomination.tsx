@@ -17,7 +17,6 @@ import { Icon } from '@polkadot/react-components';
 import AccountSection from './AccountSection';
 import BondSection from './BondSection';
 import { useBalanceClear, useFees, WholeFeesType } from '../hooks/useBalance';
-import { useTranslation } from '../translate';
 import { useSlashes } from '../hooks/useShalses';
 
 interface Props {
@@ -34,7 +33,6 @@ interface Props {
 
 function NewNomination ({ accountId, accountsAvailable, ownStashes, queueAction, selectedValidators, setAccountId, toNomination, web3Enabled }: Props): React.ReactElement<Props> {
   const { api } = useApi();
-  const { t } = useTranslation();
   const [amountToNominate, setAmountToNominate] = useState<BN | undefined | null>(null);
   const [stashIsCurrent, setStashIsCurrent] = useState<boolean>(false);
   const [isNominating, setIsNominating] = useState<boolean>(false);
@@ -68,7 +66,7 @@ function NewNomination ({ accountId, accountsAvailable, ownStashes, queueAction,
         if (status.isInBlock) {
           const message: ActionStatus = {
             action: `included in ${status.asInBlock as unknown as string}`,
-            message: t('Funds nominated successfully!'),
+            message: 'Funds nominated successfully!',
             status: 'success'
           };
 
@@ -77,7 +75,7 @@ function NewNomination ({ accountId, accountsAvailable, ownStashes, queueAction,
           setIsNominating(false);
         }
       });
-  }, [accountId, api.tx.utility, extrinsicBond, extrinsicNominate, t, toNomination, queueAction]);
+  }, [accountId, api.tx.utility, extrinsicBond, extrinsicNominate, toNomination, queueAction]);
 
   const calculateMaxPreFilledBalance = useCallback((): void => {
     if (maxAmountToNominate) {
@@ -124,7 +122,7 @@ function NewNomination ({ accountId, accountsAvailable, ownStashes, queueAction,
     if (currentAccountRef.current && currentAccountRef.current !== accountId) {
       const message: ActionStatus = {
         action: '',
-        message: t('Account was changed!'),
+        message: 'Account was changed!',
         status: 'success'
       };
 
@@ -132,14 +130,14 @@ function NewNomination ({ accountId, accountsAvailable, ownStashes, queueAction,
     }
 
     currentAccountRef.current = accountId;
-  }, [accountId, t, queueAction]);
+  }, [accountId, queueAction]);
 
   return (
     <div className='nomination-row'>
-      <Header as='h1'>{t('New nomination')}</Header>
+      <Header as='h1'>New nomination</Header>
       <div className='nomination-card'>
         {!web3Enabled &&
-        <div className='error-block'>{t('Please enable the polkadot.js extension!')}</div>
+        <div className='error-block'>Please enable the polkadot.js extension!</div>
         }
         {web3Enabled && (
           <AccountSection
@@ -165,9 +163,7 @@ function NewNomination ({ accountId, accountsAvailable, ownStashes, queueAction,
           </div>
         )} */}
         { slashes > 0 &&
-        <div className='error-block'>
-          {t('Warning: You have been slashed. You need to update your nomination.')}
-        </div>
+        <div className='error-block'>Warning: You have been slashed. You need to update your nomination.</div>
         }
         <div className='button-block right'>
           <Button
@@ -177,7 +173,7 @@ function NewNomination ({ accountId, accountsAvailable, ownStashes, queueAction,
             onClick={startNomination}
             primary
           >
-            {stashIsCurrent ? t('Add funds') : t('Bond and Nominate')}
+            {stashIsCurrent ? 'Add funds' : 'Bond and Nominate'}
             <Icon
               icon={'play'}
             />

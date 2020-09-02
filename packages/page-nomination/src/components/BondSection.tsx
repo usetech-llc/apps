@@ -7,7 +7,6 @@ import styled from 'styled-components';
 import BN from 'bn.js';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 
-import { useTranslation } from '../translate';
 import EraToTime from './EraToTime';
 import InputBalance from './InputBalance';
 import {LabelHelp} from "@polkadot/react-components/index";
@@ -19,16 +18,15 @@ interface Props {
 }
 
 function BondSection ({ amountToNominate, maxAmountToNominate, setAmountToNominate }: Props): React.ReactElement<Props> {
-  const { t } = useTranslation();
 
   return (
     <section className='bond-section'>
       <div className='bond-section-block'>
         <Header as='h2'>
-          {t('Amount to bond and nominate:')}
+          Amount to bond and nominate:
           <LabelHelp
             className='small-help'
-            help={t('Amount to bond and nominate:')}
+            help='Amount to bond and nominate:'
           />
         </Header>
         <InputBalance
@@ -43,8 +41,8 @@ function BondSection ({ amountToNominate, maxAmountToNominate, setAmountToNomina
         />
       </div>
       <div className='warning-block'>
-        {t('Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for ')}
-        <EraToTime showBlocks/>, {t('which is approximately')} <EraToTime showDays/>.
+        Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for
+        <EraToTime showBlocks/>, which is approximately <EraToTime showDays/>.
       </div>
     </section>
   );

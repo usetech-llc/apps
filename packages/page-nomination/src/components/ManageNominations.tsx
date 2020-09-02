@@ -11,7 +11,6 @@ import { Spinner } from '@polkadot/react-components';
 import { useApi, useCall } from '@polkadot/react-hooks';
 
 import CloseBlock from './CloseBlock';
-import { useTranslation } from '../translate';
 
 const Actions = React.lazy(() => import('../Actions'));
 
@@ -25,7 +24,6 @@ interface Props {
 }
 
 function ManageNomination ({ backToWallet, isKusama, next, ownStashes, selectedValidators, validators }: Props): React.ReactElement<Props> {
-  const { t } = useTranslation();
   const { api } = useApi();
   const isInElection = useCall<boolean>(api.query.staking?.eraElectionStatus, [], {
     transform: (status: ElectionStatus) => status.isOpen
@@ -36,7 +34,7 @@ function ManageNomination ({ backToWallet, isKusama, next, ownStashes, selectedV
       <div className='manage-nomination-row'>
         <div className='left'>
           <Header as={'h1'}>
-            {t('Manage Nominations')}
+            Manage Nominations
           </Header>
         </div>
         <div className='right'>

@@ -7,7 +7,6 @@ import styled from 'styled-components';
 import BN from 'bn.js';
 
 import AccountSelector from './AccountSelector';
-import { useTranslation } from '../translate';
 import Available from './Available';
 
 interface Props {
@@ -18,20 +17,19 @@ interface Props {
 }
 
 function AccountSection ({ accountId, accountsAvailable, amount, setAccountId }: Props): React.ReactElement<Props> {
-  const { t } = useTranslation();
 
   return (
     <section className='account-section'>
       <AccountSelector
         onChange={setAccountId}
-        title={t('Select your account:')}
+        title={'Select your account:'}
         value={accountId}
       />
       {!accountsAvailable &&
-      <div className='error-block'>{t('You have no accounts in polkadot.js extension. Please create account and send funds to it.')}</div>
+      <div className='error-block'>You have no accounts in polkadot.js extension. Please create account and send funds to it.</div>
       }
       {amount && !amount.gtn(0) &&
-      <div className='error-block'>{t('Your account`s balance is insufficient for nomination')}</div>
+      <div className='error-block'>Your account`s balance is insufficient for nomination</div>
       }
       <div className='divider' />
       {accountId && (
