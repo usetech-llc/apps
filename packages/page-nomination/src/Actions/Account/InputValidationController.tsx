@@ -60,7 +60,10 @@ function ValidateController ({ accountId, controllerId, defaultController, onErr
 
   return (
     <article className='warning'>
-      <div><Icon name='warning sign' />{error}</div>
+      <div>
+        <Icon name='warning sign' />
+        {error}
+      </div>
     </article>
   );
 }

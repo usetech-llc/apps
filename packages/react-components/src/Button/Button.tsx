@@ -4,33 +4,72 @@
 
 import { ButtonProps } from './types';
 
-import React, { useCallback } from 'react';
+import React, { useState } from 'react';
+import SUIButton from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
+import { isUndefined } from '@polkadot/util';
 
 import Icon from '../Icon';
-import Spinner from '../Spinner';
+import Tooltip from '../Tooltip';
 
-function Button ({ children, className = '', icon, isBasic, isBusy, isCircular, isDisabled, isFull, isIcon, isSelected, label, onClick, onMouseEnter, onMouseLeave, tabIndex, withoutLink }: ButtonProps): React.ReactElement<ButtonProps> {
-  const _onClick = useCallback(
-    () => !(isBusy || isDisabled) && onClick && onClick(),
-    [isBusy, isDisabled, onClick]
-  );
+let idCounter = 0;
+
+function Button ({ children, className, floated, icon, isAnimated, isBasic = false, isCircular = false, isDisabled = false, isFluid = false, isIcon, isLoading = false, isNegative = false, isPositive = false, isPrimary = false, label, labelPosition, onClick, onMouseEnter, onMouseLeave, size, style, tabIndex, tooltip }: ButtonProps): React.ReactElement<ButtonProps> {
+  const [triggerId] = useState(`button-${++idCounter}`);
+  const props = {
+    animate: 'fade',
+    animated: isAnimated,
+    basic: isBasic,
+    circular: isCircular,
+    className: `${className as string} ${isIcon && 'isIcon'}`,
+    'data-for': triggerId,
+    'data-tip': !!tooltip,
+    disabled: isDisabled,
+    floated,
+    fluid: isFluid,
+    labelPosition,
+    loading: isLoading,
+    negative: isNegative,
+    onClick,
+    onMouseEnter,
+    onMouseLeave,
+    positive: isPositive,
+    primary: isPrimary,
+    secondary: !isBasic && !(isPositive || isPrimary || isNegative),
+    size: size || (isIcon ? 'tiny' : undefined),
+    style,
+    tabIndex
+  };
 
   return (
-    <button
-      className={`ui--Button${label ? ' hasLabel' : ''}${isBasic ? ' isBasic' : ''}${isCircular ? ' isCircular' : ''}${isFull ? ' isFull' : ''}${isIcon ? ' isIcon' : ''}${(isBusy || isDisabled) ? ' isDisabled' : ''}${isBusy ? ' isBusy' : ''}${!onClick ? ' isReadOnly' : ''}${isSelected ? ' isSelected' : ''}${withoutLink ? ' withoutLink' : ''} ${className}`}
-      onClick={_onClick}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      tabIndex={tabIndex}
-    >
-      <Icon icon={icon} />
-      {label}
-      {children}
-      <Spinner
-        className='ui--Button-spinner'
-        variant='cover'
-      />
-    </button>
+    <>
+      {isUndefined(label) && isUndefined(children)
+        ? (
+          <SUIButton
+            {...props}
+            icon={icon}
+          />
+        )
+        : (
+          <SUIButton {...props}>
+            {icon && (
+              <>
+                <Icon icon={icon} />
+                {isIcon ? '' : '  '}
+              </>
+            )}
+            {label}
+            {children}
+          </SUIButton>
+        )
+      }
+      {tooltip && (
+        <Tooltip
+          place='top'
+          text={tooltip}
+          trigger={triggerId}
+        />
+      )}
+    </>
   );
 }
 

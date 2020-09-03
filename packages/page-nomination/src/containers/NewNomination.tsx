@@ -14,8 +14,8 @@ import BN from 'bn.js';
 import { useApi } from '@polkadot/react-hooks';
 import { Icon } from '@polkadot/react-components';
 
-import AccountSection from './AccountSection';
-import BondSection from './BondSection';
+import AccountSection from '../components/AccountSection';
+import BondSection from '../components/BondSection';
 import { useBalanceClear, useFees, WholeFeesType } from '../hooks/useBalance';
 import { useSlashes } from '../hooks/useShalses';
 

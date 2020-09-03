@@ -13,15 +13,14 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { useApi, useCall, useOwnStashInfos, useStashIds } from '@polkadot/react-hooks';
 import keyring from '@polkadot/ui-keyring';
-import { Spinner } from '@polkadot/react-components';
 import { web3FromSource, web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 import uiSettings from '@polkadot/ui-settings';
 
 // local imports and components
-import NewNomination from './components/NewNomination';
+import NewNomination from './containers/NewNomination';
 import { useTranslation } from './translate';
 import Status from './components/Status';
-import ManageNominations from './components/ManageNominations';
+import ManageNominations from './containers/ManageNominations';
 import useValidators from './hooks/useValidators';
 
 interface Validators {

@@ -4,15 +4,12 @@
 import { StakerState } from '@polkadot/react-hooks/types';
 import { ElectionStatus } from '@polkadot/types/interfaces';
 
-import React, { Suspense } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
-import { Spinner } from '@polkadot/react-components';
 import { useApi, useCall } from '@polkadot/react-hooks';
 
-import CloseBlock from './CloseBlock';
-
-const Actions = React.lazy(() => import('../Actions'));
+import Actions from '../Actions';
 
 interface Props {
   backToWallet: () => void;
@@ -23,37 +20,29 @@ interface Props {
   validators?: string[];
 }
 
-function ManageNomination ({ backToWallet, isKusama, next, ownStashes, selectedValidators, validators }: Props): React.ReactElement<Props> {
+function ManageNomination ({ next, ownStashes, selectedValidators, validators }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const isInElection = useCall<boolean>(api.query.staking?.eraElectionStatus, [], {
     transform: (status: ElectionStatus) => status.isOpen
   });
 
   return (
-    <div className='nomination-active'>
+    <div className='manage-nomination'>
       <div className='manage-nomination-row'>
         <div className='left'>
           <Header as={'h1'}>
             Manage Nominations
           </Header>
         </div>
-        <div className='right'>
-          <CloseBlock
-            isKusama={isKusama}
-            showTelegram
-          />
-        </div>
       </div>
-      <Suspense fallback={<Spinner />}>
-        <Actions
-          hideNewStake
-          isInElection={isInElection}
-          next={next}
-          ownStashes={ownStashes}
-          selectedValidators={selectedValidators}
-          validators={validators}
-        />
-      </Suspense>
+      <Actions
+        hideNewStake
+        isInElection={isInElection}
+        next={next}
+        ownStashes={ownStashes}
+        selectedValidators={selectedValidators}
+        validators={validators}
+      />
     </div>
   );
 }

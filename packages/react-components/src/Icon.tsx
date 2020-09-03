@@ -3,7 +3,7 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconProp, library } from '@fortawesome/fontawesome-svg-core';
+import { IconName, library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import styled from 'styled-components';
@@ -11,7 +11,7 @@ import styled from 'styled-components';
 interface Props {
   className?: string;
   color?: 'gray' | 'green' | 'normal' | 'orange' | 'red' | 'transparent' | 'white';
-  icon: IconProp;
+  icon: IconName;
   isSpinning?: boolean;
   onClick?: () => void;
   size?: '1x' | '2x';

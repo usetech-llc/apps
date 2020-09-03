@@ -7,15 +7,16 @@ import { EraIndex, ValidatorPrefsTo145 } from '@polkadot/types/interfaces';
 import { StakerState } from '@polkadot/react-hooks/types';
 
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import styled from 'styled-components';
 import SemanticPopup from 'semantic-ui-react/dist/commonjs/modules/Popup/Popup';
-import { AddressMini,
-  Button,
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
+import {
+  AddressMini,
   StakingBonded,
   StakingUnbonding,
   StatusContext,
   TxButton,
-  Icon } from '@polkadot/react-components';
+  Icon, LabelHelp
+} from '@polkadot/react-components';
 import { useApi, useCall, useToggle } from '@polkadot/react-hooks';
 import { FormatBalance } from '@polkadot/react-query';
 import StakingRedeemable from '@polkadot/react-components/StakingRedeemable';
@@ -128,6 +129,12 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
   return (
     <div className='account-block'>
       <div className='white-block with-footer'>
+        <a
+          className='toggle-accordion'
+          onClick={toggleAccordion}
+        >
+          <Icon icon='angle-down' className={isAccordionOpen ? '' : 'right'} />
+        </a>
         <div className='column address'>
           {/* <AddressSmall value={stashId} /> */}
           <AddressMini
@@ -174,7 +181,7 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
             <div className='accordion'>
               <div className='accordion-header'>
                 <div className='with-bottom-border'>
-                  { stakingAccount?.stakingLedger?.active.unwrap().gtn(0) && (
+                  { stakingAccount && stakingAccount.stakingLedger && stakingAccount.stakingLedger.active.unwrap().gtn(0) && (
                     <div className='item'>
                       <StakingBonded
                         stakingInfo={stakingAccount}
@@ -182,7 +189,7 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
                       />
                     </div>
                   )}
-                  { stakingAccount?.redeemable?.gtn(0) && (
+                  { stakingAccount && stakingAccount.redeemable && stakingAccount.redeemable.gtn(0) && (
                     <div className='item'>
                       <StakingRedeemable
                         className='result'
@@ -200,51 +207,89 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
                     />
                   </div>
                 </div>
-                <a
-                  className='toggle-accordion'
-                  onClick={toggleAccordion}
-                >
-                  { isAccordionOpen &&
-                    <Icon name='angle up' />
-                  }
-                  { !isAccordionOpen &&
-                    <Icon name='angle down' />
-                  }
-                </a>
-              </div>
-              <div className='accordion-body'>
-                { isAccordionOpen && (
-                  <div className='accordion-body-inner'>
-                    { balancesAll && (
-                      <div className='item'>
-                        <span>{t('total')}: </span>
-                        <FormatBalance
-                          className='result'
-                          value={balancesAll.votingBalance}
-                        />
-                      </div>
-                    )}
-                    { balancesAll && (
-                      <div className='item'>
-                        <span>{t('transferrable')}: </span>
-                        <FormatBalance
-                          className='result'
-                          value={balancesAll.availableBalance}
-                        />
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
             </div>
           }
         </div>
       </div>
+      <div className='footer-row'>
+        <Button
+          className='footer-button'
+          disabled={!isOwnStash && (!balancesAll || balancesAll.freeBalance.gtn(0))}
+          onClick={openRewards}
+        >
+          Rewards
+        </Button>
+        <Button
+          className='footer-button'
+          disabled={!isOwnController}
+          onClick={toggleBondExtra}
+        >
+          Bond more
+        </Button>
+        <TxButton
+          accountId={controllerId}
+          className='footer-button'
+          icon={isStashNominating ? 'exclamation-triangle' : 'check'}
+          isDisabled={!selectedValidators || !selectedValidators.length}
+          isPrimary
+          label={
+            isStashNominating ? (
+              <>
+                Update nomination
+                <LabelHelp
+                  className='small-help'
+                  help={'Your nomination is not optimal. Update please!'}
+                />
+              </>
+            ) : 'Nominate'}
+          params={[selectedValidators]}
+          tx='staking.nominate'
+        />
+        <Button
+          className='footer-button'
+          disabled={!isStashNominating}
+          onClick={stopNomination}
+        >
+          Stop nomination
+        </Button>
+        <Button
+          className='footer-button'
+          disabled={!isOwnStash && (!balancesAll || !balancesAll.freeBalance.gtn(0))}
+          onClick={toggleUnbond}
+        >
+          Unbond
+        </Button>
+      </div>
+      <div className='accordion-body'>
+        { isAccordionOpen && (
+          <div className='accordion-body-inner'>
+            { balancesAll && (
+              <div className='item'>
+                <span>{t('total')}: </span>
+                <FormatBalance
+                  className='result'
+                  value={balancesAll.votingBalance}
+                />
+              </div>
+            )}
+            { balancesAll && (
+              <div className='item'>
+                <span>{t('transferrable')}: </span>
+                <FormatBalance
+                  className='result'
+                  value={balancesAll.availableBalance}
+                />
+              </div>
+            )}
+          </div>
+        )}
+      </div>
       { isAccordionOpen && (
         <div className='column accordion'>
           {(nomsWaiting && nomsWaiting.length > 0) && (
             <>
-              <h4>{`${t('Waiting nominations')} (${nomsWaiting.length})`}</h4>
+              <h4>{`Waiting nominations (${nomsWaiting.length})`}</h4>
               {nomsWaiting.map((nomineeId, index): React.ReactNode => (
                 <AddressMini
                   key={index}
@@ -256,7 +301,7 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
           )}
           {(nomsInactive && nomsInactive.length > 0) && (
             <>
-              <h4>{`${t('Inactive nominations')} (${nomsInactive.length})`}</h4>
+              <h4>{`${'Inactive nominations'} (${nomsInactive.length})`}</h4>
               {nomsInactive.map((nomineeId, index): React.ReactNode => (
                 <AddressMini
                   key={index}
@@ -268,78 +313,8 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
           )}
         </div>
       )}
-      <div className='footer-row'>
-        <Button.Group>
-          <Button
-            className='footer-button'
-            icon=''
-            isDisabled={!isOwnStash && !balancesAll?.freeBalance.gtn(0)}
-            key='rewards'
-            label={t('Rewards')}
-            onClick={openRewards}
-          />
-          <Button
-            className='footer-button'
-            icon=''
-            isDisabled={!isOwnController}
-            key='bondMore'
-            label={t('Bond more')}
-            onClick={toggleBondExtra}
-          />
-          { notOptimal && (
-            <SemanticPopup
-              content='Your nomination is not optimal. Update please!'
-              style={{ zIndex: 100 }}
-              trigger={
-                <TxButton
-                  accountId={controllerId}
-                  className='warning footer-button'
-                  icon='warning sign'
-                  isDisabled={!selectedValidators?.length}
-                  isPrimary
-                  label={t('Update nomination')}
-                  params={[selectedValidators]}
-                  tx='staking.nominate'
-                />
-              }
-            />
-          )}
-          { !notOptimal && (
-            <TxButton
-              accountId={controllerId}
-              className='footer-button'
-              icon='hand paper outline'
-              isDisabled={!selectedValidators?.length}
-              isPrimary
-              label={isStashNominating ? t('Update nomination') : t('Nominate')}
-              params={[selectedValidators]}
-              tx='staking.nominate'
-            />
-          )}
-          <Button
-            className='footer-button'
-            icon=''
-            isDisabled={!isStashNominating}
-            key='stop'
-            label={t('Stop nomination')}
-            onClick={stopNomination}
-          />
-          <Button
-            className='footer-button'
-            icon=''
-            isDisabled={!isOwnStash && !balancesAll?.freeBalance.gtn(0)}
-            key='unbond'
-            label={t('Unbond')}
-            onClick={toggleUnbond}
-          />
-        </Button.Group>
-      </div>
     </div>
   );
 }
 
-export default React.memo(styled(Account)`
-  .ui--Button-Group {
-    display: inline-block;
-  }
-`);
+export default React.memo(Account);

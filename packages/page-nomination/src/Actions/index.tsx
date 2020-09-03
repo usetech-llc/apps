@@ -6,7 +6,6 @@ import { ActiveEraInfo, EraIndex } from '@polkadot/types/interfaces';
 import { StakerState } from '@polkadot/react-hooks/types';
 
 import BN from 'bn.js';
-import styled from 'styled-components';
 import React, { useEffect, useState } from 'react';
 import { useCall, useApi } from '@polkadot/react-hooks';
 import { FormatBalance } from '@polkadot/react-query';
@@ -17,9 +16,9 @@ import ElectionBanner from '../components/ElectionBanner';
 import { useTranslation } from '../translate';
 import Account from './Account';
 import NewStake from './NewStake';
+import './styles.scss';
 
 interface Props {
-  className?: string;
   hideNewStake?: boolean;
   isInElection?: boolean;
   next?: string[];
@@ -33,7 +32,7 @@ interface State {
   foundStashes?: StakerState[];
 }
 
-function Actions ({ className, hideNewStake, isInElection, next, ownStashes, selectedValidators, validators }: Props): React.ReactElement<Props> {
+function Actions ({ hideNewStake, isInElection, next, ownStashes, selectedValidators, validators }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
   const activeEra = useCall<EraIndex | undefined>(api.query.staking?.activeEra, [], {
@@ -55,14 +54,14 @@ function Actions ({ className, hideNewStake, isInElection, next, ownStashes, sel
   }, [ownStashes]);
 
   return (
-    <div className={className}>
+    <div className='manage-nomination-actions'>
       {!hideNewStake &&
       <NewStake/>
       }
       <ElectionBanner isInElection={isInElection} />
       { (!foundStashes || !foundStashes.length) ? (
         <div className='stakes table'>
-          <Spinner label={t<string>('No funds staked yet. Bond funds to validate or nominate a validator')} />
+          <Spinner label={'No funds staked yet. Bond funds to validate or nominate a validator'} />
         </div>
       ) : (
         <div className='stakes table'>
@@ -83,7 +82,7 @@ function Actions ({ className, hideNewStake, isInElection, next, ownStashes, sel
             </div>
           </div>
           <div className='tbody'>
-            {foundStashes?.map((info): React.ReactNode => (
+            {foundStashes && foundStashes.map((info: any): React.ReactNode => (
               <Account
                 activeEra={activeEra}
                 info={info}
@@ -102,146 +101,4 @@ function Actions ({ className, hideNewStake, isInElection, next, ownStashes, sel
   );
 }
 
-export default React.memo(styled(Actions)` 
-
-  * {
-    font-family: 'Roboto', sans-serif;
-  }
-  
-  .ui--AccountName {
-  
-  }
-  
-  .account-block {
-    margin-bottom: 10px;
-    
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-  
-  .result .ui--FormatBalance {
-    display: flex;
-    align-items: center
-  }
-  
-  .white-block {
-    background: #FFFFFF;
-    border: 1px solid #DDDDDD;
-    box-sizing: border-box;
-    border-radius: 4px;
-    margin: 10px 0;
-    padding: 9px 16px;
-    
-    &.with-footer {
-        margin-top: 0;
-    }
-  }
-  
-  .white-block.with-footer {
-    margin-bottom: 0;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    border-bottom: none;
-    display: grid;
-    grid-template-columns: 170px 170px 1fr;
-    column-gap: 10px;
-  }
-  
-  .stakes.table {
-    margin-top: 20px;
-  }
-  
-  .footer-row {
-    background: #F1F1F1;
-    border-radius: 0px 0px 3px 3px;
-    padding: 8px 15px;
-    border-left: 1px solid #DDDDDD;
-    border-right: 1px solid #DDDDDD;
-    border-bottom: 1px solid #DDDDDD;
-    display: flex;
-  }
-  
-  .table {
-    .thead {
-      font-family: 'Roboto';
-      font-style: normal;
-      font-weight: bold;
-      font-size: 14px;
-      line-height: 22px;
-      display: grid;
-      grid-template-columns: 170px 1fr 200px;
-      column-gap: 10px; 
-      text-align: left;
-      align-items: center;
-    }
-    .tbody {
-       overflow-y: auto;
-       overflow-x: hidden;
-       min-height: 122px;
-       max-height: 500px;
-    }
-  }
-  
-  .accordion {
-    display: grid;
-    position: relative;
-    
-    .with-bottom-border {
-      border-bottom: 1px solid #0000002e;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .item {
-      margin: 0 10px;
-    }
-    
-    .toggle-accordion {
-      color: #464E5F;
-      font-size: 18px;
-      line-height: 30px;
-      text-align: right;
-    }
-  }
-  
-  .accordion-header {
-    display: grid;
-    grid-template-columns: 1fr 37px;
-  }
-  
-  .accordion-body-inner {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .accordion-body {
-    display: flex;
-    min-height: 30px;
-  }
-  
-  .column.accordion {
-    background: #FFFFFF;
-    padding: 9px 16px;
-    border-left: 1px solid #DDDDDD;
-    border-right: 1px solid #DDDDDD;
-    
-    font-family: 'Roboto';
-    
-    h4 {
-      font-size: 18px;
-      line-height: 21px;
-      font-family: 'Roboto';
-      font-style: normal;
-      font-weight: normal;
-    }
-    
-    .ui--AddressMini {
-      &.padded {
-        padding: 8px 0;
-      }
-    }
-  }
-`);
+export default React.memo(Actions);
