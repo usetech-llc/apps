@@ -169,7 +169,7 @@ function NewNomination ({ accountId, accountsAvailable, ownStashes, queueAction,
           <Button
             icon
             disabled={!selectedValidators.length || !amountToNominate || !amountToNominate.gtn(0) || isNominating}
-            isLoading={isNominating}
+            loading={isNominating}
             onClick={startNomination}
             primary
           >

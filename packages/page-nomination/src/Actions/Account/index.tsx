@@ -212,80 +212,77 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
           }
         </div>
       </div>
-      <div className='footer-row'>
-        <Button
-          className='footer-button'
-          disabled={!isOwnStash && (!balancesAll || balancesAll.freeBalance.gtn(0))}
-          onClick={openRewards}
-        >
-          Rewards
-        </Button>
-        <Button
-          className='footer-button'
-          disabled={!isOwnController}
-          onClick={toggleBondExtra}
-        >
-          Bond more
-        </Button>
-        <TxButton
-          accountId={controllerId}
-          className='footer-button'
-          icon={isStashNominating ? 'exclamation-triangle' : 'check'}
-          isDisabled={!selectedValidators || !selectedValidators.length}
-          isPrimary
-          label={
-            isStashNominating ? (
-              <>
-                Update nomination
-                <LabelHelp
-                  className='small-help'
-                  help={'Your nomination is not optimal. Update please!'}
-                />
-              </>
-            ) : 'Nominate'}
-          params={[selectedValidators]}
-          tx='staking.nominate'
-        />
-        <Button
-          className='footer-button'
-          disabled={!isStashNominating}
-          onClick={stopNomination}
-        >
-          Stop nomination
-        </Button>
-        <Button
-          className='footer-button'
-          disabled={!isOwnStash && (!balancesAll || !balancesAll.freeBalance.gtn(0))}
-          onClick={toggleUnbond}
-        >
-          Unbond
-        </Button>
-      </div>
-      <div className='accordion-body'>
-        { isAccordionOpen && (
-          <div className='accordion-body-inner'>
-            { balancesAll && (
-              <div className='item'>
-                <span>{t('total')}: </span>
-                <FormatBalance
-                  className='result'
-                  value={balancesAll.votingBalance}
-                />
-              </div>
-            )}
-            { balancesAll && (
-              <div className='item'>
-                <span>{t('transferrable')}: </span>
-                <FormatBalance
-                  className='result'
-                  value={balancesAll.availableBalance}
-                />
-              </div>
-            )}
-          </div>
-        )}
-      </div>
       { isAccordionOpen && (
+      <div className='accordion-body'>
+        <div className='footer-row'>
+          <Button
+            className='footer-button'
+            disabled={!isOwnStash && (!balancesAll || balancesAll.freeBalance.gtn(0))}
+            onClick={openRewards}
+          >
+            Rewards
+          </Button>
+          <Button
+            className='footer-button'
+            disabled={!isOwnController}
+            onClick={toggleBondExtra}
+          >
+            Bond more
+          </Button>
+          <TxButton
+            accountId={controllerId}
+            className='footer-button'
+            icon={isStashNominating ? 'exclamation-triangle' : 'check'}
+            isDisabled={!selectedValidators || !selectedValidators.length}
+            isPrimary
+            label={
+              isStashNominating ? (
+                <>
+                  Update nomination
+                  <LabelHelp
+                    className='small-help'
+                    help={'Your nomination is not optimal. Update please!'}
+                  />
+                </>
+              ) : 'Nominate'}
+            params={[selectedValidators]}
+            tx='staking.nominate'
+          />
+          <Button
+            className='footer-button'
+            disabled={!isStashNominating}
+            onClick={stopNomination}
+          >
+            Stop nomination
+          </Button>
+          <Button
+            className='footer-button'
+            disabled={!isOwnStash && (!balancesAll || !balancesAll.freeBalance.gtn(0))}
+            onClick={toggleUnbond}
+          >
+            Unbond
+          </Button>
+        </div>
+        <div className='accordion-body-inner'>
+          { balancesAll && (
+            <div className='item'>
+              <span>{t('total')}: </span>
+              <FormatBalance
+                className='result'
+                value={balancesAll.votingBalance}
+              />
+            </div>
+          )}
+          { balancesAll && (
+            <div className='item'>
+              <span>{t('transferrable')}: </span>
+              <FormatBalance
+                className='result'
+                value={balancesAll.availableBalance}
+              />
+            </div>
+          )}
+        </div>
         <div className='column accordion'>
           {(nomsWaiting && nomsWaiting.length > 0) && (
             <>
@@ -312,6 +309,7 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
             </>
           )}
         </div>
+      </div>
       )}
     </div>
   );

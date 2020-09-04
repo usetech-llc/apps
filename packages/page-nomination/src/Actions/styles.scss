@@ -1,8 +1,17 @@
+$nomination_light_gray_color: #E4E4E4;
+
 .manage-nomination-actions {
   font-family: 'Roboto', sans-serif;
+  background: #FFFFFF;
+  border: 1px solid $nomination_light_gray_color;
+  box-sizing: border-box;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  padding: 10px 18px;
 
   .account-block {
-    margin-bottom: 10px;
+    border-bottom: 1px solid $nomination_light_gray_color;
+    padding: 10px 5px;
 
     &:last-child {
       margin-bottom: 0;
@@ -14,16 +23,27 @@
     align-items: center
   }
 
-  .white-block {
-    background: #FFFFFF;
-    border: 1px solid #DDDDDD;
-    box-sizing: border-box;
-    border-radius: 4px;
-    margin: 10px 0;
-    padding: 9px 16px;
+  .thead {
 
-    &.with-footer {
-      margin-top: 0;
+    &.white-block {
+      margin: 0;
+      padding: 0 30px 10px 30px;
+      border-bottom: 2px solid $nomination_light_gray_color;
+
+      .ui--FormatBalance {
+        font-size: 14px;
+        line-height: 14px;
+        font-weight: 400;
+      }
+
+      .small {
+        font-size: 12px;
+        line-height: 12px;
+      }
+
+      &.with-footer {
+        margin-top: 0;
+      }
     }
   }
 
@@ -35,10 +55,11 @@
     display: grid;
     grid-template-columns: 20px 170px 170px 1fr;
     column-gap: 10px;
+    align-items: center;
   }
 
   .stakes.table {
-    margin-top: 20px;
+
   }
 
   .footer-row {
@@ -81,6 +102,17 @@
     }
   }
 
+  .toggle-accordion {
+    color: black;
+    font-size: 25px;
+    line-height: 25px;
+    text-align: right;
+
+    .right {
+      transform: rotate(270deg);
+    }
+  }
+
   .accordion {
     display: grid;
     position: relative;
@@ -94,13 +126,6 @@
 
     .item {
       margin: 0 10px;
-    }
-
-    .toggle-accordion {
-      color: #464E5F;
-      font-size: 18px;
-      line-height: 30px;
-      text-align: right;
     }
   }
 
@@ -118,6 +143,7 @@
   .accordion-body {
     display: flex;
     min-height: 30px;
+    flex-direction: column;
   }
 
   .column.accordion {

@@ -13,7 +13,6 @@ import { Option } from '@polkadot/types';
 import Spinner from '@polkadot/react-components/Spinner';
 
 import ElectionBanner from '../components/ElectionBanner';
-import { useTranslation } from '../translate';
 import Account from './Account';
 import NewStake from './NewStake';
 import './styles.scss';
@@ -33,7 +32,6 @@ interface State {
 }
 
 function Actions ({ hideNewStake, isInElection, next, ownStashes, selectedValidators, validators }: Props): React.ReactElement<Props> {
-  const { t } = useTranslation();
   const { api } = useApi();
   const activeEra = useCall<EraIndex | undefined>(api.query.staking?.activeEra, [], {
     transform: (activeEra: Option<ActiveEraInfo>) => activeEra.unwrapOr({ index: undefined }).index
@@ -67,16 +65,16 @@ function Actions ({ hideNewStake, isInElection, next, ownStashes, selectedValida
         <div className='stakes table'>
           <div className='thead white-block'>
             <div className='column'>
-              {t('Accounts')}
+              Accounts
             </div>
             <div className='column'>
-              {t('Active nomination')}
+              Active nomination
             </div>
             <div className='column'>
               {bondedTotal && (
                 <>
-                  {t('Total bonded:')}
                   <FormatBalance value={bondedTotal} />
+                  <span className='small'>Total nominated</span>
                 </>
               )}
             </div>
