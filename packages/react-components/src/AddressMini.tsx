@@ -6,15 +6,11 @@ import { AccountId, AccountIndex, Address } from '@polkadot/types/interfaces';
 
 import BN from 'bn.js';
 import React from 'react';
-import styled from 'styled-components';
 import { KeyringItemType } from '@polkadot/ui-keyring/types';
 
 import { classes, toShortAddress } from './util';
 import AccountName from './AccountName';
-import BalanceDisplay from './Balance';
-import BondedDisplay from './Bonded';
 import IdentityIcon from './IdentityIcon';
-import LockedVote from './LockedVote';
 
 interface Props {
   balance?: BN | BN[];
@@ -51,7 +47,10 @@ function AddressMini ({ balance, bonded, children, className = '', iconInfo, isH
         <label className='ui--AddressMini-label'>{label}</label>
       )}
       <div className='ui--AddressMini-icon'>
-        <IdentityIcon value={value as Uint8Array} />
+        <IdentityIcon
+          size={24}
+          value={value as Uint8Array}
+        />
         {iconInfo && (
           <div className='ui--AddressMini-icon-info'>
             {iconInfo}
@@ -75,7 +74,7 @@ function AddressMini ({ balance, bonded, children, className = '', iconInfo, isH
         )}
         {children}
       </div>
-      <div className='ui--AddressMini-balances'>
+      {/* <div className='ui--AddressMini-balances'>
         {withBalance && (
           <BalanceDisplay
             balance={balance}
@@ -96,12 +95,15 @@ function AddressMini ({ balance, bonded, children, className = '', iconInfo, isH
         {summary && (
           <div className='ui--AddressMini-summary'>{summary}</div>
         )}
-      </div>
+      </div> */}
     </div>
   );
 }
 
-export default React.memo(styled(AddressMini)`
+export default React.memo(AddressMini);
+
+/*
+`
   display: inline-block;
   padding: 0 0.25rem 0 1rem;
   text-align: left;
@@ -218,4 +220,5 @@ export default React.memo(styled(AddressMini)`
     margin-top: -0.2rem;
     text-align: left;
   }
-`);
+`
+ */

@@ -173,8 +173,10 @@ function AccountName ({ children, className = '', defaultName, label, noLookup, 
   );
 }
 
-export default React.memo(styled(AccountName)`
-  border: 1px dotted transparent;
+export default React.memo(AccountName);
+
+/*
+border: 1px dotted transparent;
   vertical-align: middle;
   white-space: nowrap;
 
@@ -221,4 +223,4 @@ export default React.memo(styled(AccountName)`
       }
     }
   }
-`);
+ */

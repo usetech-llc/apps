@@ -7,8 +7,6 @@ import React, { useState } from 'react';
 import { Compact } from '@polkadot/types';
 import { formatBalance } from '@polkadot/util';
 
-import { useTranslation } from './translate';
-
 interface Props {
   children?: React.ReactNode;
   className?: string;
@@ -37,7 +35,6 @@ function format (value: Compact<any> | BN | string, currency: string | null, wit
 }
 
 function FormatBalance ({ children, className = '', isShort, label, labelPost, value, withCurrency = true, withSi }: Props): React.ReactElement<Props> {
-  const { t } = useTranslation();
   const [currency] = useState(withCurrency ? formatBalance.getDefaults().unit : null);
 
   // labelPost here looks messy, however we ensure we have one less text node
@@ -46,7 +43,7 @@ function FormatBalance ({ children, className = '', isShort, label, labelPost, v
       {label || ''}<span className='ui--FormatBalance-value'>{
         value
           ? value === 'all'
-            ? t<string>('everything{{labelPost}}', { replace: { labelPost } })
+            ? 'total {{labelPost}}'.replace('{{labelPost}}', labelPost || '')
             : format(value, currency, withSi, isShort, labelPost)
           : `-${labelPost || ''}`
       }</span>{children}

@@ -7,7 +7,6 @@ import { EraIndex, ValidatorPrefsTo145 } from '@polkadot/types/interfaces';
 import { StakerState } from '@polkadot/react-hooks/types';
 
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import SemanticPopup from 'semantic-ui-react/dist/commonjs/modules/Popup/Popup';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import {
   AddressMini,
@@ -15,7 +14,8 @@ import {
   StakingUnbonding,
   StatusContext,
   TxButton,
-  Icon, LabelHelp
+  Icon,
+  LabelHelp
 } from '@polkadot/react-components';
 import { useApi, useCall, useToggle } from '@polkadot/react-hooks';
 import { FormatBalance } from '@polkadot/react-query';
@@ -26,6 +26,7 @@ import BondExtra from './BondExtra';
 import Nominate from './Nominate';
 import Unbond from './Unbond';
 import useInactives from '../useInactives';
+import arrow from '../../assets/icons/arrow.svg';
 
 interface Props {
   activeEra?: EraIndex;
@@ -126,16 +127,17 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
     }
   }, [nominating, selectedValidators]);
 
+  console.log('balancesAll', balancesAll);
   return (
     <div className='account-block'>
       <div className='white-block with-footer'>
-        <a
-          className='toggle-accordion'
-          onClick={toggleAccordion}
-        >
-          <Icon icon='angle-down' className={isAccordionOpen ? '' : 'right'} />
-        </a>
         <div className='column address'>
+          <a
+            className='toggle-accordion'
+            onClick={toggleAccordion}
+          >
+            <img src={arrow} className={isAccordionOpen ? 'open' : ''} />
+          </a>
           {/* <AddressSmall value={stashId} /> */}
           <AddressMini
             value={stashId}
@@ -176,17 +178,21 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
             />
           ))}
         </div>
+        <div className='column date'>
+          -
+        </div>
         <div className='column all'>
-          { stakingAccount &&
+          <StakingBonded
+            stakingInfo={stakingAccount}
+            withLabel={'Total nominated'}
+          />
+          {/*{ stakingAccount &&
             <div className='accordion'>
               <div className='accordion-header'>
                 <div className='with-bottom-border'>
                   { stakingAccount && stakingAccount.stakingLedger && stakingAccount.stakingLedger.active.unwrap().gtn(0) && (
                     <div className='item'>
-                      <StakingBonded
-                        stakingInfo={stakingAccount}
-                        withLabel={t('bonded:')}
-                      />
+
                     </div>
                   )}
                   { stakingAccount && stakingAccount.redeemable && stakingAccount.redeemable.gtn(0) && (
@@ -198,22 +204,61 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
                     </div>
                   )}
                   <div className='item'>
-                    {CommissionBalance(stakingAccount, t('commission:'))}
+                    {CommissionBalance(stakingAccount, 'commission:'))}
                   </div>
                   <div className='item'>
                     <StakingUnbonding
                       stakingInfo={stakingAccount}
-                      withLabel={t<string>('unbonding:')}
+                      withLabel={'unbonding'}
                     />
                   </div>
                 </div>
               </div>
             </div>
-          }
+          }*/}
         </div>
       </div>
       { isAccordionOpen && (
       <div className='accordion-body'>
+        <div className='info-row'>
+          { balancesAll && (
+            <>
+              <div className='item'>
+                <span>total: </span>
+                <FormatBalance
+                  className='result'
+                  value={balancesAll.votingBalance}
+                />
+              </div>
+              <div className='item'>
+                <span>transferable: </span>
+                <FormatBalance
+                  className='result'
+                  value={balancesAll.availableBalance}
+                />
+              </div>
+              <div className='item'>
+                <span>locked: </span>
+                <FormatBalance
+                  className='result'
+                  value={balancesAll.lockedBalance}
+                />
+              </div>
+              <div className='item'>
+                <StakingRedeemable
+                  className='result'
+                  stakingInfo={stakingAccount}
+                />
+              </div>
+              <div className='item'>
+                <StakingUnbonding
+                  stakingInfo={stakingAccount}
+                  withLabel={'unbonding'}
+                />
+              </div>
+            </>
+          )}
+        </div>
         <div className='footer-row'>
           <Button
             className='footer-button'
@@ -263,27 +308,49 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
             Unbond
           </Button>
         </div>
-        <div className='accordion-body-inner'>
-          { balancesAll && (
-            <div className='item'>
-              <span>{t('total')}: </span>
-              <FormatBalance
-                className='result'
-                value={balancesAll.votingBalance}
-              />
-            </div>
-          )}
-          { balancesAll && (
-            <div className='item'>
-              <span>{t('transferrable')}: </span>
-              <FormatBalance
-                className='result'
-                value={balancesAll.availableBalance}
-              />
-            </div>
-          )}
-        </div>
         <div className='column accordion'>
+          <div className='stakes table'>
+            <div className='thead'>
+              <div className='column'>
+                Validators
+                <LabelHelp
+                  className='small-help'
+                  help={'Validators'}
+                />
+              </div>
+              <div className='column'>
+                Other stake
+                <LabelHelp
+                  className='small-help'
+                  help={'Other stake'}
+                />
+              </div>
+              <div className='column'>
+                Own stake
+                <LabelHelp
+                  className='small-help'
+                  help={'Own stake'}
+                />
+              </div>
+              <div className='column'>
+                Commission
+                <LabelHelp
+                  className='small-help'
+                  help={'Commission'}
+                />
+              </div>
+              <div className='column'>
+                Points
+                <LabelHelp
+                  className='small-help'
+                  help={'Points'}
+                />
+              </div>
+            </div>
+            <div className='tbody'>
+            </div>
+          </div>
+          {/* api.derive.staking.electedInfo() */}
           {(nomsWaiting && nomsWaiting.length > 0) && (
             <>
               <h4>{`Waiting nominations (${nomsWaiting.length})`}</h4>

@@ -16,6 +16,7 @@ import ElectionBanner from '../components/ElectionBanner';
 import Account from './Account';
 import NewStake from './NewStake';
 import './styles.scss';
+import {LabelHelp} from "@polkadot/react-components/index";
 
 interface Props {
   hideNewStake?: boolean;
@@ -58,17 +59,24 @@ function Actions ({ hideNewStake, isInElection, next, ownStashes, selectedValida
       }
       <ElectionBanner isInElection={isInElection} />
       { (!foundStashes || !foundStashes.length) ? (
-        <div className='stakes table'>
+        <div className='table'>
           <Spinner label={'No funds staked yet. Bond funds to validate or nominate a validator'} />
         </div>
       ) : (
-        <div className='stakes table'>
+        <div className='table'>
           <div className='thead white-block'>
             <div className='column'>
               Accounts
             </div>
             <div className='column'>
               Active nomination
+              <LabelHelp
+                className='small-help'
+                help={'Active nomination'}
+              />
+            </div>
+            <div className='column'>
+              Nomination Date
             </div>
             <div className='column'>
               {bondedTotal && (

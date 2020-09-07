@@ -234,6 +234,7 @@ body {
 
   .available-balance {
     color: #000000;
+
     .ui--FormatBalance-value {
       font-weight: bold;
       font-size: 40px;
@@ -323,6 +324,125 @@ body {
     &.right {
       margin-top: 30px;
       text-align: right;
+    }
+  }
+
+  .ui--AddressMini {
+    display: inline-block;
+    padding: 0 0.25rem 0 1rem;
+    text-align: left;
+    white-space: nowrap;
+
+    &.padded {
+      display: inline-block;
+      padding: 0 1rem 0 0;
+    }
+
+    &.summary {
+      position: relative;
+      top: -0.2rem;
+    }
+
+    .ui--AddressMini-info {
+      max-width: 12rem;
+      min-width: 12rem;
+
+      @media only screen and (max-width: 1800px) {
+        max-width: 11.5rem;
+        min-width: 11.5rem;
+      }
+
+      @media only screen and (max-width: 1700px) {
+        max-width: 11rem;
+        min-width: 11rem;
+      }
+
+      @media only screen and (max-width: 1600px) {
+        max-width: 10.5rem;
+        min-width: 10.5rem;
+      }
+
+      @media only screen and (max-width: 1500px) {
+        max-width: 10rem;
+        min-width: 10rem;
+      }
+
+      @media only screen and (max-width: 1400px) {
+        max-width: 9.5rem;
+        min-width: 9.5rem;
+      }
+
+      @media only screen and (max-width: 1300px) {
+        max-width: 9rem;
+        min-width: 9rem;
+      }
+    }
+
+    .ui--AddressMini-address {
+      overflow: hidden;
+      text-align: left;
+      text-overflow: ellipsis;
+      width: fit-content;
+      max-width: inherit;
+
+      > div {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    &.withShrink {
+      .ui--AddressMini-address {
+        min-width: 3rem;
+      }
+    }
+
+    .ui--AddressMini-label {
+      margin: 0 0 -0.5rem 2.25rem;
+    }
+
+    .ui--AddressMini-balances {
+      display: grid;
+
+      .ui--Balance,
+      .ui--Bonded,
+      .ui--LockedVote {
+        font-size: 0.75rem;
+        margin-left: 2.25rem;
+        margin-top: -0.5rem;
+        text-align: left;
+      }
+    }
+
+    .ui--AddressMini-icon {
+      margin: 0 0.5rem 0 0;
+
+      .ui--AddressMini-icon-info {
+        position: absolute;
+        right: -0.5rem;
+        top: -0.5rem;
+        z-index: 1;
+      }
+
+      .ui--IdentityIcon {
+        margin: 0;
+        vertical-align: middle;
+      }
+    }
+
+    .ui--AddressMini-icon,
+    .ui--AddressMini-info {
+      display: inline-block;
+      position: relative;
+      vertical-align: middle;
+    }
+
+    .ui--AddressMini-summary {
+      font-size: 0.75rem;
+      line-height: 1.2;
+      margin-left: 2.25rem;
+      margin-top: -0.2rem;
+      text-align: left;
     }
   }
 }

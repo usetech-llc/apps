@@ -18,6 +18,7 @@ import { useTranslation } from './translate';
 interface Props {
   className?: string;
   stakingInfo?: DeriveStakingAccount;
+  withLabel?: string;
 }
 
 function remainingBlocks (remainingEras: BN, { eraLength, eraProgress }: DeriveSessionProgress): BN {
@@ -27,7 +28,7 @@ function remainingBlocks (remainingEras: BN, { eraLength, eraProgress }: DeriveS
     .add(eraLength.sub(eraProgress));
 }
 
-function StakingUnbonding ({ className = '', stakingInfo }: Props): React.ReactElement<Props> | null {
+function StakingUnbonding ({ className = '', stakingInfo, withLabel }: Props): React.ReactElement<Props> | null {
   const { api } = useApi();
   const progress = useCall<DeriveSessionProgress>(api.derive.session.progress, []);
   const { t } = useTranslation();
@@ -44,10 +45,11 @@ function StakingUnbonding ({ className = '', stakingInfo }: Props): React.ReactE
 
   const mapped = filtered.map((unlock): [DeriveUnlocking, BN] => [unlock, remainingBlocks(unlock.remainingEras, progress)]);
   const total = mapped.reduce((total, [{ value }]) => total.add(value), BN_ZERO);
-  const trigger = `${stakingInfo.accountId.toHex()}-unlocking-trigger`;
+  const trigger = `${stakingInfo ? stakingInfo.accountId.toHex() : ''}-unlocking-trigger`;
 
   return (
     <div className={className}>
+      {withLabel}
       <Icon
         icon='clock'
         tooltip={trigger}
@@ -59,11 +61,13 @@ function StakingUnbonding ({ className = '', stakingInfo }: Props): React.ReactE
             className='row'
             key={index}
           >
-            <div>{t<string>('Unbonding {{value}}, ', { replace: { value: formatBalance(value, { forceUnit: '-' }) } })}</div>
+            <div>
+              {'Unbonding {{value}}'.replace('{{value}}', formatBalance(value, { forceUnit: '-' }))}
+            </div>
             <div className='faded'>
               <BlockToTime
                 blocks={blocks}
-                label={`${t<string>('{{blocks}} blocks', { replace: { blocks: formatNumber(blocks) } })}, `}
+                label={'{{blocks}} blocks'.replace('{{blocks}}', formatBalance(value, { forceUnit: '-' }))}
               />
             </div>
           </div>
