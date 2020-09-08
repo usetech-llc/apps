@@ -37,7 +37,7 @@ function useValidators (): UseValidatorsInterface {
   const [validatorsLoading, setValidatorsLoading] = useState(true);
   const filteredElected = useValidatorsFilter(electedInfo);
   const { validatorsFromServer, validatorsFromServerLoading } = useValidatorsFromServer();
-
+  console.log('electedInfo', electedInfo);
   const getElectedInfo = useCallback(() => {
     from(api.derive.staking.electedInfo()).subscribe((electedInfo: DeriveStakingElected) => {
       setElectedInfo(electedInfo);

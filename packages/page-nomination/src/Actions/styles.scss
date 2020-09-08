@@ -66,22 +66,20 @@ $nomination_light_gray_color: #E4E4E4;
     border-bottom-right-radius: 0;
     border-bottom: none;
     display: grid;
-    grid-template-columns: 252px 200px 150px 130px;
+    grid-template-columns: 242px 200px 150px 130px;
     column-gap: 10px;
     align-items: center;
 
     .toggle-accordion {
-      margin-right: 18px;
+      margin-right: 16px;
+      margin-left: 2px;
     }
   }
 
   .footer-row {
     background: #F1F1F1;
-    border-radius: 0 0 3px 3px;
     padding: 8px 15px;
-    border-left: 1px solid #DDDDDD;
-    border-right: 1px solid #DDDDDD;
-    border-bottom: 1px solid #DDDDDD;
+    border-radius: 4px;
     display: flex;
 
     .ui.button {
@@ -96,7 +94,7 @@ $nomination_light_gray_color: #E4E4E4;
 
   .info-row {
     display: flex;
-    padding: 18px 40px 12px 40px;
+    padding: 16px 40px 12px 40px;
 
     .item {
       display: flex;
@@ -120,7 +118,7 @@ $nomination_light_gray_color: #E4E4E4;
       font-size: 14px;
       line-height: 22px;
       display: grid;
-      grid-template-columns: 252px 200px 150px 130px;
+      grid-template-columns: 242px 200px 150px 130px;
       column-gap: 10px;
       text-align: left;
       align-items: center;
@@ -133,11 +131,38 @@ $nomination_light_gray_color: #E4E4E4;
     }
 
     &.stakes {
+      padding: 16px 9px 0 9px;
+
       .thead {
-        grid-template-columns: 1fr 150px 150px 100px 100px;
+        grid-template-columns: 1fr 120px 120px 100px 100px;
+        height: 50px;
+        padding: 0 8px;
+        border-bottom: 2px solid $nomination_light_gray_color;
       }
+
       .tbody {
-        grid-template-columns: 1fr 150px 150px 100px 100px;
+        min-height: 0;
+        max-height: none;
+
+        h4 {
+          font-size: 14px;
+          font-weight: bold;
+          color: black;
+          margin: 8px 0 0 0;
+          padding: 0 8px;
+        }
+
+        .account-block {
+          display: grid;
+          grid-template-columns: 1fr 120px 120px 100px 100px;
+          column-gap: 10px;
+          align-items: center;
+          padding: 0 8px;
+
+          &:last-child {
+            border-bottom: none;
+          }
+        }
       }
     }
   }
@@ -214,7 +239,15 @@ $nomination_light_gray_color: #E4E4E4;
     display: inline-block;
   }
 
+  .unbonding {
+
+    svg {
+      margin-left: 10px;
+    }
+  }
+
   .withdraw {
+    display: flex;
 
     button {
       padding: 0;

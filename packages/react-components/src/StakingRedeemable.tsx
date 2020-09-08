@@ -33,6 +33,7 @@ function StakingRedeemable ({ className = '', stakingInfo }: Props): React.React
 
   return (
     <div className={className}>
+      <span>withdraw: </span>
       <FormatBalance value={stakingInfo.redeemable}>
         {allAccounts.includes((stakingInfo.controllerId || '').toString()) && (
           <TxButton

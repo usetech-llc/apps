@@ -8,20 +8,19 @@ import { StakerState } from '@polkadot/react-hooks/types';
 
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import {
   AddressMini,
   StakingBonded,
   StakingUnbonding,
   StatusContext,
   TxButton,
-  Icon,
   LabelHelp
 } from '@polkadot/react-components';
 import { useApi, useCall, useToggle } from '@polkadot/react-hooks';
 import { FormatBalance } from '@polkadot/react-query';
 import StakingRedeemable from '@polkadot/react-components/StakingRedeemable';
 
-import { useTranslation } from '../../translate';
 import BondExtra from './BondExtra';
 import Nominate from './Nominate';
 import Unbond from './Unbond';
@@ -78,7 +77,6 @@ function CommissionBalance (stakingInfo: DeriveStakingAccount, withLabel?: strin
 }
 
 function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNominating, nominating, stakingLedger, stashId }, next, selectedValidators, validators }: Props): React.ReactElement<Props> {
-  const { t } = useTranslation();
   const { api } = useApi();
   const balancesAll = useCall<DeriveBalancesAll>(api.derive.balances.all, [stashId]);
   const stakingAccount = useCall<DeriveStakingAccount>(api.derive.staking.account, [stashId]);
@@ -215,7 +213,6 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
                 />
               </div>
               <div className='item'>
-                <span>withdraw: </span>
                 <StakingRedeemable
                   className='withdraw'
                   stakingInfo={stakingAccount}
@@ -223,6 +220,7 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
               </div>
               <div className='item'>
                 <StakingUnbonding
+                  className='unbonding'
                   stakingInfo={stakingAccount}
                   withLabel={'unbonding'}
                 />
@@ -319,33 +317,60 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
               </div>
             </div>
             <div className='tbody'>
+              {(nomsWaiting && nomsWaiting.length > 0) && (
+                <>
+                  <Header as='h4'>{`Waiting nominations (${nomsWaiting.length})`}</Header>
+                  {nomsWaiting.map((nomineeId, index): React.ReactNode => (
+                    <div className='account-block'>
+                      <AddressMini
+                        key={index}
+                        value={nomineeId}
+                        withBonded
+                      />
+                      <div className='other-stake'>
+                        18.316 KSM
+                      </div>
+                      <div className='own-stake'>
+                        18.316 KSM
+                      </div>
+                      <div className='commission'>
+                        0.00%
+                      </div>
+                      <div className='points'>
+                        140
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+              {(nomsInactive && nomsInactive.length > 0) && (
+                <>
+                  <Header as='h4'>{`${'Inactive nominations'} (${nomsInactive.length})`}</Header>
+                  {nomsInactive.map((nomineeId, index): React.ReactNode => (
+                    <div className='account-block'>
+                      <AddressMini
+                        key={index}
+                        value={nomineeId}
+                        withBonded
+                      />
+                      <div className='other-stake'>
+                        18.316 KSM
+                      </div>
+                      <div className='own-stake'>
+                        18.316 KSM
+                      </div>
+                      <div className='commission'>
+                        0.00%
+                      </div>
+                      <div className='points'>
+                        140
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
             </div>
           </div>
-          {/* api.derive.staking.electedInfo() */}
-          {(nomsWaiting && nomsWaiting.length > 0) && (
-            <>
-              <h4>{`Waiting nominations (${nomsWaiting.length})`}</h4>
-              {nomsWaiting.map((nomineeId, index): React.ReactNode => (
-                <AddressMini
-                  key={index}
-                  value={nomineeId}
-                  withBonded
-                />
-              ))}
-            </>
-          )}
-          {(nomsInactive && nomsInactive.length > 0) && (
-            <>
-              <h4>{`${'Inactive nominations'} (${nomsInactive.length})`}</h4>
-              {nomsInactive.map((nomineeId, index): React.ReactNode => (
-                <AddressMini
-                  key={index}
-                  value={nomineeId}
-                  withBonded
-                />
-              ))}
-            </>
-          )}
         </div>
       </div>
       )}
