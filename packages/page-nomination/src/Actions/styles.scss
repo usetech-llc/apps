@@ -213,4 +213,14 @@ $nomination_light_gray_color: #E4E4E4;
   .ui--Button-Group {
     display: inline-block;
   }
+
+  .withdraw {
+
+    button {
+      padding: 0;
+      background: transparent !important;
+      color: black !important;
+      margin-left: 10px;
+    }
+  }
 }

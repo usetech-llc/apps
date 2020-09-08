@@ -186,36 +186,6 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
             stakingInfo={stakingAccount}
             withLabel={'Total nominated'}
           />
-          {/*{ stakingAccount &&
-            <div className='accordion'>
-              <div className='accordion-header'>
-                <div className='with-bottom-border'>
-                  { stakingAccount && stakingAccount.stakingLedger && stakingAccount.stakingLedger.active.unwrap().gtn(0) && (
-                    <div className='item'>
-
-                    </div>
-                  )}
-                  { stakingAccount && stakingAccount.redeemable && stakingAccount.redeemable.gtn(0) && (
-                    <div className='item'>
-                      <StakingRedeemable
-                        className='result'
-                        stakingInfo={stakingAccount}
-                      />
-                    </div>
-                  )}
-                  <div className='item'>
-                    {CommissionBalance(stakingAccount, 'commission:'))}
-                  </div>
-                  <div className='item'>
-                    <StakingUnbonding
-                      stakingInfo={stakingAccount}
-                      withLabel={'unbonding'}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          }*/}
         </div>
       </div>
       { isAccordionOpen && (
@@ -245,8 +215,9 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
                 />
               </div>
               <div className='item'>
+                <span>withdraw: </span>
                 <StakingRedeemable
-                  className='result'
+                  className='withdraw'
                   stakingInfo={stakingAccount}
                 />
               </div>
