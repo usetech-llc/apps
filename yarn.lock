@@ -19950,6 +19950,7 @@ __metadata:
     i18next-scanner: ^2.11.0
     react: ^16.13.1
     react-dom: ^16.13.1
+    react-range: ^1.6.7
     sass: ^1.26.8
     sass-loader: ^8.0.2
     source-map-explorer: ^2.5.0
@@ -21216,6 +21217,16 @@ __metadata:
     react: ~16
     react-dom: ~16
   checksum: 3/c16fc3e2ebd42738f3d5630562235142019fe79d9ba7c82df600a8982d89d0405b3609770a3d802efc6786baca410e6d715b1e13d9bc392ce35b61c7d0268b9c
+  languageName: node
+  linkType: hard
+
+"react-range@npm:^1.6.7":
+  version: 1.6.7
+  resolution: "react-range@npm:1.6.7"
+  peerDependencies:
+    react: ^16.8.0-0 || ^17.0.0-0
+    react-dom: ^16.8.0-0 || ^17.0.0-0
+  checksum: 3/3223d6c7623052fd0ca36f0b8f5e90eb0d2233df0faaa51030a32bfe7d2f7f161ce3e187227289f4bd9637df3a99cf366b2876887b9a57afd343175668b817c5
   languageName: node
   linkType: hard
 

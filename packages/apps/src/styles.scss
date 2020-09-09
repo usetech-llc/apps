@@ -142,11 +142,7 @@
   src: url('./fonts/roboto/Roboto-BlackItalic.woff2') format('woff2'), url('./fonts/roboto/Roboto-BlackItalic.woff') format('woff');
 }
 
-$nomination_blue_color: #0087cb;
-$nomination_warning_color: #CA6014;
-$nomination_warning_light_color: #F7F2EE;
-$nomination_error_light_color: #F8EFEF;
-$nomination_error_color: #CA1414;
+@import './variables.scss';
 
 * {
   font-family: Roboto, Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;

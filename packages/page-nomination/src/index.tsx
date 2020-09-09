@@ -18,10 +18,12 @@ import uiSettings from '@polkadot/ui-settings';
 
 // local imports and components
 import NewNomination from './containers/NewNomination';
+import BondAndNominateModal from './components/BondAndNominateModal';
 import { useTranslation } from './translate';
 import Status from './components/Status';
 import ManageNominations from './containers/ManageNominations';
 import useValidators from './hooks/useValidators';
+import BN from "bn.js";
 
 interface Validators {
   next?: string[];
@@ -47,7 +49,10 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
   const { t } = useTranslation();
   const { api } = useApi();
   const [web3Enabled, setWeb3Enabled] = useState<boolean>(false);
+  const [amountToNominate, setAmountToNominate] = useState<BN | undefined | null>(null);
+  const [stashIsCurrent, setStashIsCurrent] = useState<boolean>(false);
   const [status, setStatus] = useState<string | null>(null);
+  const [isNominating, setIsNominating] = useState<boolean>(false);
   const ownStashes = useOwnStashInfos();
   const allStashes = useStashIds();
   const stakingOverview = useCall<DeriveStakingOverview>(api.derive.staking.overview, []);
@@ -165,6 +170,20 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
     }
   }, [filteredValidators, setSelectedValidators, stakingOverview]);
 
+  const disableStartButton = useCallback(() => {
+    if (!ownStashes) {
+      return;
+    }
+
+    const currentStash = ownStashes.find((stash) => stash.stashId === accountId);
+
+    setStashIsCurrent(!!currentStash);
+  }, [accountId, ownStashes]);
+
+  useEffect(() => {
+    disableStartButton();
+  }, [disableStartButton]);
+
   return (
     // in all apps, the main wrapper is setup to allow the padding
     // and margins inside the application. (Just from a consistent pov)
@@ -183,13 +202,16 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
             <NewNomination
               accountId={accountId}
               accountsAvailable={accountsAvailable}
+              amountToNominate={amountToNominate}
+              isNominating={isNominating}
+              next={next}
               ownStashes={ownStashes}
-              queueAction={queueAction}
               selectedValidators={selectedValidators}
               setAccountId={setAccountId}
+              setAmountToNominate={setAmountToNominate}
               stakingOverview={stakingOverview}
-              toNomination={toNomination}
               web3Enabled={web3Enabled}
+              queueAction={queueAction}
             />
           )}
         />
@@ -225,6 +247,16 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
           />
         )}
       </div>*/}
+      <BondAndNominateModal
+        accountId={accountId}
+        amountToNominate={amountToNominate}
+        isNominating={isNominating}
+        selectedValidators={selectedValidators}
+        setIsNominating={setIsNominating}
+        stashIsCurrent={stashIsCurrent}
+        toNomination={toNomination}
+        queueAction={queueAction}
+      />
       <Status
         queueAction={queueAction}
         stqueue={stqueue}

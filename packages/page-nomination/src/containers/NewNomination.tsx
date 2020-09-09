@@ -8,11 +8,9 @@ import { ActionStatus, QueueAction$Add } from '@polkadot/react-components/Status
 import { StakerState } from '@polkadot/react-hooks/types';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import BN from 'bn.js';
-import { useApi } from '@polkadot/react-hooks';
-import { Icon } from '@polkadot/react-components';
+
 
 import AccountSection from '../components/AccountSection';
 import BondSection from '../components/BondSection';
@@ -22,60 +20,37 @@ import { useSlashes } from '../hooks/useShalses';
 interface Props {
   accountId: string | null;
   accountsAvailable: boolean;
+  amountToNominate: BN | undefined | null;
+  isNominating: boolean;
+  next?: string[];
   ownStashes: StakerState[] | undefined;
   queueAction: QueueAction$Add;
   setAccountId: (accountId: string | null) => void;
+  setAmountToNominate: (amountToNominate: BN | undefined) => void;
+
   selectedValidators: string[];
   stakingOverview: DeriveStakingOverview | undefined;
-  toNomination: () => void;
   web3Enabled: boolean;
 }
 
-function NewNomination ({ accountId, accountsAvailable, ownStashes, queueAction, selectedValidators, setAccountId, toNomination, web3Enabled }: Props): React.ReactElement<Props> {
-  const { api } = useApi();
-  const [amountToNominate, setAmountToNominate] = useState<BN | undefined | null>(null);
-  const [stashIsCurrent, setStashIsCurrent] = useState<boolean>(false);
-  const [isNominating, setIsNominating] = useState<boolean>(false);
+function NewNomination (props: Props): React.ReactElement<Props> {
+  const {
+    accountId,
+    accountsAvailable,
+    amountToNominate,
+    queueAction,
+    setAccountId,
+    setAmountToNominate,
+    selectedValidators,
+    web3Enabled,
+  } = props;
+
+
   const { wholeFees }: WholeFeesType = useFees(accountId, selectedValidators);
   const accountBalance: Balance | null = useBalanceClear(accountId);
   const [maxAmountToNominate, setMaxAmountToNominate] = useState<BN | undefined | null>(null);
   const slashes = useSlashes(accountId);
   const currentAccountRef = useRef<string | null>();
-  const extrinsicBond = (amountToNominate && accountId)
-    ? api.tx.staking.bond(accountId, amountToNominate, 2)
-    : null;
-  const extrinsicNominate = (amountToNominate && accountId)
-    ? api.tx.staking.nominate(selectedValidators)
-    : null;
-
-  const startNomination = useCallback(() => {
-    if (!extrinsicBond || !extrinsicNominate || !accountId) {
-      return;
-    }
-
-    const txs = [extrinsicBond, extrinsicNominate];
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    api.tx.utility
-      .batch(txs)
-      .signAndSend(accountId, ({ status }) => {
-        if (status.isReady) {
-          setIsNominating(true);
-        }
-
-        if (status.isInBlock) {
-          const message: ActionStatus = {
-            action: `included in ${status.asInBlock as unknown as string}`,
-            message: 'Funds nominated successfully!',
-            status: 'success'
-          };
-
-          toNomination();
-          queueAction([message]);
-          setIsNominating(false);
-        }
-      });
-  }, [accountId, api.tx.utility, extrinsicBond, extrinsicNominate, toNomination, queueAction]);
 
   const calculateMaxPreFilledBalance = useCallback((): void => {
     if (maxAmountToNominate) {
@@ -85,20 +60,6 @@ function NewNomination ({ accountId, accountsAvailable, ownStashes, queueAction,
       }
     }
   }, [amountToNominate, maxAmountToNominate]);
-
-  const disableStartButton = useCallback(() => {
-    if (!ownStashes) {
-      return;
-    }
-
-    const currentStash = ownStashes.find((stash) => stash.stashId === accountId);
-
-    setStashIsCurrent(!!currentStash);
-  }, [accountId, ownStashes]);
-
-  useEffect(() => {
-    disableStartButton();
-  }, [disableStartButton]);
 
   useEffect(() => {
     calculateMaxPreFilledBalance();
@@ -166,7 +127,7 @@ function NewNomination ({ accountId, accountsAvailable, ownStashes, queueAction,
         <div className='error-block'>Warning: You have been slashed. You need to update your nomination.</div>
         }
         <div className='button-block right'>
-          <Button
+          {/* <Button
             icon
             disabled={!selectedValidators.length || !amountToNominate || !amountToNominate.gtn(0) || isNominating}
             loading={isNominating}
@@ -177,7 +138,7 @@ function NewNomination ({ accountId, accountsAvailable, ownStashes, queueAction,
             <Icon
               icon={'play'}
             />
-          </Button>
+          </Button> */}
         </div>
       </div>
     </div>

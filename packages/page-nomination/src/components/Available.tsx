@@ -1,4 +1,4 @@
-// Copyright 2017-2020 @polkadot/react-query authors & contributors
+// Copyright 2020-2021 UseTech authors & contributors
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
@@ -13,8 +13,6 @@ import { useApi, useCall } from '@polkadot/react-hooks';
 import { FormatBalance } from '@polkadot/react-query';
 import {LabelHelp, Spinner} from '@polkadot/react-components';
 
-import { useTranslation } from '../translate';
-
 interface Props extends BareProps {
   label?: React.ReactNode;
   params?: AccountId | AccountIndex | Address | string | Uint8Array | null;
@@ -22,7 +20,6 @@ interface Props extends BareProps {
 
 function AvailableDisplay ({ className, label, params }: Props): React.ReactElement<Props> {
   const { api } = useApi();
-  const { t } = useTranslation();
   const allBalances = useCall<DeriveBalancesAll>(api.derive.balances.all, [params]);
 
   return (
@@ -32,17 +29,17 @@ function AvailableDisplay ({ className, label, params }: Props): React.ReactElem
         : (
           <>
             <Header as={'h2'}>
-              {t('Your available balance:')}
+              Your available balance:
               <LabelHelp
                 className='small-help'
-                help={t('Your available balance')}
+                help={'Your available balance'}
               />
             </Header>
             <div className='value'>
               <FormatBalance
                 className={className}
                 label={label}
-                value={allBalances?.availableBalance}
+                value={allBalances ? allBalances.availableBalance : null}
               />
             </div>
           </>

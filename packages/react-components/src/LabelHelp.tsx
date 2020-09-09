@@ -11,15 +11,16 @@ import Tooltip from './Tooltip';
 interface Props {
   help: React.ReactNode;
   className?: string;
+  style?: object;
 }
 
 let id = 0;
 
-function LabelHelp ({ className = '', help }: Props): React.ReactElement<Props> {
+function LabelHelp ({ className = '', help, style }: Props): React.ReactElement<Props> {
   const [trigger] = useState(`label-help-${++id}`);
 
   return (
-    <div className={classes('ui--LabelHelp', className)}>
+    <div className={classes('ui--LabelHelp', className)} style={style || {}}>
       <Icon
         icon={'question-circle'}
         tooltip={trigger}

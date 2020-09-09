@@ -30,7 +30,7 @@ function CloseBlock ({ showCloseButton = false }: Props): React.ReactElement<Pro
           href='/'
           onClick={closeWindow}
         >
-          <Icon name='close' />
+          <Icon icon='close' />
         </a>
       )}
     </>
