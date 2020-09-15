@@ -2,12 +2,29 @@
 
 .range-modal {
 
+  h1.ui.header {
+    @include h1header;
+    margin: 0 0 16px 0;
+    display: flex;
+
+    .small-help {
+      margin-left: 8px;
+      svg {
+        width: 15px;
+      }
+    }
+  }
+
+  .divider {
+    @include divider;
+  }
+
   .range-block {
-    margin-top: 30px;
+    margin: 30px 0;
 
     .range-list {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
       margin-bottom: 20px;
       align-items: center;
 
@@ -20,6 +37,21 @@
       }
     }
 
+  }
+
+  .strategy-name {
+    font-size: 14px;
+    line-height: 21px;
+    display: block;
+    padding: 0 10px;
+
+    svg {
+      margin-right: 10px;
+    }
+  }
+
+  .ui--InputAddressMulti {
+    margin-top: 18px;
   }
 
   .render-thumb {
@@ -74,5 +106,15 @@
       top: 17px;
     }
   }
+  .ui.secondary.button {
+    @include secondary;
+  }
 
+  .ui.icon.primary.button {
+    @include primary;
+
+    svg {
+      margin-left: 10px;
+    }
+  }
 }

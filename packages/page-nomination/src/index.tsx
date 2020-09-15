@@ -10,25 +10,21 @@ import { ActionStatus, QueueAction$Add, QueueStatus, QueueTx } from '@polkadot/r
 // external imports (including those found in the packages/*
 // of this repo)
 import React, { useState, useCallback, useEffect } from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
-import { useApi, useCall, useOwnStashInfos, useStashIds } from '@polkadot/react-hooks';
+import BN from 'bn.js';
+import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
+import { useApi, useCall, useOwnStashInfos } from '@polkadot/react-hooks';
 import keyring from '@polkadot/ui-keyring';
 import { web3FromSource, web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 import uiSettings from '@polkadot/ui-settings';
 
 // local imports and components
 import NewNomination from './containers/NewNomination';
-import BondAndNominateModal from './components/BondAndNominateModal';
 import { useTranslation } from './translate';
 import Status from './components/Status';
 import ManageNominations from './containers/ManageNominations';
-import useValidators from './hooks/useValidators';
-import BN from "bn.js";
-
-interface Validators {
-  next?: string[];
-  validators?: string[];
-}
+import useValidatorsFromServer from "@polkadot/app-nomination/hooks/useValidatorsFromServer";
+import {ValidatorInfo} from "@polkadot/app-nomination/types";
+import { ksiRange } from './utils';
 
 declare global {
   interface Window {
@@ -50,17 +46,20 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
   const { api } = useApi();
   const [web3Enabled, setWeb3Enabled] = useState<boolean>(false);
   const [amountToNominate, setAmountToNominate] = useState<BN | undefined | null>(null);
-  const [stashIsCurrent, setStashIsCurrent] = useState<boolean>(false);
-  const [status, setStatus] = useState<string | null>(null);
-  const [isNominating, setIsNominating] = useState<boolean>(false);
   const ownStashes = useOwnStashInfos();
-  const allStashes = useStashIds();
+  const history = useHistory();
   const stakingOverview = useCall<DeriveStakingOverview>(api.derive.staking.overview, []);
-  const [selectedValidators, setSelectedValidators] = useState<string[]>([]);
-  const [{ next, validators }, setValidators] = useState<Validators>({});
-  const { filteredValidators } = useValidators();
   const [accountId, setAccountId] = useState<string | null>(null);
   const [accountsAvailable, setAccountsAvailable] = useState<boolean>(false);
+  const [ksi, setKsi] = useState<number>(0.5);
+  const {
+    getValidatorsFromServer,
+    nominationServerAvailable,
+    validatorsFromServer,
+    validatorsFromServerLoading,
+  } = useValidatorsFromServer();
+  const [optimalValidators, setOptimalValidators] = useState<ValidatorInfo[]>([]);
+  const [shouldGetElectedInfo, setShouldGetElectedInfo] = useState<boolean>(false);
   const [settings] = useState(uiSettings.get());
   const isKusama = uiSettings && uiSettings.apiUrl.includes('kusama');
 
@@ -73,25 +72,22 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
     if (!pair) {
       return;
     }
-    console.log('pair', pair);
     const { meta: { source } } = pair;
 
     if (!source) {
       return;
     }
-    console.log('source', source);
     const injected = await web3FromSource(source as string);
 
     api.setSigner(injected.signer);
   }, [accountId, api]);
 
-  const toNomination = useCallback(() => {
-    setStatus('manage');
-  }, []);
-
-  const backToWallet = useCallback(() => {
-    setStatus('new');
-  }, []);
+  const onSetKsi = useCallback((ksi) => {
+    console.log('onSetKsi', ksi);
+    if (ksiRange[ksi]) {
+      setKsi(ksiRange[ksi]);
+    }
+  }, [setKsi]);
 
   useEffect((): void => {
     if (!accountId) {
@@ -102,41 +98,22 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
     setSigner().then();
   }, [accountId, setSigner]);
 
-  useEffect((): void => {
-    allStashes && stakingOverview && setValidators({
-      next: allStashes.filter((address) => !stakingOverview.validators.includes(address as any)),
-      validators: stakingOverview.validators.map((a) => a.toString())
-    });
-  }, [allStashes, stakingOverview]);
-
   useEffect(() => {
     // initialize wallet
-    if (Object.keys(window.injectedWeb3).length === 0) {
-      setStatus('none');
-    } else {
-      const polkadotExtension = Object.keys(window.injectedWeb3).find((key) => key === 'polkadot-js');
-
-      if (!polkadotExtension) {
-        setStatus('none');
-      }
-    }
-
     if (ownStashes) {
       if (ownStashes.length) {
-        setStatus('manage');
+        history.push('/manage');
       } else {
-        setStatus('new');
+        history.push('new');
       }
     }
   }, [ownStashes]);
 
   useEffect((): void => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     web3Enable('').then((res) => {
       setWeb3Enabled(!!res.length);
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     web3Accounts().then((res) => {
       setAccountsAvailable(!!res.length);
     });
@@ -154,36 +131,20 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
     }
   }, [settings]);
 
-  /**
-   * Set validators list.
-   * If filtered validators
-   */
+  // if we have problems with server - we should use client elected info and filter
   useEffect(() => {
-    if (filteredValidators && filteredValidators.length) {
-      setSelectedValidators(
-        filteredValidators.map((validator): string => validator.key).slice(0, 16)
-      );
+    if ((!validatorsFromServer || !validatorsFromServer.length) && !validatorsFromServerLoading) {
+      setShouldGetElectedInfo(true);
     } else {
-      stakingOverview && setSelectedValidators(
-        stakingOverview.validators.map((acc): string => acc.toString()).slice(0, 16)
-      );
+      setOptimalValidators(validatorsFromServer);
     }
-  }, [filteredValidators, setSelectedValidators, stakingOverview]);
-
-  const disableStartButton = useCallback(() => {
-    if (!ownStashes) {
-      return;
-    }
-
-    const currentStash = ownStashes.find((stash) => stash.stashId === accountId);
-
-    setStashIsCurrent(!!currentStash);
-  }, [accountId, ownStashes]);
+  }, [validatorsFromServer, validatorsFromServerLoading]);
 
   useEffect(() => {
-    disableStartButton();
-  }, [disableStartButton]);
+    getValidatorsFromServer(ksi);
+  }, [ksi]);
 
+  console.log('validatorsFromServer', validatorsFromServer, 'optimalValidators!!!', optimalValidators);
   return (
     // in all apps, the main wrapper is setup to allow the padding
     // and margins inside the application. (Just from a consistent pov)
@@ -203,10 +164,9 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
               accountId={accountId}
               accountsAvailable={accountsAvailable}
               amountToNominate={amountToNominate}
-              isNominating={isNominating}
-              next={next}
+              nominationServerAvailable={nominationServerAvailable}
               ownStashes={ownStashes}
-              selectedValidators={selectedValidators}
+              optimalValidators={optimalValidators}
               setAccountId={setAccountId}
               setAmountToNominate={setAmountToNominate}
               stakingOverview={stakingOverview}
@@ -221,42 +181,19 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
           path='/manage'
           render={() => (
             <ManageNominations
-              backToWallet={backToWallet}
               isKusama={isKusama}
-              next={next}
+              ksi={ksi}
+              setKsi={onSetKsi}
+              nominationServerAvailable={nominationServerAvailable}
               ownStashes={ownStashes}
-              selectedValidators={selectedValidators}
-              validators={validators}
+              optimalValidators={optimalValidators}
+              queueAction={queueAction}
+              stakingOverview={stakingOverview}
             />
           )}
         />
         <Redirect to={'new'} />
       </Switch>
-      {/*<div className='ui placeholder segment'>
-        { status === 'new' && (
-
-        )}
-        { status === 'manage' && (
-          <ManageNominations
-            backToWallet={backToWallet}
-            isKusama={isKusama}
-            next={next}
-            ownStashes={ownStashes}
-            selectedValidators={selectedValidators}
-            validators={validators}
-          />
-        )}
-      </div>*/}
-      <BondAndNominateModal
-        accountId={accountId}
-        amountToNominate={amountToNominate}
-        isNominating={isNominating}
-        selectedValidators={selectedValidators}
-        setIsNominating={setIsNominating}
-        stashIsCurrent={stashIsCurrent}
-        toNomination={toNomination}
-        queueAction={queueAction}
-      />
       <Status
         queueAction={queueAction}
         stqueue={stqueue}
@@ -267,115 +204,3 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
 }
 
 export default React.memo(Nomination);
-
-/*
- position: relative;
-
-   .nomination-row {
-      display: grid;
-      grid-template-columns: 500px 210px;
-      grid-column-gap: 32px;
-   }
-
-   .manage-nomination-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-column-gap: 32px;
-
-      .right {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-      }
-   }
-
-   .help-button-block {
-      margin-left: 16px;
-   }
-
-
-
-   .qr-center {
-     margin: 0 auto;
-   }
-
-   .ui.header:before {
-      display: none !important;
-   }
-
-   .text-center {
-      text-align: center;
-   }
-
-   .icon.success {
-      font-size: 22px;
-   }
-
-   section {
-      margin: 8px 0;
-   }
-
-   .header-qr {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      margin-bottom: 30px;
-   }
-
-   .close-window {
-      font-family: 'Roboto';
-      font-style: normal;
-      font-weight: normal;
-      font-size: 14px;
-      line-height: 24px;
-      color: #464E5F;
-      margin-left: 28px;
-   }
-
-   .bond-section {
-      margin-bottom: 20px;
-   }
-
-   .account-panel, .bond-section-block {
-      background: white;
-      border: 1px solid #DDDDDD;
-      box-sizing: border-box;
-      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05);
-      border-radius: 4px;
-      padding: 24px;
-   }
-
-   .account-panel {
-       text-align: center;
-   }
-
-   .button.back {
-      float: left;
-   }
-
-   .nomination-active {
-      .button.back {
-        margin-top: 26px;
-      }
-   }
-
-   .divider {
-      width: 100%;
-      height: 1px;
-      background-color: #D5D5D5;
-      margin-bottom: 16px;
-  }
-
-   @media (max-width: 800px) {
-      min-width: 100%;
-
-      .table .tbody {
-        overflow-x: auto;
-      }
-
-      .manage-nomination-row {
-        grid-template-columns: auto;
-      }
-
-   }
- */

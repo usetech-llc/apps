@@ -2,29 +2,31 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import { ActiveEraInfo, EraIndex } from '@polkadot/types/interfaces';
+import { EraIndex } from '@polkadot/types/interfaces';
 import { StakerState } from '@polkadot/react-hooks/types';
+import { QueueAction$Add } from '@polkadot/react-components/Status/types';
+import { DeriveStakingOverview, DeriveEraPoints } from '@polkadot/api-derive/types';
+import {ValidatorInfo} from '@polkadot/app-nomination/types';
 
 import BN from 'bn.js';
 import React, { useEffect, useState } from 'react';
 import { useCall, useApi } from '@polkadot/react-hooks';
 import { FormatBalance } from '@polkadot/react-query';
-import { Option } from '@polkadot/types';
 import Spinner from '@polkadot/react-components/Spinner';
+import LabelHelp from '@polkadot/react-components/LabelHelp';
 
 import ElectionBanner from '../components/ElectionBanner';
 import Account from './Account';
 import NewStake from './NewStake';
 import './styles.scss';
-import {LabelHelp} from "@polkadot/react-components/index";
 
 interface Props {
   hideNewStake?: boolean;
   isInElection?: boolean;
-  next?: string[];
+  optimalValidators: ValidatorInfo[];
   ownStashes?: StakerState[];
-  selectedValidators?: string[];
-  validators?: string[];
+  queueAction: QueueAction$Add;
+  stakingOverview: DeriveStakingOverview | undefined;
 }
 
 interface State {
@@ -32,11 +34,26 @@ interface State {
   foundStashes?: StakerState[];
 }
 
-function Actions ({ hideNewStake, isInElection, next, ownStashes, selectedValidators, validators }: Props): React.ReactElement<Props> {
+function Actions (props: Props): React.ReactElement<Props> {
+  const {
+    hideNewStake,
+    isInElection,
+    ksi,
+    nominationServerAvailable,
+    optimalValidators,
+    ownStashes,
+    queueAction,
+    setKsi,
+    stakingOverview,
+  } = props;
+
   const { api } = useApi();
-  const activeEra = useCall<EraIndex | undefined>(api.query.staking?.activeEra, [], {
+  const [filteredEras, setFilteredEras] = useState<EraIndex[] | null>(null);
+  /* const activeEra = useCall<EraIndex | undefined>(api.query.staking?.activeEra, [], {
     transform: (activeEra: Option<ActiveEraInfo>) => activeEra.unwrapOr({ index: undefined }).index
-  });
+  }); */
+  const allEras = useCall<EraIndex[]>(api.derive.staking.erasHistoric);
+  const erasPoints = useCall<DeriveEraPoints[]>(!!filteredEras && api.derive.staking._erasPoints, [filteredEras, false]);
   const [{ bondedTotal, foundStashes }, setState] = useState<State>({});
 
   useEffect((): void => {
@@ -52,6 +69,14 @@ function Actions ({ hideNewStake, isInElection, next, ownStashes, selectedValida
     });
   }, [ownStashes]);
 
+  useEffect(() => {
+    if (allEras && allEras.length) {
+      const filteredEras = allEras.slice(-1);
+      setFilteredEras(filteredEras);
+    }
+  }, [allEras]);
+
+  console.log('erasPoints', erasPoints);
   return (
     <div className='manage-nomination-actions'>
       {!hideNewStake &&
@@ -90,14 +115,15 @@ function Actions ({ hideNewStake, isInElection, next, ownStashes, selectedValida
           <div className='tbody'>
             {foundStashes && foundStashes.map((info: any): React.ReactNode => (
               <Account
-                activeEra={activeEra}
                 info={info}
                 isDisabled={isInElection}
+                ksi={ksi}
+                setKsi={setKsi}
                 key={info.stashId}
-                next={next}
-                selectedValidators={selectedValidators}
-                stashId={info.stashId}
-                validators={validators}
+                nominationServerAvailable={nominationServerAvailable}
+                optimalValidators={optimalValidators}
+                queueAction={queueAction}
+                stakingOverview={stakingOverview}
               />
             ))}
           </div>

@@ -30,6 +30,7 @@ interface Props {
   isHidden?: boolean;
   isInPlaceEditor?: boolean;
   isReadOnly?: boolean;
+  isSmall?: boolean;
   isWarning?: boolean;
   label?: React.ReactNode;
   labelExtra?: React.ReactNode;
@@ -198,6 +199,7 @@ function Input ({ autoFocus = false, children, className, defaultValue, help, ic
               : 'off'
           }
           autoCorrect='off'
+          data-testid={label}
           onPaste={_onPaste}
           spellCheck={false}
         />

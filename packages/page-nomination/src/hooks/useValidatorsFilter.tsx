@@ -15,7 +15,7 @@ function useValidatorsFilter (electedInfo?: DeriveStakingElected): DeriveStaking
   const [filtered, setFiltered] = useState<DeriveStakingElected | null>(null);
 
   const getAccountInfo = useCallback((address: string): Promise<DeriveAccountInfo> => {
-    return api.derive.accounts.info(address);
+    return api.derive.accounts.info(address) as Promise<DeriveAccountInfo>;
   }, [api.derive.accounts]);
 
   const checkIdentity = useCallback((value: DeriveAccountInfo): boolean => {

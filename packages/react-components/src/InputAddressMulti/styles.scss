@@ -1,0 +1,49 @@
+.ui--InputAddressMulti {
+  border-top-width: 0;
+
+  .ui--InputAddressMulti-Input {
+    .ui.input {
+      margin-bottom: 0.25rem;
+      opacity: 1 !important;
+    }
+  }
+
+  .ui--InputAddressMulti-columns {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    width: 100%;
+
+    .ui--InputAddressMulti-column {
+      display: flex;
+      flex-direction: column;
+      min-height: 15rem;
+      max-height: 15rem;
+      width: 50%;
+      padding: 0.25rem 0.5rem;
+
+      .ui--InputAddressMulti-items {
+        padding: 0.5rem 0;
+        background: white;
+        border: 1px solid rgba(34, 36, 38, 0.15);
+        border-radius: 0.286rem 0.286rem;
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        .ui--Spinner {
+          margin-top: 2rem;
+        }
+
+        .ui--AddressToggle {
+          padding-left: 0.75rem;
+        }
+
+        .ui--AddressMini-address {
+          min-width: auto;
+          max-width: 100%;
+        }
+      }
+    }
+  }
+}

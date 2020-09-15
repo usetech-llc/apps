@@ -8,27 +8,26 @@ import { ActionStatus, QueueAction$Add } from '@polkadot/react-components/Status
 import { StakerState } from '@polkadot/react-hooks/types';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import BN from 'bn.js';
-
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
+import { Icon } from '@polkadot/react-components';
 
 import AccountSection from '../components/AccountSection';
 import BondSection from '../components/BondSection';
 import { useBalanceClear, useFees, WholeFeesType } from '../hooks/useBalance';
 import { useSlashes } from '../hooks/useShalses';
+import BondAndNominateModal from '../components/BondAndNominateModal';
+
 
 interface Props {
   accountId: string | null;
   accountsAvailable: boolean;
   amountToNominate: BN | undefined | null;
-  isNominating: boolean;
-  next?: string[];
   ownStashes: StakerState[] | undefined;
   queueAction: QueueAction$Add;
   setAccountId: (accountId: string | null) => void;
   setAmountToNominate: (amountToNominate: BN | undefined) => void;
-
-  selectedValidators: string[];
   stakingOverview: DeriveStakingOverview | undefined;
   web3Enabled: boolean;
 }
@@ -38,17 +37,22 @@ function NewNomination (props: Props): React.ReactElement<Props> {
     accountId,
     accountsAvailable,
     amountToNominate,
+    ownStashes,
+    optimalValidators,
     queueAction,
     setAccountId,
     setAmountToNominate,
-    selectedValidators,
+    stakingOverview,
     web3Enabled,
   } = props;
 
-
-  const { wholeFees }: WholeFeesType = useFees(accountId, selectedValidators);
+  const { wholeFees }: WholeFeesType = useFees(accountId, optimalValidators);
   const accountBalance: Balance | null = useBalanceClear(accountId);
   const [maxAmountToNominate, setMaxAmountToNominate] = useState<BN | undefined | null>(null);
+  const [nominationModalOpened, setNominationModalOpened] = useState<boolean>(false);
+  const [isNominating, setIsNominating] = useState<boolean>(false);
+  const [stashIsCurrent, setStashIsCurrent] = useState<boolean>(false);
+
   const slashes = useSlashes(accountId);
   const currentAccountRef = useRef<string | null>();
 
@@ -60,6 +64,16 @@ function NewNomination (props: Props): React.ReactElement<Props> {
       }
     }
   }, [amountToNominate, maxAmountToNominate]);
+
+  const disableStartButton = useCallback(() => {
+    if (!ownStashes) {
+      return;
+    }
+
+    const currentStash = ownStashes.find((stash) => stash.stashId === accountId);
+
+    setStashIsCurrent(!!currentStash);
+  }, [accountId, ownStashes]);
 
   useEffect(() => {
     calculateMaxPreFilledBalance();
@@ -92,6 +106,10 @@ function NewNomination (props: Props): React.ReactElement<Props> {
 
     currentAccountRef.current = accountId;
   }, [accountId, queueAction]);
+
+  useEffect(() => {
+    disableStartButton();
+  }, [disableStartButton]);
 
   return (
     <div className='nomination-row'>
@@ -127,18 +145,31 @@ function NewNomination (props: Props): React.ReactElement<Props> {
         <div className='error-block'>Warning: You have been slashed. You need to update your nomination.</div>
         }
         <div className='button-block right'>
-          {/* <Button
+          { nominationModalOpened && (
+            <BondAndNominateModal
+              accountId={accountId}
+              amountToNominate={amountToNominate}
+              isNominating={isNominating}
+              optimalValidators={optimalValidators}
+              setIsNominating={setIsNominating}
+              setNominationModalOpened={setNominationModalOpened}
+              stashIsCurrent={stashIsCurrent}
+              stakingOverview={stakingOverview}
+              queueAction={queueAction}
+            />
+          )}
+          <Button
             icon
-            disabled={!selectedValidators.length || !amountToNominate || !amountToNominate.gtn(0) || isNominating}
+            disabled={!amountToNominate || !amountToNominate.gtn(0) || isNominating}
             loading={isNominating}
-            onClick={startNomination}
+            onClick={setNominationModalOpened.bind(null, true)}
             primary
           >
-            {stashIsCurrent ? 'Add funds' : 'Bond and Nominate'}
+            {stashIsCurrent ? 'Bond more' : 'Bond and Nominate'}
             <Icon
               icon={'play'}
             />
-          </Button> */}
+          </Button>
         </div>
       </div>
     </div>

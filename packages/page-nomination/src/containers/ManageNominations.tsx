@@ -4,6 +4,9 @@
 
 import { StakerState } from '@polkadot/react-hooks/types';
 import { ElectionStatus } from '@polkadot/types/interfaces';
+import { DeriveStakingOverview, DeriveStakingElected } from '@polkadot/api-derive/types';
+import { QueueAction$Add } from '@polkadot/react-components/Status/types';
+import { ValidatorInfo } from '@polkadot/app-nomination/types';
 
 import React from 'react';
 import styled from 'styled-components';
@@ -12,17 +15,20 @@ import { useApi, useCall } from '@polkadot/react-hooks';
 
 import Actions from '../Actions';
 
+
 interface Props {
-  backToWallet: () => void;
   isKusama: boolean;
-  next?: string[];
+  optimalValidators: ValidatorInfo[];
   ownStashes: StakerState[] | undefined;
-  selectedValidators: string[];
-  validators?: string[];
+  queueAction: QueueAction$Add;
+  stakingOverview: DeriveStakingOverview | undefined;
 }
 
-function ManageNomination ({ next, ownStashes, selectedValidators, validators }: Props): React.ReactElement<Props> {
+function ManageNomination ({ optimalValidators, ksi, nominationServerAvailable, ownStashes, queueAction, stakingOverview, setKsi }: Props): React.ReactElement<Props> {
   const { api } = useApi();
+  // const electedInfo = useCall<DeriveStakingElected>(api.derive.staking.electedInfo, []);
+  // console.log('electedInfo', electedInfo);
+
   const isInElection = useCall<boolean>(api.query.staking?.eraElectionStatus, [], {
     transform: (status: ElectionStatus) => status.isOpen
   });
@@ -39,10 +45,13 @@ function ManageNomination ({ next, ownStashes, selectedValidators, validators }:
       <Actions
         hideNewStake
         isInElection={isInElection}
-        next={next}
+        ksi={ksi}
+        setKsi={setKsi}
+        nominationServerAvailable={nominationServerAvailable}
+        optimalValidators={optimalValidators}
         ownStashes={ownStashes}
-        selectedValidators={selectedValidators}
-        validators={validators}
+        queueAction={queueAction}
+        stakingOverview={stakingOverview}
       />
     </div>
   );

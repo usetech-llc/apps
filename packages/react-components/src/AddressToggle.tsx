@@ -5,12 +5,12 @@
 import { DeriveAccountInfo } from '@polkadot/api-derive/types';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { useApi, useCall } from '@polkadot/react-hooks';
 
 import { getAddressName } from './util';
 import AddressMini from './AddressMini';
 import Toggle from './Toggle';
+import './addressToggle.styles.scss';
 
 interface Props {
   address: string;
@@ -83,52 +83,4 @@ function AddressToggle ({ address, className = '', filter, isHidden, noLookup, n
   );
 }
 
-export default React.memo(styled(AddressToggle)`
-  align-items: flex-start;
-  border: 1px solid transparent; /* #eee */
-  border-radius: 0.25rem;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  margin: 0.125rem;
-  padding: 0.125rem 0.25rem;
-  text-align: left;
-  vertical-align: middle;
-  white-space: nowrap;
-
-  .ui--AddressToggle-address {
-    filter: grayscale(100%);
-    opacity: 0.5;
-  }
-
-  &:hover {
-    border-color: #ccc;
-  }
-
-  &.isHidden {
-    display: none;
-  }
-
-  &.isDragging {
-    background: white;
-    box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.15);
-  }
-
-  .ui--AddressToggle-address,
-  .ui--AddressToggle-toggle {
-    flex: 1;
-    padding: 0;
-  }
-
-  .ui--AddressToggle-toggle {
-    margin-top: 0.1rem;
-    text-align: right;
-  }
-
-  &.isAye {
-    .ui--AddressToggle-address {
-      filter: none;
-      opacity: 1;
-    }
-  }
-`);
+export default React.memo(AddressToggle);

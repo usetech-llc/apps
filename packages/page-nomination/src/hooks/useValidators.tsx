@@ -1,4 +1,4 @@
-// Copyright 2017-2020 @polkadot/app-staking authors & contributors
+// Copyright 2020 UseTech authors & contributors
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
@@ -6,7 +6,7 @@ import BN from 'bn.js';
 import { from } from 'rxjs';
 import { useEffect, useState, useCallback } from 'react';
 import { useAccounts, useApi, useDebounce, useFavorites } from '@polkadot/react-hooks';
-import { DeriveStakingElected, DeriveSessionIndexes } from '@polkadot/api-derive/types';
+import { DeriveStakingElected } from '@polkadot/api-derive/types';
 import { ValidatorInfo, TargetSortBy } from '../types';
 import { extractInfo } from './useSortedTargets';
 import { STORE_FAVS_BASE } from '@polkadot/app-staking/constants';
@@ -33,19 +33,19 @@ function useValidators (): UseValidatorsInterface {
   const [{ sortBy, sortFromMax }] = useState<{ sortBy: TargetSortBy; sortFromMax: boolean }>({ sortBy: 'rankOverall', sortFromMax: true });
   const amount = useDebounce(_amount);
   const [favorites] = useFavorites(STORE_FAVS_BASE);
-  const [validators, setWorkable] = useState<ValidatorInfo[]>([]);
+  const [optimalValidators, setOptimalValidators] = useState<ValidatorInfo[]>([]);
   const [validatorsLoading, setValidatorsLoading] = useState(true);
   const filteredElected = useValidatorsFilter(electedInfo);
   const { validatorsFromServer, validatorsFromServerLoading } = useValidatorsFromServer();
-  console.log('electedInfo', electedInfo);
+
   const getElectedInfo = useCallback(() => {
-    from(api.derive.staking.electedInfo()).subscribe((electedInfo: DeriveStakingElected) => {
+    from(api.derive.staking.electedInfo()).subscribe((electedInfo: any) => {
       setElectedInfo(electedInfo);
     });
   }, [api.derive.staking]);
 
   const getLastEra = useCallback(() => {
-    from(api.derive.session.indexes()).subscribe(({ activeEra }: DeriveSessionIndexes) => {
+    from(api.derive.session.indexes()).subscribe(({ activeEra }: any) => {
       setLastEra(activeEra.gtn(0) ? activeEra.subn(1) : new BN(0));
     });
   }, [api.derive.session]);
@@ -64,9 +64,8 @@ function useValidators (): UseValidatorsInterface {
   useEffect((): void => {
     if (filteredElected && filteredElected.info && lastReward) {
       const { validators } = extractInfo(allAccounts, amount, filteredElected, favorites, lastReward);
-
       if (validators) {
-        setWorkable(validators);
+        setOptimalValidators(validators);
         setValidatorsLoading(false);
       }
     }
@@ -76,19 +75,19 @@ function useValidators (): UseValidatorsInterface {
     getLastReward();
   }, [getLastReward, lastEra]);
 
+  // if we have problems with server - we should use client elected info and filter
   useEffect(() => {
+    console.log('if we have problems with server', validatorsFromServer);
     if ((!validatorsFromServer || !validatorsFromServer.length) && !validatorsFromServerLoading) {
       getLastEra();
       getElectedInfo();
-    }
-
-    if (validatorsFromServer && validatorsFromServer.length) {
-      setWorkable(validatorsFromServer);
+    } else {
+      setOptimalValidators(validatorsFromServer);
     }
   }, [getElectedInfo, getLastEra, validatorsFromServer, validatorsFromServerLoading]);
 
   return {
-    filteredValidators: validators,
+    filteredValidators: optimalValidators,
     validatorsLoading
   };
 }

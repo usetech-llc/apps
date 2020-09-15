@@ -1,12 +1,14 @@
 // Copyright 2017-2020 @polkadot/app-nomination authors & contributors
 import { ValidatorInfo } from '../types';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { of } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { switchMap, catchError } from 'rxjs/operators';
 
 interface ValidatorsFromServerInterface {
+  getValidatorsFromServer: (ksi: number) => void;
+  nominationServerAvailable: boolean;
   validatorsFromServer: ValidatorInfo[];
   validatorsFromServerLoading: boolean;
 }
@@ -15,9 +17,10 @@ interface ValidatorsFromServerInterface {
  * Get validators from server if health "connected":true
  * @return {Array<ValidatorInfo>} filtered validators from server
  */
-function useValidatorsFromServer (): ValidatorsFromServerInterface {
+function useValidatorsFromServer(): ValidatorsFromServerInterface {
   const [validators, setValidators] = useState<Array<ValidatorInfo> | []>([]);
   const [validatorsLoading, setValidatorsLoading] = useState<boolean>(true);
+  const [nominationServerAvailable, setNominationServerAvailable] = useState<boolean>(false);
 
   const fetchData = useCallback((url: string) => {
     return fromFetch(url).pipe(
@@ -36,21 +39,29 @@ function useValidatorsFromServer (): ValidatorsFromServerInterface {
     );
   }, []);
 
-  useEffect(() => {
+  const getValidatorsFromServer = useCallback((ksi) => {
     setValidatorsLoading(true);
-    fetchData('/api/health').subscribe((result) => {
-      if (result && result.connected) {
-        fetchData('/api/bestvalidators').subscribe((validators) => {
-          setValidators(validators);
+    if (!nominationServerAvailable) {
+      fetchData('/api/health').subscribe((result) => {
+        if (result && result.connected) {
+          setNominationServerAvailable(true);
+          fetchData(`/api/bestvalidators?ksi=${ksi}`).subscribe((validators) => {
+            setValidators(validators);
+            setValidatorsLoading(false);
+          });
+        } else {
           setValidatorsLoading(false);
-        });
-      } else {
+        }
+      });
+    } else {
+      fetchData(`/api/bestvalidators?ksi=${ksi}`).subscribe((validators) => {
+        setValidators(validators);
         setValidatorsLoading(false);
-      }
-    });
-  }, [fetchData]);
+      });
+    }
+  }, [nominationServerAvailable, setValidators, setValidatorsLoading]);
 
-  return { validatorsFromServer: validators, validatorsFromServerLoading: validatorsLoading };
+  return { getValidatorsFromServer, nominationServerAvailable, validatorsFromServer: validators, validatorsFromServerLoading: validatorsLoading };
 }
 
 export default useValidatorsFromServer;

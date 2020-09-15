@@ -5,6 +5,9 @@
 import { DeriveBalancesAll, DeriveStakingAccount } from '@polkadot/api-derive/types';
 import { EraIndex, ValidatorPrefsTo145 } from '@polkadot/types/interfaces';
 import { StakerState } from '@polkadot/react-hooks/types';
+import { QueueAction$Add } from '@polkadot/react-components/Status/types';
+import { DeriveStakingOverview } from '@polkadot/api-derive/types';
+import { ValidatorInfo } from '@polkadot/app-nomination/types';
 
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
@@ -22,20 +25,22 @@ import { FormatBalance } from '@polkadot/react-query';
 import StakingRedeemable from '@polkadot/react-components/StakingRedeemable';
 
 import BondExtra from './BondExtra';
-import Nominate from './Nominate';
+// import Nominate from './Nominate';
 import Unbond from './Unbond';
 import useInactives from '../useInactives';
 import arrow from '../../assets/icons/arrow.svg';
+import BondAndNominateModal from '../../components/BondAndNominateModal';
+import NominatorRow from './NominatorRow';
 
 interface Props {
-  activeEra?: EraIndex;
   className?: string;
   isDisabled?: boolean;
   info: StakerState;
   next?: string[];
-  stashId: string;
+  optimalValidators: ValidatorInfo[];
+  queueAction: QueueAction$Add;
+  stakingOverview: DeriveStakingOverview | undefined;
   validators?: string[];
-  selectedValidators?: string[];
 }
 
 function CommissionBalance (stakingInfo: DeriveStakingAccount, withLabel?: string): any {
@@ -76,13 +81,31 @@ function CommissionBalance (stakingInfo: DeriveStakingAccount, withLabel?: strin
   );
 }
 
-function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNominating, nominating, stakingLedger, stashId }, next, selectedValidators, validators }: Props): React.ReactElement<Props> {
+function Account (props: Props): React.ReactElement<Props> {
+  const {
+    info: {
+      controllerId,
+      isOwnController,
+      isOwnStash,
+      isStashNominating,
+      nominating,
+      stakingLedger,
+      stashId
+    },
+    ksi,
+    nominationServerAvailable,
+    optimalValidators,
+    queueAction,
+    setKsi,
+    stakingOverview,
+  } = props;
+
   const { api } = useApi();
   const balancesAll = useCall<DeriveBalancesAll>(api.derive.balances.all, [stashId]);
   const stakingAccount = useCall<DeriveStakingAccount>(api.derive.staking.account, [stashId]);
   const [isBondExtraOpen, toggleBondExtra] = useToggle();
   const [isAccordionOpen, toggleAccordion] = useToggle();
-  const [isNominateOpen, toggleNominate] = useToggle();
+  const [nominationModalOpened, setNominationModalOpened] = useState<boolean>(false);
   const [isUnbondOpen, toggleUnbond] = useToggle();
   const [notOptimal, setNotOptimal] = useState<boolean>(false);
   const { nomsActive, nomsInactive, nomsWaiting } = useInactives(stashId, nominating);
@@ -109,23 +132,22 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
 
   useEffect((): void => {
     // case if current validators are not optimal
-    if (selectedValidators && selectedValidators.length && nominating && nominating.length) {
+    if (optimalValidators.length && nominating && nominating.length) {
       let count = 0;
 
       nominating.forEach((validator): void => {
-        if (!selectedValidators.includes(validator)) {
+        if (!optimalValidators.find(optimalValidator => optimalValidator.accountId.toString() === validator)) {
           count++;
         }
       });
 
       // there are 16 nominators, if we have half not optimal, set warning
       if (count >= 8) {
-        setNotOptimal(true);
+        setNotOptimal && setNotOptimal(true);
       }
     }
-  }, [nominating, selectedValidators]);
+  }, [nominating, optimalValidators]);
 
-  console.log('balancesAll', balancesAll);
   return (
     <div className='account-block'>
       <div className='white-block with-footer'>
@@ -146,16 +168,18 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
               stashId={stashId}
             />
           )}
-          {isNominateOpen && controllerId && (
-            <Nominate
-              controllerId={controllerId}
-              isOpen={isNominateOpen}
-              next={next}
+          { nominationModalOpened && (
+            <BondAndNominateModal
+              accountId={stashId}
+              ksi={ksi}
+              setKsi={setKsi}
               nominating={nominating}
-              onClose={toggleNominate}
-              selectedValidators={selectedValidators}
-              stashId={stashId}
-              validators={validators}
+              nominationServerAvailable={nominationServerAvailable}
+              optimalValidators={optimalValidators}
+              setNominationModalOpened={setNominationModalOpened}
+              stashIsCurrent
+              stakingOverview={stakingOverview}
+              queueAction={queueAction}
             />
           )}
           {isUnbondOpen && (
@@ -168,9 +192,9 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
           )}
         </div>
         <div className='column address'>
-          {nomsActive && nomsActive.map((nomineeId, index): React.ReactNode => (
+          {nomsActive && nomsActive.map((nomineeId): React.ReactNode => (
             <AddressMini
-              key={index}
+              key={nomineeId}
               value={nomineeId}
               withBonded
             />
@@ -243,7 +267,7 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
           >
             Bond more
           </Button>
-          <TxButton
+          {/* <TxButton
             accountId={controllerId}
             className='footer-button'
             icon={isStashNominating ? 'exclamation-triangle' : 'check'}
@@ -261,7 +285,22 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
               ) : 'Nominate'}
             params={[selectedValidators]}
             tx='staking.nominate'
-          />
+          /> */}
+          <Button
+            className='footer-button'
+            disabled={!isStashNominating}
+            onClick={setNominationModalOpened.bind(null, true)}
+          >
+            { isStashNominating ? (
+            <>
+              Update nomination
+              <LabelHelp
+                className='small-help'
+                help={'Your nomination is not optimal. Update please!'}
+              />
+            </>
+            ) : 'Nominate'}
+          </Button>
           <Button
             className='footer-button'
             disabled={!isStashNominating}
@@ -320,52 +359,16 @@ function Account ({ info: { controllerId, isOwnController, isOwnStash, isStashNo
               {(nomsWaiting && nomsWaiting.length > 0) && (
                 <>
                   <Header as='h4'>{`Waiting nominations (${nomsWaiting.length})`}</Header>
-                  {nomsWaiting.map((nomineeId, index): React.ReactNode => (
-                    <div className='account-block'>
-                      <AddressMini
-                        key={index}
-                        value={nomineeId}
-                        withBonded
-                      />
-                      <div className='other-stake'>
-                        18.316 KSM
-                      </div>
-                      <div className='own-stake'>
-                        18.316 KSM
-                      </div>
-                      <div className='commission'>
-                        0.00%
-                      </div>
-                      <div className='points'>
-                        140
-                      </div>
-                    </div>
+                  {nomsWaiting.map((nomineeId): React.ReactNode => (
+                    <NominatorRow key={nomineeId} validatorId={nomineeId} />
                   ))}
                 </>
               )}
               {(nomsInactive && nomsInactive.length > 0) && (
                 <>
                   <Header as='h4'>{`${'Inactive nominations'} (${nomsInactive.length})`}</Header>
-                  {nomsInactive.map((nomineeId, index): React.ReactNode => (
-                    <div className='account-block'>
-                      <AddressMini
-                        key={index}
-                        value={nomineeId}
-                        withBonded
-                      />
-                      <div className='other-stake'>
-                        18.316 KSM
-                      </div>
-                      <div className='own-stake'>
-                        18.316 KSM
-                      </div>
-                      <div className='commission'>
-                        0.00%
-                      </div>
-                      <div className='points'>
-                        140
-                      </div>
-                    </div>
+                  {nomsInactive.map((nomineeId): React.ReactNode => (
+                    <NominatorRow key={nomineeId} validatorId={nomineeId} />
                   ))}
                 </>
               )}

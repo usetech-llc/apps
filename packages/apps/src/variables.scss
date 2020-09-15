@@ -4,3 +4,37 @@ $nomination_warning_color: #CA6014;
 $nomination_warning_light_color: #F7F2EE;
 $nomination_error_light_color: #F8EFEF;
 $nomination_error_color: #CA1414;
+$nomination_secondary_color: #E2E2E2;
+
+@mixin divider {
+  width: 100%;
+  height: 1px;
+  background-color: #D5D5D5;
+  margin: 16px 0;
+}
+
+@mixin h1header {
+  font-family: Roboto, Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 28px;
+  line-height: 40px;
+  text-transform: none;
+  color: #000000;
+}
+
+@mixin secondary {
+  border: 2px solid $nomination_secondary_color;
+  background-color: $nomination_secondary_color;
+  color: black;
+}
+
+@mixin primary {
+  border: 2px solid $nomination_blue_color;
+  background-color: $nomination_blue_color;
+
+  &:hover, &:active {
+    background-color: white;
+    color: black;
+  }
+}
