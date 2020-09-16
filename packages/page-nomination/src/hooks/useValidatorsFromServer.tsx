@@ -11,6 +11,7 @@ interface ValidatorsFromServerInterface {
   nominationServerAvailable: boolean;
   validatorsFromServer: ValidatorInfo[];
   validatorsFromServerLoading: boolean;
+  validatorsFromServerFailed: boolean;
 }
 
 /**
@@ -20,10 +21,17 @@ interface ValidatorsFromServerInterface {
 function useValidatorsFromServer(): ValidatorsFromServerInterface {
   const [validators, setValidators] = useState<Array<ValidatorInfo> | []>([]);
   const [validatorsLoading, setValidatorsLoading] = useState<boolean>(true);
-  const [nominationServerAvailable, setNominationServerAvailable] = useState<boolean>(false);
+  const [nominationServerAvailable, setNominationServerAvailable] = useState<boolean>(true);
+  const [validatorsFromServerFailed, setValidatorsFromServerFailed] = useState<boolean>(false);
 
   const fetchData = useCallback((url: string) => {
-    return fromFetch(url).pipe(
+    const headers = {
+      'accept': 'application/json',
+    };
+    return fromFetch(url, {
+      method: 'GET',
+      headers,
+    }).pipe(
       switchMap((response) => {
         if (response.ok) {
           return response.json();
@@ -33,35 +41,48 @@ function useValidatorsFromServer(): ValidatorsFromServerInterface {
       }),
       catchError((err) => {
         setValidatorsLoading(false);
-
+        setValidatorsFromServerFailed(true);
         return of({ error: true, message: err.message });
       })
     );
   }, []);
 
+  const fetchValidators = useCallback((bestValidatorsUrl) => {
+    fetchData(bestValidatorsUrl).subscribe((resp) => {
+      if (resp.validators && resp.validators.length) {
+        setValidators(resp.validators);
+      } else {
+        setValidatorsFromServerFailed(true);
+      }
+      setValidatorsLoading(false);
+    });
+  }, [fetchData]);
+
   const getValidatorsFromServer = useCallback((ksi) => {
+    const bestValidatorsUrl = `/api/rpi/bestvalidators?ksi=${ksi}`;
     setValidatorsLoading(true);
     if (!nominationServerAvailable) {
       fetchData('/api/health').subscribe((result) => {
         if (result && result.connected) {
           setNominationServerAvailable(true);
-          fetchData(`/api/bestvalidators?ksi=${ksi}`).subscribe((validators) => {
-            setValidators(validators);
-            setValidatorsLoading(false);
-          });
+          fetchValidators(bestValidatorsUrl);
         } else {
+          setValidatorsFromServerFailed(true);
           setValidatorsLoading(false);
         }
       });
     } else {
-      fetchData(`/api/bestvalidators?ksi=${ksi}`).subscribe((validators) => {
-        setValidators(validators);
-        setValidatorsLoading(false);
-      });
+      fetchValidators(bestValidatorsUrl);
     }
   }, [nominationServerAvailable, setValidators, setValidatorsLoading]);
 
-  return { getValidatorsFromServer, nominationServerAvailable, validatorsFromServer: validators, validatorsFromServerLoading: validatorsLoading };
+  return {
+    getValidatorsFromServer,
+    nominationServerAvailable,
+    validatorsFromServer: validators,
+    validatorsFromServerLoading: validatorsLoading,
+    validatorsFromServerFailed,
+  };
 }
 
 export default useValidatorsFromServer;

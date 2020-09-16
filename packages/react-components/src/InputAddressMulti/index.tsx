@@ -3,9 +3,8 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDebounce, useLoadingDelay } from '@polkadot/react-hooks';
+import { useDebounce } from '@polkadot/react-hooks';
 
-import { useTranslation } from '../translate';
 import Input from '../Input';
 import Spinner from '../Spinner';
 import Available from './Available';

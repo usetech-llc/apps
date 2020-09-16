@@ -25,6 +25,8 @@ import ManageNominations from './containers/ManageNominations';
 import useValidatorsFromServer from "@polkadot/app-nomination/hooks/useValidatorsFromServer";
 import {ValidatorInfo} from "@polkadot/app-nomination/types";
 import { ksiRange } from './utils';
+import useElectedInfo from './hooks/useElectedInfo';
+import useValidators from "@polkadot/app-nomination/hooks/useValidators";
 
 declare global {
   interface Window {
@@ -53,13 +55,12 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
   const [accountsAvailable, setAccountsAvailable] = useState<boolean>(false);
   const [ksi, setKsi] = useState<number>(0.5);
   const {
+    filteredValidators,
     getValidatorsFromServer,
     nominationServerAvailable,
-    validatorsFromServer,
-    validatorsFromServerLoading,
-  } = useValidatorsFromServer();
+    validatorsLoading,
+  } = useValidators(ksi);
   const [optimalValidators, setOptimalValidators] = useState<ValidatorInfo[]>([]);
-  const [shouldGetElectedInfo, setShouldGetElectedInfo] = useState<boolean>(false);
   const [settings] = useState(uiSettings.get());
   const isKusama = uiSettings && uiSettings.apiUrl.includes('kusama');
 
@@ -72,18 +73,18 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
     if (!pair) {
       return;
     }
+
     const { meta: { source } } = pair;
 
     if (!source) {
       return;
     }
-    const injected = await web3FromSource(source as string);
 
+    const injected = await web3FromSource(source as string);
     api.setSigner(injected.signer);
   }, [accountId, api]);
 
   const onSetKsi = useCallback((ksi) => {
-    console.log('onSetKsi', ksi);
     if (ksiRange[ksi]) {
       setKsi(ksiRange[ksi]);
     }
@@ -93,7 +94,6 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
     if (!accountId) {
       return;
     }
-
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     setSigner().then();
   }, [accountId, setSigner]);
@@ -133,18 +133,15 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
 
   // if we have problems with server - we should use client elected info and filter
   useEffect(() => {
-    if ((!validatorsFromServer || !validatorsFromServer.length) && !validatorsFromServerLoading) {
-      setShouldGetElectedInfo(true);
-    } else {
-      setOptimalValidators(validatorsFromServer);
+    if (filteredValidators && filteredValidators.length && !validatorsLoading) {
+      setOptimalValidators(filteredValidators);
     }
-  }, [validatorsFromServer, validatorsFromServerLoading]);
+  }, [filteredValidators, validatorsLoading]);
 
   useEffect(() => {
     getValidatorsFromServer(ksi);
   }, [ksi]);
 
-  console.log('validatorsFromServer', validatorsFromServer, 'optimalValidators!!!', optimalValidators);
   return (
     // in all apps, the main wrapper is setup to allow the padding
     // and margins inside the application. (Just from a consistent pov)
@@ -164,14 +161,17 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
               accountId={accountId}
               accountsAvailable={accountsAvailable}
               amountToNominate={amountToNominate}
+              ksi={ksi}
               nominationServerAvailable={nominationServerAvailable}
               ownStashes={ownStashes}
               optimalValidators={optimalValidators}
               setAccountId={setAccountId}
+              setKsi={onSetKsi}
               setAmountToNominate={setAmountToNominate}
               stakingOverview={stakingOverview}
               web3Enabled={web3Enabled}
               queueAction={queueAction}
+              validatorsFromServerLoading={validatorsLoading}
             />
           )}
         />
@@ -189,6 +189,7 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
               optimalValidators={optimalValidators}
               queueAction={queueAction}
               stakingOverview={stakingOverview}
+              validatorsFromServerLoading={validatorsLoading}
             />
           )}
         />

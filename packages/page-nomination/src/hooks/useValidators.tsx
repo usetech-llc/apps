@@ -14,7 +14,9 @@ import useValidatorsFilter from './useValidatorsFilter';
 import useValidatorsFromServer from './useValidatorsFromServer';
 
 interface UseValidatorsInterface {
+  getValidatorsFromServer: (ksi: number) => void;
   filteredValidators: ValidatorInfo[];
+  nominationServerAvailable: boolean;
   validatorsLoading: boolean;
 }
 
@@ -22,21 +24,26 @@ interface UseValidatorsInterface {
  * Get, sort and filter validators
  * @return {Array<ValidatorInfo>} filtered validators
  */
-function useValidators (): UseValidatorsInterface {
+function useValidators (ksi: number): UseValidatorsInterface {
   const { api } = useApi();
   const [_amount] = useState<BN | undefined>(new BN(1_000));
   const [lastEra, setLastEra] = useState<BN | null>(null);
   const [lastReward, setLastReward] = useState<BN | null>(null);
   const [electedInfo, setElectedInfo] = useState<DeriveStakingElected>();
   const { allAccounts } = useAccounts();
-  // const electedInfo = useCall<DeriveStakingElected>(api.derive.staking.electedInfo, []);
   const [{ sortBy, sortFromMax }] = useState<{ sortBy: TargetSortBy; sortFromMax: boolean }>({ sortBy: 'rankOverall', sortFromMax: true });
   const amount = useDebounce(_amount);
   const [favorites] = useFavorites(STORE_FAVS_BASE);
   const [optimalValidators, setOptimalValidators] = useState<ValidatorInfo[]>([]);
   const [validatorsLoading, setValidatorsLoading] = useState(true);
   const filteredElected = useValidatorsFilter(electedInfo);
-  const { validatorsFromServer, validatorsFromServerLoading } = useValidatorsFromServer();
+  const {
+    getValidatorsFromServer,
+    nominationServerAvailable,
+    validatorsFromServer,
+    validatorsFromServerLoading,
+    validatorsFromServerFailed,
+  } = useValidatorsFromServer();
 
   const getElectedInfo = useCallback(() => {
     from(api.derive.staking.electedInfo()).subscribe((electedInfo: any) => {
@@ -75,10 +82,13 @@ function useValidators (): UseValidatorsInterface {
     getLastReward();
   }, [getLastReward, lastEra]);
 
+  useEffect(() => {
+    setValidatorsLoading(validatorsFromServerLoading);
+  }, [validatorsFromServerLoading]);
+
   // if we have problems with server - we should use client elected info and filter
   useEffect(() => {
-    console.log('if we have problems with server', validatorsFromServer);
-    if ((!validatorsFromServer || !validatorsFromServer.length) && !validatorsFromServerLoading) {
+    if (validatorsFromServerFailed) {
       getLastEra();
       getElectedInfo();
     } else {
@@ -88,6 +98,8 @@ function useValidators (): UseValidatorsInterface {
 
   return {
     filteredValidators: optimalValidators,
+    getValidatorsFromServer,
+    nominationServerAvailable,
     validatorsLoading
   };
 }

@@ -17,6 +17,7 @@ import Actions from '../Actions';
 
 
 interface Props {
+  electedInfo: DeriveStakingElected;
   isKusama: boolean;
   optimalValidators: ValidatorInfo[];
   ownStashes: StakerState[] | undefined;
@@ -24,7 +25,17 @@ interface Props {
   stakingOverview: DeriveStakingOverview | undefined;
 }
 
-function ManageNomination ({ optimalValidators, ksi, nominationServerAvailable, ownStashes, queueAction, stakingOverview, setKsi }: Props): React.ReactElement<Props> {
+function ManageNomination (props : Props): React.ReactElement<Props> {
+  const {
+    optimalValidators,
+    ksi,
+    nominationServerAvailable,
+    ownStashes,
+    queueAction,
+    stakingOverview,
+    setKsi,
+    validatorsFromServerLoading,
+  } = props;
   const { api } = useApi();
   // const electedInfo = useCall<DeriveStakingElected>(api.derive.staking.electedInfo, []);
   // console.log('electedInfo', electedInfo);
@@ -52,6 +63,7 @@ function ManageNomination ({ optimalValidators, ksi, nominationServerAvailable, 
         ownStashes={ownStashes}
         queueAction={queueAction}
         stakingOverview={stakingOverview}
+        validatorsFromServerLoading={validatorsFromServerLoading}
       />
     </div>
   );

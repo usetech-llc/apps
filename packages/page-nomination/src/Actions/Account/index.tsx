@@ -3,10 +3,9 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import { DeriveBalancesAll, DeriveStakingAccount } from '@polkadot/api-derive/types';
-import { EraIndex, ValidatorPrefsTo145 } from '@polkadot/types/interfaces';
 import { StakerState } from '@polkadot/react-hooks/types';
 import { QueueAction$Add } from '@polkadot/react-components/Status/types';
-import { DeriveStakingOverview } from '@polkadot/api-derive/types';
+import { DeriveStakingOverview, DeriveEraPoints } from '@polkadot/api-derive/types';
 import { ValidatorInfo } from '@polkadot/app-nomination/types';
 
 import React, { useCallback, useContext, useEffect, useState } from 'react';
@@ -17,7 +16,6 @@ import {
   StakingBonded,
   StakingUnbonding,
   StatusContext,
-  TxButton,
   LabelHelp
 } from '@polkadot/react-components';
 import { useApi, useCall, useToggle } from '@polkadot/react-hooks';
@@ -25,7 +23,6 @@ import { FormatBalance } from '@polkadot/react-query';
 import StakingRedeemable from '@polkadot/react-components/StakingRedeemable';
 
 import BondExtra from './BondExtra';
-// import Nominate from './Nominate';
 import Unbond from './Unbond';
 import useInactives from '../useInactives';
 import arrow from '../../assets/icons/arrow.svg';
@@ -34,6 +31,7 @@ import NominatorRow from './NominatorRow';
 
 interface Props {
   className?: string;
+  erasPoints: DeriveEraPoints[];
   isDisabled?: boolean;
   info: StakerState;
   next?: string[];
@@ -43,46 +41,9 @@ interface Props {
   validators?: string[];
 }
 
-function CommissionBalance (stakingInfo: DeriveStakingAccount, withLabel?: string): any {
-  if (!stakingInfo || !stakingInfo.validatorPrefs) {
-    return null;
-  }
-
-  return (
-    <>
-      <div />
-      {(stakingInfo.validatorPrefs as any as ValidatorPrefsTo145).unstakeThreshold && (
-        <>
-          <span>{withLabel}</span>
-          <div className='result'>
-            {(stakingInfo.validatorPrefs as any as ValidatorPrefsTo145).unstakeThreshold.toString()}
-          </div>
-        </>
-      )}
-      {(stakingInfo.validatorPrefs.commission || (stakingInfo.validatorPrefs as any as ValidatorPrefsTo145).validatorPayment) && (
-        (stakingInfo.validatorPrefs as any as ValidatorPrefsTo145).validatorPayment
-          ? (
-            <>
-              <span>{withLabel}</span>
-              <FormatBalance
-                className='result'
-                value={(stakingInfo.validatorPrefs as any as ValidatorPrefsTo145).validatorPayment}
-              />
-            </>
-          )
-          : (
-            <>
-              <span>{withLabel}</span>
-              <span>{(stakingInfo.validatorPrefs.commission.unwrap().toNumber() / 10_000_000).toFixed(2)}%</span>
-            </>
-          )
-      )}
-    </>
-  );
-}
-
 function Account (props: Props): React.ReactElement<Props> {
   const {
+    erasPoints,
     info: {
       controllerId,
       isOwnController,
@@ -98,6 +59,7 @@ function Account (props: Props): React.ReactElement<Props> {
     queueAction,
     setKsi,
     stakingOverview,
+    validatorsFromServerLoading,
   } = props;
 
   const { api } = useApi();
@@ -180,6 +142,7 @@ function Account (props: Props): React.ReactElement<Props> {
               stashIsCurrent
               stakingOverview={stakingOverview}
               queueAction={queueAction}
+              validatorsFromServerLoading={validatorsFromServerLoading}
             />
           )}
           {isUnbondOpen && (
@@ -360,7 +323,7 @@ function Account (props: Props): React.ReactElement<Props> {
                 <>
                   <Header as='h4'>{`Waiting nominations (${nomsWaiting.length})`}</Header>
                   {nomsWaiting.map((nomineeId): React.ReactNode => (
-                    <NominatorRow key={nomineeId} validatorId={nomineeId} />
+                    <NominatorRow erasPoints={erasPoints} key={nomineeId} validatorId={nomineeId} />
                   ))}
                 </>
               )}
@@ -368,7 +331,7 @@ function Account (props: Props): React.ReactElement<Props> {
                 <>
                   <Header as='h4'>{`${'Inactive nominations'} (${nomsInactive.length})`}</Header>
                   {nomsInactive.map((nomineeId): React.ReactNode => (
-                    <NominatorRow key={nomineeId} validatorId={nomineeId} />
+                    <NominatorRow erasPoints={erasPoints} key={nomineeId} validatorId={nomineeId} />
                   ))}
                 </>
               )}

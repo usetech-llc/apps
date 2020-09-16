@@ -52,38 +52,3 @@ function FormatBalance ({ children, className = '', isShort, label, labelPost, v
 }
 
 export default React.memo(FormatBalance);
-/*
-display: inline-block;
-  vertical-align: baseline;
-  white-space: nowrap;
-
-  * {
-    vertical-align: baseline !important;
-  }
-
-  > label,
-  > .label {
-    display: inline-block;
-    margin-right: 0.25rem;
-    vertical-align: baseline;
-  }
-
-  .ui--FormatBalance-value {
-    text-align: right;
-
-    > .ui--FormatBalance-postfix {
-      font-weight: 100;
-      opacity: 0.75;
-      vertical-align: baseline;
-    }
-  }
-
-  .ui--Icon {
-    margin-top: 0.25rem;
-    margin-bottom: -0.25rem;
-  }
-
-  .ui--Icon+.ui--FormatBalance-value {
-    margin-left: 0.375rem;
-  }
- */

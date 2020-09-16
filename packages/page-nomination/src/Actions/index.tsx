@@ -6,7 +6,7 @@ import { EraIndex } from '@polkadot/types/interfaces';
 import { StakerState } from '@polkadot/react-hooks/types';
 import { QueueAction$Add } from '@polkadot/react-components/Status/types';
 import { DeriveStakingOverview, DeriveEraPoints } from '@polkadot/api-derive/types';
-import {ValidatorInfo} from '@polkadot/app-nomination/types';
+import { ValidatorInfo } from '@polkadot/app-nomination/types';
 
 import BN from 'bn.js';
 import React, { useEffect, useState } from 'react';
@@ -45,6 +45,7 @@ function Actions (props: Props): React.ReactElement<Props> {
     queueAction,
     setKsi,
     stakingOverview,
+    validatorsFromServerLoading,
   } = props;
 
   const { api } = useApi();
@@ -76,7 +77,6 @@ function Actions (props: Props): React.ReactElement<Props> {
     }
   }, [allEras]);
 
-  console.log('erasPoints', erasPoints);
   return (
     <div className='manage-nomination-actions'>
       {!hideNewStake &&
@@ -115,6 +115,7 @@ function Actions (props: Props): React.ReactElement<Props> {
           <div className='tbody'>
             {foundStashes && foundStashes.map((info: any): React.ReactNode => (
               <Account
+                erasPoints={erasPoints}
                 info={info}
                 isDisabled={isInElection}
                 ksi={ksi}
@@ -124,6 +125,7 @@ function Actions (props: Props): React.ReactElement<Props> {
                 optimalValidators={optimalValidators}
                 queueAction={queueAction}
                 stakingOverview={stakingOverview}
+                validatorsFromServerLoading={validatorsFromServerLoading}
               />
             ))}
           </div>

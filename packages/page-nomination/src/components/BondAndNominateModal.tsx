@@ -56,6 +56,7 @@ function BondAndNominateModal (props: Props): React.ReactElement<Props> {
     stashIsCurrent,
     stakingOverview,
     queueAction,
+    validatorsFromServerLoading,
   } = props;
 
   const { api } = useApi();
@@ -109,14 +110,16 @@ function BondAndNominateModal (props: Props): React.ReactElement<Props> {
   }, [accountId, api.tx.utility, extrinsicBond, extrinsicNominate, queueAction]);
 
   useEffect((): void => {
-    console.log('allStashes');
     allStashes && stakingOverview && setValidators({
       next: allStashes.filter((address: any) => !stakingOverview.validators.includes(address as any)),
       validators: stakingOverview.validators.map((a: any) => a.toString())
     });
   }, [allStashes, stakingOverview]);
 
-  console.log('activeRange', ksi, 'optimalValidators', optimalValidators);
+  // console.log('selectedValidators', selectedValidators, 'validatorsFromServerLoading', validatorsFromServerLoading);
+  if (optimalValidators) {
+    console.log('optimalValidators[0]', optimalValidators[0]);
+  }
   return (
     <Modal
       className='range-modal'
@@ -144,7 +147,7 @@ function BondAndNominateModal (props: Props): React.ReactElement<Props> {
             setActiveRange={setKsi}
           />
         )}
-        { (validators && selectedValidators) && (
+        { (validators && selectedValidators && !validatorsFromServerLoading) && (
           <InputAddressMulti
             available={validators}
             availableLabel={'Candidate accounts'}
@@ -154,7 +157,7 @@ function BondAndNominateModal (props: Props): React.ReactElement<Props> {
             onChange={setSelectedValidators}
             valueLabel={'Nominated accounts'}
           />
-        ) || <Spinner />}
+        ) || <><br /><Spinner /></>}
       </Modal.Content>
       <Modal.Actions  cancelLabel={'Cancel'} onCancel={setNominationModalOpened.bind(null, false)}>
         <Button
