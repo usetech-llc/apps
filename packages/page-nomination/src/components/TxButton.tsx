@@ -3,20 +3,20 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import { SubmittableExtrinsic } from '@polkadot/api/types';
-import { TxButtonProps as Props } from './types';
+import { TxButtonProps as Props } from '@polkadot/react-components/types';
 
 import React, { useCallback, useContext } from 'react';
 import { SubmittableResult } from '@polkadot/api';
 import { useApi, useToggle } from '@polkadot/react-hooks';
 import { assert, isFunction, isUndefined } from '@polkadot/util';
 
-import Button from './Button';
-import { StatusContext } from './Status';
+import Button from '@polkadot/react-components/Button';
+import { StatusContext } from '@polkadot/react-components/Status';
+import './TxButtonStyles.scss';
 
 function TxButton(props: Props): React.ReactElement<Props> {
   const {
     accountId,
-    className = '',
     extrinsic: propsExtrinsic,
     icon,
     isBasic,
@@ -106,8 +106,8 @@ function TxButton(props: Props): React.ReactElement<Props> {
 
   return (
     <Button
-      className={className ? className : ''}
-      icon={icon || 'check'}
+      className={'tx-button'}
+      icon={icon || undefined}
       isBasic={isBasic}
       isDisabled={isSending || isDisabled || needsAccount}
       isIcon={isIcon}

@@ -10,7 +10,6 @@ $nomination_secondary_color: #E2E2E2;
   width: 100%;
   height: 1px;
   background-color: #D5D5D5;
-  margin: 16px 0;
 }
 
 @mixin h1header {
@@ -24,17 +23,17 @@ $nomination_secondary_color: #E2E2E2;
 }
 
 @mixin secondary {
-  border: 2px solid $nomination_secondary_color;
-  background-color: $nomination_secondary_color;
-  color: black;
+  border: 2px solid $nomination_secondary_color !important;
+  background-color: $nomination_secondary_color !important;
+  color: black !important;
 }
 
 @mixin primary {
-  border: 2px solid $nomination_blue_color;
-  background-color: $nomination_blue_color;
+  border: 2px solid $nomination_blue_color !important;
+  background-color: $nomination_blue_color !important;
 
   &:hover, &:active {
-    background-color: white;
-    color: black;
+    background-color: white !important;
+    color: black !important;
   }
 }

@@ -27,17 +27,27 @@ function RangeComponent (props: Props): React.ReactElement<Props> {
       <div className='range-block'>
         <div className='range-list'>
           <div className='item'>
+            <div className='vertical-divider' />
             Conservative strategy
             <LabelHelp
               className='small-help'
               help='Conservative strategy'
             />
           </div>
-          <div className='item' />
-          <div className='item' />
-          <div className='item' />
-          <div className='item' />
           <div className='item'>
+            <div className='vertical-divider' />
+          </div>
+          <div className='item'>
+            <div className='vertical-divider' />
+          </div>
+          <div className='item'>
+            <div className='vertical-divider' />
+          </div>
+          <div className='item'>
+            <div className='vertical-divider' />
+          </div>
+          <div className='item'>
+            <div className='vertical-divider' />
             Aggressive strategy
             <LabelHelp
               className='small-help'

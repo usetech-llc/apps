@@ -9,12 +9,13 @@ interface Props {
   className?: string;
   isDisabled?: boolean;
   label: React.ReactNode;
+  labelRight?: React.ReactNode;
   onChange?: (isChecked: boolean) => void;
   preventDefault?: boolean;
   value?: boolean;
 }
 
-function Toggle ({ className = '', isDisabled, label, onChange, preventDefault, value }: Props): React.ReactElement<Props> {
+function Toggle ({ className = '', isDisabled, label, labelRight, onChange, preventDefault, value }: Props): React.ReactElement<Props> {
   const _onClick = useCallback(
     (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
       if (!isDisabled) {
@@ -36,6 +37,7 @@ function Toggle ({ className = '', isDisabled, label, onChange, preventDefault, 
     >
       {label && <label>{label}</label>}
       <div className='ui--Toggle-Slider' />
+      {labelRight && <label>{labelRight}</label>}
     </div>
   );
 }
@@ -53,7 +55,6 @@ export default React.memo(styled(Toggle)`
   }
 
   .ui--Toggle-Slider {
-    background: #e4e5e6;
     border-radius: 1.5rem;
     display: inline-block;
     height: 1.5rem;
@@ -79,10 +80,8 @@ export default React.memo(styled(Toggle)`
 
   &.isChecked {
     .ui--Toggle-Slider {
-      background: #2196F3;
 
       &:before {
-        border-color: #2196F3;
         transform: translateX(1.5rem);
       }
     }

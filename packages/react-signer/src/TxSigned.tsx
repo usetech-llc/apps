@@ -14,14 +14,14 @@ import styled from 'styled-components';
 import { ApiPromise } from '@polkadot/api';
 import { web3FromSource } from '@polkadot/extension-dapp';
 import { registry } from '@polkadot/react-api';
-import { Button, ErrorBoundary, Modal, Output, StatusContext, Toggle } from '@polkadot/react-components';
+import { ErrorBoundary, Modal, Output, StatusContext } from '@polkadot/react-components';
 import { useApi, useToggle } from '@polkadot/react-hooks';
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import { Option } from '@polkadot/types';
 import keyring from '@polkadot/ui-keyring';
 import { BN_ZERO, assert } from '@polkadot/util';
 
 import { LedgerSigner, QrSigner } from './signers';
-import { useTranslation } from './translate';
 import Address from './Address';
 import Qr from './Qr';
 import SignFields from './SignFields';
@@ -155,7 +155,6 @@ async function extractParams (address: string, options: Partial<SignerOptions>, 
 
 function TxSigned ({ className, currentItem, requestAddress }: Props): React.ReactElement<Props> | null {
   const { api } = useApi();
-  const { t } = useTranslation();
   const { queueSetTxStatus } = useContext(StatusContext);
   const [flags, setFlags] = useState(extractExternal(requestAddress));
   const [{ isQrHashed, qrAddress, qrPayload, qrResolve }, setQrState] = useState<QrState>({ isQrHashed: false, qrAddress: '', qrPayload: new Uint8Array() });
@@ -321,13 +320,13 @@ function TxSigned ({ className, currentItem, requestAddress }: Props): React.Rea
                       <Output
                         isFull
                         isTrimmed
-                        label={t<string>('multisig call data')}
+                        label={'Multisig call data'}
                         value={multiCall}
                         withCopy
                       />
                     </Modal.Column>
                     <Modal.Column>
-                      {t('The call data that can be supplied to a final call to multi approvals')}
+                      {'The call data that can be supplied to a final call to multi approvals'}
                     </Modal.Column>
                   </Modal.Columns>
                 )}
@@ -338,36 +337,18 @@ function TxSigned ({ className, currentItem, requestAddress }: Props): React.Rea
       </Modal.Content>
       <Modal.Actions onCancel={_onCancel}>
         <Button
-          icon={
-            flags.isQr
-              ? 'qrcode'
-              : 'sign-in-alt'
-          }
-          isBusy={isBusy}
           isDisabled={!senderInfo.signAddress || isRenderError}
-          label={
-            flags.isQr
-              ? t<string>('Sign via Qr')
-              : isSubmit
-                ? t<string>('Sign and Submit')
-                : t<string>('Sign (no submission)')
-          }
           onClick={_doStart}
+          primary
           tabIndex={2}
-        />
-        {!isBusy && (
-          <Toggle
-            className='signToggle'
-            isDisabled={!!currentItem.payload}
-            label={
-              isSubmit
-                ? t<string>('Sign and Submit')
-                : t<string>('Sign (no submission)')
-            }
-            onChange={setIsSubmit}
-            value={isSubmit}
-          />
-        )}
+        >
+          { flags.isQr
+            ? 'Sign via Qr'
+            : isSubmit
+              ? 'Sign and Submit'
+              : 'Sign (no submission)'
+          }
+        </Button>
       </Modal.Actions>
     </>
   );

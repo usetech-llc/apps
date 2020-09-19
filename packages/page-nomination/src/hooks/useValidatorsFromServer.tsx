@@ -1,8 +1,8 @@
 // Copyright 2017-2020 @polkadot/app-nomination authors & contributors
 import { ValidatorInfo } from '../types';
 
-import { useState, useCallback } from 'react';
-import { of } from 'rxjs';
+import { useState, useCallback, useEffect } from 'react';
+import { of, Observable } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { switchMap, catchError } from 'rxjs/operators';
 
@@ -75,6 +75,12 @@ function useValidatorsFromServer(): ValidatorsFromServerInterface {
       fetchValidators(bestValidatorsUrl);
     }
   }, [nominationServerAvailable, setValidators, setValidatorsLoading]);
+
+  useEffect(() => {
+    return () => {
+      // clean up
+    };
+  }, []);
 
   return {
     getValidatorsFromServer,

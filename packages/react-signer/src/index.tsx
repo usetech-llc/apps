@@ -9,12 +9,13 @@ import { DefinitionRpcExt } from '@polkadot/types/types';
 import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ApiPromise } from '@polkadot/api';
-import { Modal, StatusContext } from '@polkadot/react-components';
+import { LabelHelp, Modal, StatusContext } from '@polkadot/react-components';
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import { useApi } from '@polkadot/react-hooks';
 import { assert, isFunction } from '@polkadot/util';
 import { format } from '@polkadot/util/logger';
+import '@polkadot/app-nomination/components/BondAndNominationModal.styles.scss';
 
-import { useTranslation } from './translate';
 import TxSigned from './TxSigned';
 import TxUnsigned from './TxUnsigned';
 
@@ -77,7 +78,6 @@ function extractCurrent (api: ApiPromise, queueSetTxStatus: QueueTxMessageSetSta
 
 function Signer ({ children, className = '' }: Props): React.ReactElement<Props> {
   const { api } = useApi();
-  const { t } = useTranslation();
   const { queueSetTxStatus, txqueue } = useContext(StatusContext);
   const [{ currentItem, requestAddress }, setItem] = useState<ItemState>({ currentItem: null, requestAddress: null });
 
@@ -90,20 +90,29 @@ function Signer ({ children, className = '' }: Props): React.ReactElement<Props>
       {children}
       {currentItem && (
         <Modal
-          className={className}
-          header={t('Authorize transaction')}
+          className={'range-modal'}
+          header={
+            <>
+              <Header as={'h1'}>
+                Authorize transaction
+                <LabelHelp
+                  className='small-help'
+                  help={'Authorize transaction'}
+                />
+              </Header>
+              <div className='divider' />
+            </>
+          }
           key={currentItem.id}
           size='large'
         >
-          {currentItem.isUnsigned
-            ? <TxUnsigned currentItem={currentItem} />
-            : (
-              <TxSigned
-                currentItem={currentItem}
-                requestAddress={requestAddress}
-              />
-            )
-          }
+          {currentItem.isUnsigned && <TxUnsigned currentItem={currentItem} />}
+          {(!currentItem.isUnsigned && requestAddress) && (
+          <TxSigned
+            currentItem={currentItem}
+            requestAddress={requestAddress}
+          />
+          )}
         </Modal>
       )}
     </>

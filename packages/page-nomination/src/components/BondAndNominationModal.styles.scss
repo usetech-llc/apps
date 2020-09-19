@@ -2,10 +2,52 @@
 
 .range-modal {
 
+  .ui--Toggle {
+
+    &.tipToggle {
+      &.isChecked {
+        .ui--Toggle-Slider {
+          background-color: $nomination_blue_color !important;
+
+          &:before {
+            border-color: $nomination_blue_color !important;
+          }
+        }
+      }
+    }
+
+    &.blue-toggle {
+      margin-top: 20px;
+
+      &.isChecked {
+        .ui--Toggle-Slider {
+          background-color: $nomination_secondary_color !important;
+
+          &:before {
+            border-color: $nomination_blue_color !important;
+          }
+        }
+      }
+
+      .ui--Toggle-Slider {
+        background-color: $nomination_blue_color !important;
+
+        &:before {
+          border-color: $nomination_blue_color !important;
+        }
+      }
+
+      label {
+        color: black;
+      }
+    }
+  }
+
   h1.ui.header {
     @include h1header;
     margin: 0 0 16px 0;
     display: flex;
+    align-items: center;
 
     .small-help {
       margin-left: 8px;
@@ -17,6 +59,7 @@
 
   .divider {
     @include divider;
+    margin: 16px 0 0 0;
   }
 
   .range-block {
@@ -30,6 +73,7 @@
 
       .item {
         display: flex;
+        align-items: center;
 
         .small-help {
           margin-left: 8px;
@@ -59,7 +103,7 @@
     width: 28px;
     background-color: white;
     border: 4px solid rgb(0, 135, 203);
-    border-radius: 10px;
+    border-radius: 14px;
     transform: translate(532px, -11px);
     display: flex;
     justify-content: center;
@@ -108,6 +152,22 @@
   }
   .ui.secondary.button {
     @include secondary;
+  }
+
+  .ui.primary.button {
+    @include primary;
+  }
+
+  .ui.primary.button {
+    @include primary;
+
+    svg {
+      margin-left: 10px;
+    }
+  }
+
+  .ui.icon.primary.button {
+    @include primary;
   }
 
   .ui.icon.primary.button {

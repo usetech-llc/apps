@@ -6,10 +6,7 @@ import { DeriveBalancesAll } from '@polkadot/api-derive/types';
 
 import BN from 'bn.js';
 import React, { useEffect, useState } from 'react';
-import { Icon } from '@polkadot/react-components';
 import { useApi, useCall } from '@polkadot/react-hooks';
-
-import { useTranslation } from '../../translate';
 
 interface Props {
   accountId: string | null;
@@ -18,7 +15,6 @@ interface Props {
 }
 
 function ValidateAmount ({ accountId, onError, value }: Props): React.ReactElement<Props> | null {
-  const { t } = useTranslation();
   const { api } = useApi();
   const allBalances = useCall<DeriveBalancesAll>(api.derive.balances.all, [accountId]);
   const [error, setError] = useState<string | null>(null);
@@ -30,22 +26,22 @@ function ValidateAmount ({ accountId, onError, value }: Props): React.ReactEleme
       let newError: string | null = null;
 
       if (value.gt(allBalances.freeBalance)) {
-        newError = t('The specified value is greater than your free balance. The node will bond the maximum amount available.');
+        newError = 'The specified value is greater than your free balance. The node will bond the maximum amount available.';
       }
 
       onError(newError);
       setError((error) => error !== newError ? newError : error);
     }
-  }, [allBalances, onError, t, value]);
+  }, [allBalances, onError, value]);
 
   if (!error) {
     return null;
   }
 
   return (
-    <article className='warning'>
-      <div><Icon name='warning sign' />{error}</div>
-    </article>
+    <div className='warning-block'>
+      {error}
+    </div>
   );
 }
 

@@ -67,7 +67,7 @@ function Account (props: Props): React.ReactElement<Props> {
   const stakingAccount = useCall<DeriveStakingAccount>(api.derive.staking.account, [stashId]);
   const [isBondExtraOpen, toggleBondExtra] = useToggle();
   const [isAccordionOpen, toggleAccordion] = useToggle();
-  const [nominationModalOpened, setNominationModalOpened] = useState<boolean>(false);
+  const [nominationModalOpened, toggleNominationModal] = useToggle();
   const [isUnbondOpen, toggleUnbond] = useToggle();
   const [notOptimal, setNotOptimal] = useState<boolean>(false);
   const { nomsActive, nomsInactive, nomsWaiting } = useInactives(stashId, nominating);
@@ -130,6 +130,7 @@ function Account (props: Props): React.ReactElement<Props> {
               stashId={stashId}
             />
           )}
+          {/* 'Your nomination is not optimal. Update please!' */}
           { nominationModalOpened && (
             <BondAndNominateModal
               accountId={stashId}
@@ -138,7 +139,7 @@ function Account (props: Props): React.ReactElement<Props> {
               nominating={nominating}
               nominationServerAvailable={nominationServerAvailable}
               optimalValidators={optimalValidators}
-              setNominationModalOpened={setNominationModalOpened}
+              toggleNominationModal={toggleNominationModal}
               stashIsCurrent
               stakingOverview={stakingOverview}
               queueAction={queueAction}
@@ -230,29 +231,10 @@ function Account (props: Props): React.ReactElement<Props> {
           >
             Bond more
           </Button>
-          {/* <TxButton
-            accountId={controllerId}
-            className='footer-button'
-            icon={isStashNominating ? 'exclamation-triangle' : 'check'}
-            isDisabled={!selectedValidators || !selectedValidators.length}
-            isPrimary
-            label={
-              isStashNominating ? (
-                <>
-                  Update nomination
-                  <LabelHelp
-                    className='small-help'
-                    help={'Your nomination is not optimal. Update please!'}
-                  />
-                </>
-              ) : 'Nominate'}
-            params={[selectedValidators]}
-            tx='staking.nominate'
-          /> */}
           <Button
             className='footer-button'
             disabled={!isStashNominating}
-            onClick={setNominationModalOpened.bind(null, true)}
+            onClick={toggleNominationModal}
           >
             { isStashNominating ? (
             <>

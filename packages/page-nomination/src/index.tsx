@@ -5,6 +5,7 @@
 // global app props
 import { AppProps as Props } from '@polkadot/react-components/types';
 import { DeriveStakingOverview } from '@polkadot/api-derive/types';
+import { ValidatorInfo } from '@polkadot/app-nomination/types';
 import { ActionStatus, QueueAction$Add, QueueStatus, QueueTx } from '@polkadot/react-components/Status/types';
 
 // external imports (including those found in the packages/*
@@ -22,11 +23,8 @@ import NewNomination from './containers/NewNomination';
 import { useTranslation } from './translate';
 import Status from './components/Status';
 import ManageNominations from './containers/ManageNominations';
-import useValidatorsFromServer from "@polkadot/app-nomination/hooks/useValidatorsFromServer";
-import {ValidatorInfo} from "@polkadot/app-nomination/types";
 import { ksiRange } from './utils';
-import useElectedInfo from './hooks/useElectedInfo';
-import useValidators from "@polkadot/app-nomination/hooks/useValidators";
+import useValidators from './hooks/useValidators';
 
 declare global {
   interface Window {
@@ -49,14 +47,18 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
   const [web3Enabled, setWeb3Enabled] = useState<boolean>(false);
   const [amountToNominate, setAmountToNominate] = useState<BN | undefined | null>(null);
   const ownStashes = useOwnStashInfos();
-  const history = useHistory();
+  // const history = useHistory();
   const stakingOverview = useCall<DeriveStakingOverview>(api.derive.staking.overview, []);
   const [accountId, setAccountId] = useState<string | null>(null);
   const [accountsAvailable, setAccountsAvailable] = useState<boolean>(false);
   const [ksi, setKsi] = useState<number>(0.5);
+  // const filteredValidators = [];
+  const getValidatorsFromServer = () => {};
+  // const nominationServerAvailable = false;
+  // const validatorsLoading = false;
   const {
     filteredValidators,
-    getValidatorsFromServer,
+    // getValidatorsFromServer,
     nominationServerAvailable,
     validatorsLoading,
   } = useValidators(ksi);
@@ -65,6 +67,7 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
   const isKusama = uiSettings && uiSettings.apiUrl.includes('kusama');
 
   const setSigner = useCallback(async (): Promise<void> => {
+    console.log('setSigner');
     if (!accountId) {
       return;
     }
@@ -98,7 +101,7 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
     setSigner().then();
   }, [accountId, setSigner]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     // initialize wallet
     if (ownStashes) {
       if (ownStashes.length) {
@@ -107,7 +110,7 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
         history.push('new');
       }
     }
-  }, [ownStashes]);
+  }, [ownStashes]);*/
 
   useEffect((): void => {
     web3Enable('').then((res) => {
@@ -123,7 +126,6 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
     // set settings to Kusama
     const newApiUrl = 'wss://kusama-rpc.polkadot.io/';
 
-    // uiSettings.set({ ...settings, apiUrl: 'wss://westend-rpc.polkadot.io' });
     uiSettings.set({ ...settings, apiUrl: newApiUrl });
 
     if (settings.apiUrl !== newApiUrl) {

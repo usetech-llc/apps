@@ -18,6 +18,8 @@ import BondSection from '../components/BondSection';
 import { useBalanceClear, useFees, WholeFeesType } from '../hooks/useBalance';
 import { useSlashes } from '../hooks/useShalses';
 import BondAndNominateModal from '../components/BondAndNominateModal';
+import BondExtra from "@polkadot/app-nomination/Actions/Account/BondExtra";
+import {useToggle} from "@polkadot/react-hooks/index";
 
 
 interface Props {
@@ -37,11 +39,13 @@ function NewNomination (props: Props): React.ReactElement<Props> {
     accountId,
     accountsAvailable,
     amountToNominate,
+    ksi,
     ownStashes,
     optimalValidators,
     queueAction,
     setAccountId,
     setAmountToNominate,
+    setKsi,
     stakingOverview,
     web3Enabled,
   } = props;
@@ -49,7 +53,8 @@ function NewNomination (props: Props): React.ReactElement<Props> {
   const { wholeFees }: WholeFeesType = useFees(accountId, optimalValidators);
   const accountBalance: Balance | null = useBalanceClear(accountId);
   const [maxAmountToNominate, setMaxAmountToNominate] = useState<BN | undefined | null>(null);
-  const [nominationModalOpened, setNominationModalOpened] = useState<boolean>(false);
+  const [nominationModalOpened, toggleNominationModal] = useToggle();
+  const [isBondExtraOpen, toggleBondExtra] = useToggle();
   const [isNominating, setIsNominating] = useState<boolean>(false);
   const [stashIsCurrent, setStashIsCurrent] = useState<boolean>(false);
 
@@ -69,11 +74,17 @@ function NewNomination (props: Props): React.ReactElement<Props> {
     if (!ownStashes) {
       return;
     }
-
     const currentStash = ownStashes.find((stash) => stash.stashId === accountId);
-
     setStashIsCurrent(!!currentStash);
   }, [accountId, ownStashes]);
+
+  const openNominationModal = useCallback(() => {
+    if (stashIsCurrent) {
+      toggleBondExtra();
+    } else {
+      toggleNominationModal();
+    }
+  }, [stashIsCurrent, toggleBondExtra, toggleNominationModal]);
 
   useEffect(() => {
     calculateMaxPreFilledBalance();
@@ -136,11 +147,9 @@ function NewNomination (props: Props): React.ReactElement<Props> {
             />
           </>
         )}
-        {/* { !maxAmountToNominate && (
-          <div className='error-block'>
-            {t('You have no enough balance for nomination')}
-          </div>
-        )} */}
+         { !maxAmountToNominate && (
+          <div className='error-block'>You have no enough balance for nomination</div>
+        )}
         { slashes > 0 &&
         <div className='error-block'>Warning: You have been slashed. You need to update your nomination.</div>
         }
@@ -149,20 +158,28 @@ function NewNomination (props: Props): React.ReactElement<Props> {
             <BondAndNominateModal
               accountId={accountId}
               amountToNominate={amountToNominate}
+              ksi={ksi}
+              setKsi={setKsi}
               isNominating={isNominating}
               optimalValidators={optimalValidators}
               setIsNominating={setIsNominating}
-              setNominationModalOpened={setNominationModalOpened}
+              setNominationModalOpened={toggleNominationModal}
               stashIsCurrent={stashIsCurrent}
               stakingOverview={stakingOverview}
               queueAction={queueAction}
+            />
+          )}
+          {isBondExtraOpen && (
+            <BondExtra
+              onClose={toggleBondExtra}
+              stashId={accountId}
             />
           )}
           <Button
             icon
             disabled={!amountToNominate || !amountToNominate.gtn(0) || isNominating}
             loading={isNominating}
-            onClick={setNominationModalOpened.bind(null, true)}
+            onClick={openNominationModal}
             primary
           >
             {stashIsCurrent ? 'Bond more' : 'Bond and Nominate'}

@@ -4,11 +4,13 @@
 
 import BN from 'bn.js';
 import React, { useState } from 'react';
-import { InputAddress, InputBalance, Modal, TxButton } from '@polkadot/react-components';
-import { Available } from '@polkadot/react-query';
+import { InputAddress, InputBalance, LabelHelp, Modal } from '@polkadot/react-components';
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 
-import { useTranslation } from '../../translate';
 import ValidateAmount from './InputValidateAmount';
+import Available from '../../components/Available';
+import TxButton from '../../components/TxButton';
+import '../../components/BondAndNominationModal.styles.scss';
 
 interface Props {
   onClose: () => void;
@@ -18,15 +20,25 @@ interface Props {
 const ZERO = new BN(0);
 
 function BondExtra ({ onClose, stashId }: Props): React.ReactElement<Props> {
-  const { t } = useTranslation();
   const [amountError, setAmountError] = useState<string | null>(null);
   const [maxAdditional, setMaxAdditional] = useState<BN | undefined>();
   const [maxBalance] = useState<BN | undefined>();
 
   return (
     <Modal
-      className='staking--BondExtra'
-      header= {t('Bond more funds')}
+      className="range-modal"
+      header={
+        <>
+          <Header as={'h1'}>
+            Bond more funds
+            <LabelHelp
+              className='small-help'
+              help={'Nomination strategy'}
+            />
+          </Header>
+          <div className='divider' />
+        </>
+      }
       size='large'
     >
       <Modal.Content className='ui--signer-Signer-Content'>
@@ -35,29 +47,34 @@ function BondExtra ({ onClose, stashId }: Props): React.ReactElement<Props> {
             <InputAddress
               defaultValue={stashId}
               isDisabled
-              label={t('stash account')}
+              label={'Stash account'}
             />
           </Modal.Column>
           <Modal.Column>
-            <p>{t('Since this transaction deals with funding, the stash account will be used.')}</p>
+            <p>{'Since this transaction deals with funding, the stash account will be used.'}</p>
           </Modal.Column>
         </Modal.Columns>
         <Modal.Columns>
           <Modal.Column>
             <InputBalance
               autoFocus
-              help={t('Amount to add to the currently bonded funds. This is adjusted using the available funds on the account.')}
               isError={!!amountError || !maxAdditional || maxAdditional.eqn(0)}
-              label={t('additional bonded funds')}
               labelExtra={
                 <Available
-                  label={<span className='label'>{t('available')}</span>}
+                  className='available-balance'
                   params={stashId}
                 />
               }
               maxValue={maxBalance}
               onChange={setMaxAdditional}
             />
+            <Header as={'h2'}>
+              Additional bonded funds
+              <LabelHelp
+                className='small-help'
+                help={'Amount to add to the currently bonded funds. This is adjusted using the available funds on the account.'}
+              />
+            </Header>
             <ValidateAmount
               accountId={stashId}
               onError={setAmountError}
@@ -65,17 +82,16 @@ function BondExtra ({ onClose, stashId }: Props): React.ReactElement<Props> {
             />
           </Modal.Column>
           <Modal.Column>
-            <p>{t('Ensure that not all funds are locked, funds need to be available for fees.')}</p>
+            <p>Ensure that not all funds are locked, funds need to be available for fees.</p>
           </Modal.Column>
         </Modal.Columns>
       </Modal.Content>
       <Modal.Actions onCancel={onClose}>
         <TxButton
           accountId={stashId}
-          icon='sign-in'
-          isDisabled={!maxAdditional?.gt(ZERO)}
+          isDisabled={!maxAdditional || !maxAdditional.gt(ZERO)}
           isPrimary
-          label={t('Bond more')}
+          label={'Bond more'}
           onStart={onClose}
           params={[maxAdditional]}
           tx='staking.bondExtra'

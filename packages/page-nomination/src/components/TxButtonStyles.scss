@@ -1,0 +1,8 @@
+@import '../../../apps/src/variables';
+
+.tx-button {
+
+  &.ui.primary.button {
+    @include primary;
+  }
+}

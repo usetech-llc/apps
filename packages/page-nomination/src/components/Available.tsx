@@ -12,6 +12,7 @@ import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import { useApi, useCall } from '@polkadot/react-hooks';
 import { FormatBalance } from '@polkadot/react-query';
 import {LabelHelp, Spinner} from '@polkadot/react-components';
+import './Available.scss';
 
 interface Props extends BareProps {
   label?: React.ReactNode;
