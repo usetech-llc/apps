@@ -5,8 +5,10 @@ import { AppProps as Props } from '@polkadot/react-components/types';
 
 // external imports
 import React, { useCallback, useEffect, useState, useRef } from 'react';
+import { useHistory } from 'react-router-dom';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
+import { useApi } from '@polkadot/react-hooks';
 import { Table, LabelHelp } from '@polkadot/react-components';
 
 // local imports and components
@@ -29,6 +31,8 @@ function App ({ className }: Props): React.ReactElement<Props> {
   const [collections, setCollections] = useState<Array<NftCollectionInterface>>(collectionsStorage);
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface | null>(null);
   const [canTransferTokens] = useState<boolean>(true);
+  const { api } = useApi();
+  const history = useHistory();
   // @ts-ignore
   const { balance, existentialDeposit } = useBalance(account);
   const currentAccount = useRef<string | null | undefined>();
@@ -89,6 +93,12 @@ function App ({ className }: Props): React.ReactElement<Props> {
     }
     currentAccount.current = account;
   }, [account]);
+
+  useEffect(() => {
+    if (api.query && Object.values(api.query).length && !api.query.nft) {
+      history.push('/explorer');
+    }
+  }, [api, api.query, api.query.nft]);
 
   useEffect(() => {
     localStorage.setItem('tokenCollections', JSON.stringify(collections));

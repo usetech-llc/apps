@@ -8,6 +8,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import createRoutes from '@polkadot/apps-routing';
 import { Button, ChainImg, Icon, Menu, media } from '@polkadot/react-components';
+import { useNftExists } from '@polkadot/react-hooks';
 
 import { SIDEBAR_MENU_THRESHOLD } from '../constants';
 import NetworkModal from '../modals/Network';
@@ -27,6 +28,7 @@ interface Props {
 
 function SideBar ({ className = '', collapse, handleResize, isCollapsed, isMenuOpen, toggleMenu }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
+  const nftExists = useNftExists();
   const [modals, setModals] = useState<Record<string, boolean>>(
     createRoutes(t).reduce((result: Record<string, boolean>, route): Record<string, boolean> => {
       if (route && route.Modal) {
@@ -57,9 +59,13 @@ function SideBar ({ className = '', collapse, handleResize, isCollapsed, isMenuO
         className={`toggleImg ${isMenuOpen ? 'closed' : 'open delayed'}`}
         onClick={toggleMenu}
       />
-      {routing.map((route): React.ReactNode => (
-        route?.Modal
-          ? route.Modal && modals[route.name]
+      {routing.map((route): React.ReactNode => {
+        if (route && route.name === 'nft' && !nftExists) {
+          return null;
+        }
+        return (
+          route?.Modal
+            ? route.Modal && modals[route.name]
             ? (
               <route.Modal
                 key={route.name}
@@ -67,8 +73,9 @@ function SideBar ({ className = '', collapse, handleResize, isCollapsed, isMenuO
               />
             )
             : <div key={route.name} />
-          : null
-      ))}
+            : null
+        )
+      })}
       {modals.network && (
         <NetworkModal onClose={_toggleModal('network')}/>
       )}
@@ -79,27 +86,32 @@ function SideBar ({ className = '', collapse, handleResize, isCollapsed, isMenuO
         >
           <div className='apps--SideBar-Scroll'>
             <ChainInfo onClick={_toggleModal('network')} />
-            {routing.map((route, index): React.ReactNode => (
-              route
-                ? (
-                  <Item
-                    isCollapsed={isCollapsed}
-                    key={route.name}
-                    onClick={
-                      route.Modal
-                        ? _toggleModal(route.name)
-                        : handleResize
-                    }
-                    route={route}
-                  />
-                )
-                : (
-                  <Menu.Divider
-                    hidden
-                    key={index}
-                  />
-                )
-            ))}
+            {routing.map((route, index): React.ReactNode => {
+              if (route && route.name === 'nft' && !nftExists) {
+                return null;
+              }
+              return (
+                route
+                  ? (
+                    <Item
+                      isCollapsed={isCollapsed}
+                      key={route.name}
+                      onClick={
+                        route.Modal
+                          ? _toggleModal(route.name)
+                          : handleResize
+                      }
+                      route={route}
+                    />
+                  )
+                  : (
+                    <Menu.Divider
+                      hidden
+                      key={index}
+                    />
+                  )
+              )
+            })}
             <Menu.Divider hidden />
             <Menu.Item className='apps--SideBar-Item'>
               <a

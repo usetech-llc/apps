@@ -4,10 +4,19 @@
 
 import React from 'react';
 import { Redirect } from 'react-router';
+import { useNftExists } from '@polkadot/react-hooks/index';
 
 function NotFound (): React.ReactElement {
+  const nftExists = useNftExists();
+
+  if (nftExists) {
+    return (
+      <Redirect to='/nft' />
+    );
+  }
+
   return (
-    <Redirect to='/nft' />
+    <Redirect to='/explorer' />
   );
 }
 

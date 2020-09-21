@@ -19,6 +19,7 @@ export { default as useIpfs } from './useIpfs';
 export { default as useIsMountedRef } from './useIsMountedRef';
 export { default as useMembers } from './useMembers';
 export { default as useModal } from './useModal';
+export { default as useNftExists } from './useNftExists';
 export { default as useNonEmptyString } from './useNonEmptyString';
 export { default as useNonZeroBn } from './useNonZeroBn';
 export { default as useOwnEraRewards } from './useOwnEraRewards';

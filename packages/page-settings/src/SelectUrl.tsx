@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import { createEndpoints } from '@polkadot/apps-config/settings';
 import { Dropdown, Input, Toggle } from '@polkadot/react-components';
 import uiSettings from '@polkadot/ui-settings';
+import { useNftExists } from '@polkadot/react-hooks';
 
 import { useTranslation } from './translate';
 import { createOption } from './util';
@@ -60,11 +61,13 @@ function getInitialState (t: TFunction): State {
 
 function SelectUrl ({ className = '', onChange }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
+  const nftExists = useNftExists();
   const [info, setInfo] = useState(getInitialState(t));
   const { isCustom, isValid, url } = info;
   const translatedEndpoints = useMemo(
-    () => createEndpoints(t).map((option) => createOption(option, ['local'])),
-    [t]
+    () => createEndpoints(t).map((option) => createOption(option, ['local']))
+      .filter((item: any) => item && (item.value === 'ws://127.0.0.1:9944/' || nftExists && item.value === 'wss://unique.usetech.com')),
+    [nftExists, t]
   );
 
   useEffect((): void => {
@@ -94,6 +97,8 @@ function SelectUrl ({ className = '', onChange }: Props): React.ReactElement<Pro
   const help = t<string>('Select the remote endpoint, either from the dropdown on manual entered via the custom toggle');
   const label = t<string>('remote node/endpoint to connect to');
 
+  // value: "wss://unique.usetech.com"
+  // value: "ws://127.0.0.1:9944/"
   return (
     <div className={className}>
       <div className='ui--row'>{
