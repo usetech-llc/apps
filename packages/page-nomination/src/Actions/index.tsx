@@ -97,6 +97,7 @@ function Actions (props: Props): React.ReactElement<Props> {
               Active nomination
               <LabelHelp
                 className='small-help'
+                description={'Active nominations description Active nominations description Active nominations description Active nominations description Active nominations description '}
                 help={'Active nomination'}
               />
             </div>

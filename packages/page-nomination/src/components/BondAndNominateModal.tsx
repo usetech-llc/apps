@@ -156,6 +156,7 @@ function BondAndNominateModal (props: Props): React.ReactElement<Props> {
             Nomination strategy
             <LabelHelp
               className='small-help'
+              description={'Help description'}
               help={'Nomination strategy'}
             />
           </Header>

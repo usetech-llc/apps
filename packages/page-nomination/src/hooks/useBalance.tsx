@@ -58,16 +58,15 @@ export function useFees (accountId?: string | null, validators?: string[]): Whol
   }, []);
 
   useEffect(() => {
-    if (!wholeFees && accountId && validators) {
+    if (!wholeFees && accountId && validators && validators.length) {
       setFeesLoading(true);
       const fessGetter = forkJoin({
         withdraw: api.api.tx.staking.withdrawUnbonded(0).paymentInfo(accountId),
-        startNomination: api.api.tx.staking.nominate(validators).paymentInfo(accountId),
+        startNomination: api.api.tx.staking.nominate([]).paymentInfo(accountId),
         stopNomination: api.api.tx.staking.chill().paymentInfo(accountId),
         unbond: api.api.tx.staking.unbond(amount).paymentInfo(accountId)
       }).pipe(catchError((error) => {
         setFeesLoading(false);
-
         return of(error);
       }));
 

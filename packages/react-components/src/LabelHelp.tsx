@@ -9,14 +9,15 @@ import { classes } from './util';
 import Tooltip from './Tooltip';
 
 interface Props {
-  help: React.ReactNode;
   className?: string;
+  description?: string;
+  help: React.ReactNode;
   style?: object;
 }
 
 let id = 0;
 
-function LabelHelp ({ className = '', help, style }: Props): React.ReactElement<Props> {
+function LabelHelp ({ className = '', description, help, style }: Props): React.ReactElement<Props> {
   const [trigger] = useState(`label-help-${++id}`);
 
   return (
@@ -26,6 +27,7 @@ function LabelHelp ({ className = '', help, style }: Props): React.ReactElement<
         tooltip={trigger}
       />
       <Tooltip
+        description={description}
         text={help}
         trigger={trigger}
       />

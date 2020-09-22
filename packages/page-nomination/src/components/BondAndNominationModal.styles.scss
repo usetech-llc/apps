@@ -68,12 +68,23 @@
     .range-list {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-      margin-bottom: 20px;
       align-items: center;
 
       .item {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
+        height: 40px;
+        position: relative;
+
+        .vertical-divider {
+          position: absolute;
+          height: 5px;
+          right: 0;
+          bottom: 0;
+          width: 1px;
+          background: black;
+          opacity: 0.5;
+        }
 
         .small-help {
           margin-left: 8px;
@@ -132,9 +143,17 @@
     color: white;
     padding: 0 10px;
     justify-content: center;
-    top: -60px;
+    top: -40px;
     left: 0;
     line-height: 21px;
+
+    &.right {
+      left: -137px;
+
+      .range-polygon {
+        left: 140px;
+      }
+    }
 
     .small-help {
       display: flex;

@@ -2,10 +2,11 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import React, { useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import ReactDOM from 'react-dom';
 import ReactTooltip from 'react-tooltip';
 import styled from 'styled-components';
+import { useToggle } from '@polkadot/react-hooks';
 
 const rootElement = typeof document === 'undefined'
   ? null // This hack is required for server side rendering
@@ -14,6 +15,7 @@ const rootElement = typeof document === 'undefined'
 interface Props {
   className?: string;
   dataFor?: string;
+  description?: string;
   effect?: 'solid' | 'float';
   offset?: {
     bottom?: number;
@@ -26,12 +28,17 @@ interface Props {
   trigger: string;
 }
 
-function Tooltip ({ className = '', effect = 'solid', offset, place = 'top', text, trigger }: Props): React.ReactElement<Props> | null {
+function Tooltip ({ className = '', description, effect = 'solid', offset, place = 'top', text, trigger }: Props): React.ReactElement<Props> | null {
+  const [showDescription, toggleDescription] = useToggle();
   const [tooltipContainer] = useState(
     typeof document === 'undefined'
       ? {} as HTMLElement // This hack is required for server side rendering
       : document.createElement('div')
   );
+
+  const onClickTooltipContent = useCallback((e) => {
+    e.stopPropagation();
+  }, []);
 
   useEffect((): () => void => {
     rootElement && rootElement.appendChild(tooltipContainer);
@@ -44,12 +51,36 @@ function Tooltip ({ className = '', effect = 'solid', offset, place = 'top', tex
   return ReactDOM.createPortal(
     <ReactTooltip
       className={`ui--Tooltip ${className}`}
+      clickable
+      globalEventOff="click"
+      event={'click'}
       effect={effect}
       id={trigger}
       offset={offset}
       place={place}
     >
-      {className?.includes('address') ? <div>{text}</div> : text}
+      {className?.includes('address') ? (
+        <div>{text}</div>
+      ) : (
+        <div onClick={onClickTooltipContent}>
+          {text}
+          {description && (
+            <div className='tooltip-description'>
+              { !showDescription && (
+                <a onClick={toggleDescription}>Show description</a>
+              )}
+              { showDescription && (
+                <div className='description'>
+                  {description}
+                </div>
+              )}
+              { showDescription && (
+                <a onClick={toggleDescription}>Hide description</a>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </ReactTooltip>,
     tooltipContainer
   );

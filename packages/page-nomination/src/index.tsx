@@ -52,13 +52,8 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
   const [accountId, setAccountId] = useState<string | null>(null);
   const [accountsAvailable, setAccountsAvailable] = useState<boolean>(false);
   const [ksi, setKsi] = useState<number>(0.5);
-  // const filteredValidators = [];
-  const getValidatorsFromServer = () => {};
-  // const nominationServerAvailable = false;
-  // const validatorsLoading = false;
   const {
     filteredValidators,
-    // getValidatorsFromServer,
     nominationServerAvailable,
     validatorsLoading,
   } = useValidators(ksi);
@@ -139,10 +134,6 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
       setOptimalValidators(filteredValidators);
     }
   }, [filteredValidators, validatorsLoading]);
-
-  useEffect(() => {
-    getValidatorsFromServer(ksi);
-  }, [ksi]);
 
   return (
     // in all apps, the main wrapper is setup to allow the padding

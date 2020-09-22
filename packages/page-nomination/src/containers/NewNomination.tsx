@@ -51,6 +51,7 @@ function NewNomination (props: Props): React.ReactElement<Props> {
   } = props;
 
   const { wholeFees }: WholeFeesType = useFees(accountId, optimalValidators);
+  // const [wholeFees, ] = useState(new BN(0));
   const accountBalance: Balance | null = useBalanceClear(accountId);
   const [maxAmountToNominate, setMaxAmountToNominate] = useState<BN | undefined | null>(null);
   const [nominationModalOpened, toggleNominationModal] = useToggle();

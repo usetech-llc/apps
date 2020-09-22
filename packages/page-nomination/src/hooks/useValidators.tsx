@@ -14,7 +14,6 @@ import useValidatorsFilter from './useValidatorsFilter';
 import useValidatorsFromServer from './useValidatorsFromServer';
 
 interface UseValidatorsInterface {
-  getValidatorsFromServer: (ksi: number) => void;
   filteredValidators: ValidatorInfo[];
   nominationServerAvailable: boolean;
   validatorsLoading: boolean;
@@ -38,12 +37,11 @@ function useValidators (ksi: number): UseValidatorsInterface {
   const [validatorsLoading, setValidatorsLoading] = useState(true);
   const filteredElected = useValidatorsFilter(electedInfo);
   const {
-    getValidatorsFromServer,
     nominationServerAvailable,
     validatorsFromServer,
     validatorsFromServerLoading,
     validatorsFromServerFailed,
-  } = useValidatorsFromServer();
+  } = useValidatorsFromServer(ksi);
 
   const getElectedInfo = useCallback(() => {
     from(api.derive.staking.electedInfo()).subscribe((electedInfo: any) => {
@@ -94,11 +92,10 @@ function useValidators (ksi: number): UseValidatorsInterface {
     } else {
       setOptimalValidators(validatorsFromServer);
     }
-  }, [getElectedInfo, getLastEra, validatorsFromServer, validatorsFromServerLoading]);
+  }, [getElectedInfo, getLastEra, validatorsFromServer, validatorsFromServerFailed]);
 
   return {
     filteredValidators: optimalValidators,
-    getValidatorsFromServer,
     nominationServerAvailable,
     validatorsLoading
   };
