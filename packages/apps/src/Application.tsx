@@ -17,6 +17,7 @@ import uiSettings from '@polkadot/ui-settings';
 
 import { useTranslation } from './translate';
 import './styles.scss';
+import LabelHelp from "@polkadot/react-components/LabelHelp";
 
 export const PORTAL_ID = 'portals';
 
@@ -37,17 +38,31 @@ function Application ({ className }: Props): React.ReactElement<Props> {
             name='home'
           >
             <Link to={'/new'}>{t('New nomination')}</Link>
+            <LabelHelp
+              className='small-help'
+              help={'Make a new nomination'}
+            />
           </Menu.Item>
           <Menu.Item
             link
             active={location.pathname === '/manage'}
             name='home'
           >
-            <Link to={'/manage'}>{t('Manage nominations')}</Link>
+            <Link to={'/manage'}>
+              {t('Manage nominations')}
+            </Link>
+            <LabelHelp
+              className='small-help'
+              help={'Manage existing nominations'}
+            />
           </Menu.Item>
           <Menu.Menu position='right'>
             <Menu.Item>
               <TelegramNotifications isKusama={isKusama} />
+              <LabelHelp
+                className='small-help'
+                help={'External link! Telegram bot by Ryabina for events notifications'}
+              />
             </Menu.Item>
           </Menu.Menu>
         </div>

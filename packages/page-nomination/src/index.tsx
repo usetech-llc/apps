@@ -47,7 +47,7 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
   const [web3Enabled, setWeb3Enabled] = useState<boolean>(false);
   const [amountToNominate, setAmountToNominate] = useState<BN | undefined | null>(null);
   const ownStashes = useOwnStashInfos();
-  // const history = useHistory();
+  const history = useHistory();
   const stakingOverview = useCall<DeriveStakingOverview>(api.derive.staking.overview, []);
   const [accountId, setAccountId] = useState<string | null>(null);
   const [accountsAvailable, setAccountsAvailable] = useState<boolean>(false);
@@ -96,7 +96,7 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
     setSigner().then();
   }, [accountId, setSigner]);
 
-  /*useEffect(() => {
+  useEffect(() => {
     // initialize wallet
     if (ownStashes) {
       if (ownStashes.length) {
@@ -105,7 +105,7 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
         history.push('new');
       }
     }
-  }, [ownStashes]);*/
+  }, [ownStashes]);
 
   useEffect((): void => {
     web3Enable('').then((res) => {

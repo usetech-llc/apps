@@ -33,7 +33,18 @@ function BondSection ({ amountToNominate, maxAmountToNominate, setAmountToNomina
           Amount to bond and nominate:
           <LabelHelp
             className='small-help'
-            help='Amount to bond and nominate:'
+            help='How much you wish to nominate'
+            description={
+              <div>
+                <p>This is how much you want to nominate.</p>
+                <p>
+                  We will calculate and pre-fill the field for the amount of nomination with a maximum available, you can put in a smaller amount if you wish (some funds need to remain in the account for transaction fees).
+                </p>
+                <p>
+                  Be aware – Kusama nomination can be stopped at any time, but after you do that, the network will take around 7 days to unbond your funds, during which you will not earn any income on them.
+                </p>
+              </div>
+            }
           />
         </Header>
         <InputBalance

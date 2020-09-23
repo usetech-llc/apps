@@ -3,14 +3,16 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import React, { useState } from 'react';
+import { useToggle } from '@polkadot/react-hooks';
 
 import Icon from './Icon';
 import { classes } from './util';
 import Tooltip from './Tooltip';
 
+
 interface Props {
   className?: string;
-  description?: string;
+  description?: React.ReactNode;
   help: React.ReactNode;
   style?: object;
 }
@@ -19,6 +21,7 @@ let id = 0;
 
 function LabelHelp ({ className = '', description, help, style }: Props): React.ReactElement<Props> {
   const [trigger] = useState(`label-help-${++id}`);
+  const [showDescription, toggleDescription] = useToggle();
 
   return (
     <div className={classes('ui--LabelHelp', className)} style={style || {}}>
@@ -27,8 +30,11 @@ function LabelHelp ({ className = '', description, help, style }: Props): React.
         tooltip={trigger}
       />
       <Tooltip
+        className={'with-description'}
         description={description}
+        showDescription={showDescription}
         text={help}
+        toggleDescription={toggleDescription}
         trigger={trigger}
       />
     </div>

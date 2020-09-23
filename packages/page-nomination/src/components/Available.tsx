@@ -33,7 +33,19 @@ function AvailableDisplay ({ className, label, params }: Props): React.ReactElem
               Your available balance:
               <LabelHelp
                 className='small-help'
-                help={'Your available balance'}
+                help={'Free balance on this account'}
+                description={
+                  <div>
+                    <p>
+                      We will show you the balance on the chosen account available for nomination and
+                      calculate and pre-fill the field for the amount of nomination with a maximum available
+                      (some funds need to remain in the account for transaction fees).
+                    </p>
+                    <p>
+                      Be aware – Kusama nomination can be stopped at any time, but after you do that, the network will take around 7 days to unbond your funds, during which you will not earn any income on them.
+                    </p>
+                  </div>
+                }
               />
             </Header>
             <div className='value'>

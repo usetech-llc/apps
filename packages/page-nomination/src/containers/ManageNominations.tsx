@@ -14,6 +14,7 @@ import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import { useApi, useCall } from '@polkadot/react-hooks';
 
 import Actions from '../Actions';
+import LabelHelp from "@polkadot/react-components/LabelHelp";
 
 
 interface Props {
@@ -50,6 +51,10 @@ function ManageNomination (props : Props): React.ReactElement<Props> {
         <div className='left'>
           <Header as={'h1'}>
             Manage Nominations
+            <LabelHelp
+              className='small-help'
+              help={'Manage existing nominations'}
+            />
           </Header>
         </div>
       </div>

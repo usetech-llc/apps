@@ -20,6 +20,7 @@ import { useSlashes } from '../hooks/useShalses';
 import BondAndNominateModal from '../components/BondAndNominateModal';
 import BondExtra from "@polkadot/app-nomination/Actions/Account/BondExtra";
 import {useToggle} from "@polkadot/react-hooks/index";
+import LabelHelp from "@polkadot/react-components/LabelHelp";
 
 
 interface Props {
@@ -125,7 +126,27 @@ function NewNomination (props: Props): React.ReactElement<Props> {
 
   return (
     <div className='nomination-row'>
-      <Header as='h1'>New nomination</Header>
+      <Header as='h1'>
+        New nomination
+        <LabelHelp
+          className='small-help'
+          help={'Make a new nomination'}
+          description={
+            <div>
+              Here are the main steps for making the new nomination:
+              <p>
+                1. We currently support only Polkadot.JS extension wallet and automatically detect your accounts there, all you need to do is allow us to do that. No other authorizations are made with that call.
+              </p>
+              <p>
+                2. If you have several accounts, choose the one that has your funds which you want to nominate. We will show you the available balance on that account and calculate and pre-fill the field for the amount of nomination with a maximum available (some funds need to remain in the account for transaction fees). Be aware – Kusama nomination can be stopped at any time, but after you do that, the network will take around 7 days to unbond your funds, during which you will not earn any income on them.
+              </p>
+              <p>
+                3. Click start and we will take you to the next screen where you can choose the nomination strategy.
+              </p>
+            </div>
+          }
+        />
+      </Header>
       <div className='nomination-card'>
         {!web3Enabled &&
         <div className='error-block'>Please enable the polkadot.js extension!</div>
@@ -178,7 +199,7 @@ function NewNomination (props: Props): React.ReactElement<Props> {
           )}
           <Button
             icon
-            disabled={!amountToNominate || !amountToNominate.gtn(0) || isNominating}
+            disabled={!amountToNominate || !amountToNominate || !amountToNominate.gtn(0) || isNominating}
             loading={isNominating}
             onClick={openNominationModal}
             primary
@@ -188,6 +209,10 @@ function NewNomination (props: Props): React.ReactElement<Props> {
               icon={'play'}
             />
           </Button>
+          <LabelHelp
+            className='small-help'
+            help={'Start nomination process'}
+          />
         </div>
       </div>
     </div>

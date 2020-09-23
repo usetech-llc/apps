@@ -126,5 +126,13 @@ export default css`
     text-align: center;
     z-index: 1002;
     max-width: 300px;
+    
+    &:before, &:after {
+      display: none;
+    }
+    
+    .description {
+      opacity: 0.8;
+    }
   }
 `;

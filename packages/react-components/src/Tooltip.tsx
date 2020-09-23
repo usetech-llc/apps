@@ -6,7 +6,6 @@ import React, {useCallback, useEffect, useState} from 'react';
 import ReactDOM from 'react-dom';
 import ReactTooltip from 'react-tooltip';
 import styled from 'styled-components';
-import { useToggle } from '@polkadot/react-hooks';
 
 const rootElement = typeof document === 'undefined'
   ? null // This hack is required for server side rendering
@@ -15,8 +14,9 @@ const rootElement = typeof document === 'undefined'
 interface Props {
   className?: string;
   dataFor?: string;
-  description?: string;
+  description?: React.ReactNode;
   effect?: 'solid' | 'float';
+  showDescription?: boolean;
   offset?: {
     bottom?: number;
     left?: number;
@@ -26,10 +26,11 @@ interface Props {
   place?: 'bottom' | 'top' | 'right' | 'left';
   text: React.ReactNode;
   trigger: string;
+  toggleDescription: () => void;
 }
 
-function Tooltip ({ className = '', description, effect = 'solid', offset, place = 'top', text, trigger }: Props): React.ReactElement<Props> | null {
-  const [showDescription, toggleDescription] = useToggle();
+function Tooltip ({ className = '', description, effect = 'solid', showDescription, offset, place = 'top', text, trigger, toggleDescription }: Props): React.ReactElement<Props> | null {
+
   const [tooltipContainer] = useState(
     typeof document === 'undefined'
       ? {} as HTMLElement // This hack is required for server side rendering
@@ -50,6 +51,7 @@ function Tooltip ({ className = '', description, effect = 'solid', offset, place
 
   return ReactDOM.createPortal(
     <ReactTooltip
+      afterHide={showDescription ? toggleDescription : () => {}}
       className={`ui--Tooltip ${className}`}
       clickable
       globalEventOff="click"
@@ -67,7 +69,7 @@ function Tooltip ({ className = '', description, effect = 'solid', offset, place
           {description && (
             <div className='tooltip-description'>
               { !showDescription && (
-                <a onClick={toggleDescription}>Show description</a>
+                <a onClick={toggleDescription}>Show more...</a>
               )}
               { showDescription && (
                 <div className='description'>
@@ -75,7 +77,7 @@ function Tooltip ({ className = '', description, effect = 'solid', offset, place
                 </div>
               )}
               { showDescription && (
-                <a onClick={toggleDescription}>Hide description</a>
+                <a onClick={toggleDescription}>Hide</a>
               )}
             </div>
           )}
