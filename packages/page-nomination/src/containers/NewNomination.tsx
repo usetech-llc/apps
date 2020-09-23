@@ -21,17 +21,23 @@ import BondAndNominateModal from '../components/BondAndNominateModal';
 import BondExtra from "@polkadot/app-nomination/Actions/Account/BondExtra";
 import {useToggle} from "@polkadot/react-hooks/index";
 import LabelHelp from "@polkadot/react-components/LabelHelp";
+import {ValidatorInfo} from "@polkadot/app-nomination/types";
 
 
 interface Props {
   accountId: string | null;
   accountsAvailable: boolean;
   amountToNominate: BN | undefined | null;
+  ksi: number;
+  nominationServerAvailable: boolean;
+  optimalValidators: ValidatorInfo[];
   ownStashes: StakerState[] | undefined;
   queueAction: QueueAction$Add;
   setAccountId: (accountId: string | null) => void;
   setAmountToNominate: (amountToNominate: BN | undefined) => void;
+  setKsi: (ksi: number) => void;
   stakingOverview: DeriveStakingOverview | undefined;
+  validatorsFromServerLoading: boolean;
   web3Enabled: boolean;
 }
 
@@ -41,6 +47,7 @@ function NewNomination (props: Props): React.ReactElement<Props> {
     accountsAvailable,
     amountToNominate,
     ksi,
+    nominationServerAvailable,
     ownStashes,
     optimalValidators,
     queueAction,
@@ -48,6 +55,7 @@ function NewNomination (props: Props): React.ReactElement<Props> {
     setAmountToNominate,
     setKsi,
     stakingOverview,
+    validatorsFromServerLoading,
     web3Enabled,
   } = props;
 
@@ -183,15 +191,17 @@ function NewNomination (props: Props): React.ReactElement<Props> {
               ksi={ksi}
               setKsi={setKsi}
               isNominating={isNominating}
+              nominationServerAvailable={nominationServerAvailable}
               optimalValidators={optimalValidators}
+              queueAction={queueAction}
               setIsNominating={setIsNominating}
-              setNominationModalOpened={toggleNominationModal}
               stashIsCurrent={stashIsCurrent}
               stakingOverview={stakingOverview}
-              queueAction={queueAction}
+              toggleNominationModal={toggleNominationModal}
+              validatorsFromServerLoading={validatorsFromServerLoading}
             />
           )}
-          {isBondExtraOpen && (
+          {(isBondExtraOpen && accountId) && (
             <BondExtra
               onClose={toggleBondExtra}
               stashId={accountId}

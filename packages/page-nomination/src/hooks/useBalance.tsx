@@ -10,6 +10,7 @@ import { useApi, useCall } from '@polkadot/react-hooks';
 import { DeriveBalancesAll } from '@polkadot/api-derive/types';
 import { formatNumber, formatBalance } from '@polkadot/util';
 import { Balance } from '@polkadot/types/interfaces/runtime';
+import {ValidatorInfo} from "@polkadot/app-nomination/types";
 
 // Known account we want to use (available on dev chain, with funds)
 
@@ -39,7 +40,7 @@ export type WholeFeesType = {
  * @return {WholeFeesType} { wholeFees, feesLoading }
  */
 
-export function useFees (accountId?: string | null, validators?: string[]): WholeFeesType {
+export function useFees (accountId?: string | null, validators?: ValidatorInfo[]): WholeFeesType {
   const [amount, setAmount] = useState<BN>(new BN(1));
   const [feesLoading, setFeesLoading] = useState<boolean>(false);
   const [wholeFees, setWholeFees] = useState<BN | null>(null);
@@ -62,7 +63,7 @@ export function useFees (accountId?: string | null, validators?: string[]): Whol
       setFeesLoading(true);
       const fessGetter = forkJoin({
         withdraw: api.api.tx.staking.withdrawUnbonded(0).paymentInfo(accountId),
-        startNomination: api.api.tx.staking.nominate([]).paymentInfo(accountId),
+        startNomination: api.api.tx.staking.nominate(validators.map(validator => validator.accountId)).paymentInfo(accountId),
         stopNomination: api.api.tx.staking.chill().paymentInfo(accountId),
         unbond: api.api.tx.staking.unbond(amount).paymentInfo(accountId)
       }).pipe(catchError((error) => {

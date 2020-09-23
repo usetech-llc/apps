@@ -31,14 +31,18 @@ import NominatorRow from './NominatorRow';
 
 interface Props {
   className?: string;
-  erasPoints: DeriveEraPoints[];
+  erasPoints?: DeriveEraPoints[];
   isDisabled?: boolean;
   info: StakerState;
+  ksi: number;
   next?: string[];
+  nominationServerAvailable: boolean;
   optimalValidators: ValidatorInfo[];
   queueAction: QueueAction$Add;
+  setKsi: (ksi: number) => void;
   stakingOverview: DeriveStakingOverview | undefined;
   validators?: string[];
+  validatorsFromServerLoading: boolean;
 }
 
 function Account (props: Props): React.ReactElement<Props> {

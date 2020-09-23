@@ -8,6 +8,7 @@ import Nomination from '@polkadot/app-nomination';
 
 export default function create (t: (key: string, text: string, options: { ns: string }) => string): Route {
   return {
+    // @ts-ignore
     Component: Nomination,
     display: {
       isHidden: false,
@@ -17,7 +18,6 @@ export default function create (t: (key: string, text: string, options: { ns: st
         'tx.staking.bond'
       ]
     },
-    icon: 'cart arrow down',
     name: 'Nomination',
     text: t('nav.nomination', 'Nomination', { ns: 'apps-routing' })
   };

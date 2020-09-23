@@ -29,13 +29,17 @@ interface Props {
   amountToNominate?: BN | undefined | null;
   bondMore?: boolean;
   isNominating?: boolean;
+  ksi: number;
   nominating?: string[];
+  nominationServerAvailable: boolean;
   optimalValidators: ValidatorInfo[];
   setIsNominating?: (isNominating: boolean) => void;
   setNotOptimal?: (notOptimal: boolean) => void;
+  setKsi: (ksi: number) => void;
   stashIsCurrent: boolean;
   stakingOverview?: DeriveStakingOverview | undefined;
   toggleNominationModal: () => void;
+  validatorsFromServerLoading: boolean;
   queueAction: QueueAction$Add;
 }
 

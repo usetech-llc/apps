@@ -62,7 +62,6 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
   const isKusama = uiSettings && uiSettings.apiUrl.includes('kusama');
 
   const setSigner = useCallback(async (): Promise<void> => {
-    console.log('setSigner');
     if (!accountId) {
       return;
     }

@@ -12,7 +12,7 @@ import { FormatBalance } from '@polkadot/react-query';
 import { formatNumber } from '@polkadot/util';
 
 interface Props {
-  erasPoints: DeriveEraPoints[];
+  erasPoints?: DeriveEraPoints[];
   validatorId: string;
 }
 

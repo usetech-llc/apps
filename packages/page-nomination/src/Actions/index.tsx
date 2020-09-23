@@ -23,10 +23,14 @@ import './styles.scss';
 interface Props {
   hideNewStake?: boolean;
   isInElection?: boolean;
+  ksi: number;
+  nominationServerAvailable: boolean;
   optimalValidators: ValidatorInfo[];
   ownStashes?: StakerState[];
   queueAction: QueueAction$Add;
+  setKsi: (ksi: number) => void;
   stakingOverview: DeriveStakingOverview | undefined;
+  validatorsFromServerLoading: boolean;
 }
 
 interface State {

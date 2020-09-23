@@ -20,10 +20,14 @@ import LabelHelp from "@polkadot/react-components/LabelHelp";
 interface Props {
   electedInfo: DeriveStakingElected;
   isKusama: boolean;
+  ksi: number;
+  nominationServerAvailable: boolean;
   optimalValidators: ValidatorInfo[];
   ownStashes: StakerState[] | undefined;
   queueAction: QueueAction$Add;
+  setKsi: (ksi: number) => void;
   stakingOverview: DeriveStakingOverview | undefined;
+  validatorsFromServerLoading: boolean;
 }
 
 function ManageNomination (props : Props): React.ReactElement<Props> {
@@ -41,7 +45,7 @@ function ManageNomination (props : Props): React.ReactElement<Props> {
   // const electedInfo = useCall<DeriveStakingElected>(api.derive.staking.electedInfo, []);
   // console.log('electedInfo', electedInfo);
 
-  const isInElection = useCall<boolean>(api.query.staking?.eraElectionStatus, [], {
+  const isInElection = useCall<boolean>(api.query.staking ? api.query.staking.eraElectionStatus : null, [], {
     transform: (status: ElectionStatus) => status.isOpen
   });
 
