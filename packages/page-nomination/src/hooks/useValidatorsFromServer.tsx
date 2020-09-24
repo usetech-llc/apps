@@ -44,7 +44,7 @@ function useValidatorsFromServer(ksi: number): ValidatorsFromServerInterface {
   }, []);
 
   useEffect(() => {
-    const bestValidatorsUrl = `/api/rpi/bestvalidators?ksi=${ksi}`;
+    const bestValidatorsUrl = `/api/rpi/bestvalidators?ksi=${(ksi / 10).toFixed(1)}`;
     const subscription = fetchData(bestValidatorsUrl).subscribe((resp) => {
       if (resp.validators && resp.validators.length) {
         setValidators(resp.validators);

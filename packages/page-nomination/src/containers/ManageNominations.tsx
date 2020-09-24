@@ -4,7 +4,7 @@
 
 import { StakerState } from '@polkadot/react-hooks/types';
 import { ElectionStatus } from '@polkadot/types/interfaces';
-import { DeriveStakingOverview, DeriveStakingElected } from '@polkadot/api-derive/types';
+import { DeriveStakingOverview } from '@polkadot/api-derive/types';
 import { QueueAction$Add } from '@polkadot/react-components/Status/types';
 import { ValidatorInfo } from '@polkadot/app-nomination/types';
 
@@ -18,14 +18,14 @@ import LabelHelp from "@polkadot/react-components/LabelHelp";
 
 
 interface Props {
-  electedInfo: DeriveStakingElected;
   isKusama: boolean;
   ksi: number;
   nominationServerAvailable: boolean;
   optimalValidators: ValidatorInfo[];
   ownStashes: StakerState[] | undefined;
   queueAction: QueueAction$Add;
-  setKsi: (ksi: number) => void;
+  setAccountId: (accountId: string | null) => void;
+  setKsi: (ksi: Array<number>) => void;
   stakingOverview: DeriveStakingOverview | undefined;
   validatorsFromServerLoading: boolean;
 }
@@ -38,12 +38,11 @@ function ManageNomination (props : Props): React.ReactElement<Props> {
     ownStashes,
     queueAction,
     stakingOverview,
+    setAccountId,
     setKsi,
     validatorsFromServerLoading,
   } = props;
   const { api } = useApi();
-  // const electedInfo = useCall<DeriveStakingElected>(api.derive.staking.electedInfo, []);
-  // console.log('electedInfo', electedInfo);
 
   const isInElection = useCall<boolean>(api.query.staking ? api.query.staking.eraElectionStatus : null, [], {
     transform: (status: ElectionStatus) => status.isOpen
@@ -66,6 +65,7 @@ function ManageNomination (props : Props): React.ReactElement<Props> {
         hideNewStake
         isInElection={isInElection}
         ksi={ksi}
+        setAccountId={setAccountId}
         setKsi={setKsi}
         nominationServerAvailable={nominationServerAvailable}
         optimalValidators={optimalValidators}

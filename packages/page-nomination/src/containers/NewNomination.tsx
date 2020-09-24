@@ -35,7 +35,7 @@ interface Props {
   queueAction: QueueAction$Add;
   setAccountId: (accountId: string | null) => void;
   setAmountToNominate: (amountToNominate: BN | undefined) => void;
-  setKsi: (ksi: number) => void;
+  setKsi: (ksi: Array<number>) => void;
   stakingOverview: DeriveStakingOverview | undefined;
   validatorsFromServerLoading: boolean;
   web3Enabled: boolean;
@@ -203,6 +203,7 @@ function NewNomination (props: Props): React.ReactElement<Props> {
           )}
           {(isBondExtraOpen && accountId) && (
             <BondExtra
+              amount={amountToNominate}
               onClose={toggleBondExtra}
               stashId={accountId}
             />

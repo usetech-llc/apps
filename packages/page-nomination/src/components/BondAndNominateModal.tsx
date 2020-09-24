@@ -16,7 +16,6 @@ import { useApi, useStashIds } from '@polkadot/react-hooks';
 import { InputAddressMulti, LabelHelp, Modal, Spinner, Toggle } from '@polkadot/react-components';
 import { MAX_NOMINATIONS } from '@polkadot/app-staking/constants';
 import RangeComponent from './RangeComponent';
-import { ksiRange } from '../utils';
 import './BondAndNominationModal.styles.scss';
 
 interface Validators {
@@ -33,9 +32,10 @@ interface Props {
   nominating?: string[];
   nominationServerAvailable: boolean;
   optimalValidators: ValidatorInfo[];
+  setAccountId?: (accountId: string | null) => void;
   setIsNominating?: (isNominating: boolean) => void;
   setNotOptimal?: (notOptimal: boolean) => void;
-  setKsi: (ksi: number) => void;
+  setKsi: (ksi: Array<number>) => void;
   stashIsCurrent: boolean;
   stakingOverview?: DeriveStakingOverview | undefined;
   toggleNominationModal: () => void;
@@ -54,6 +54,7 @@ function BondAndNominateModal (props: Props): React.ReactElement<Props> {
     nominating,
     nominationServerAvailable,
     optimalValidators,
+    setAccountId,
     setIsNominating,
     setKsi,
     stashIsCurrent,
@@ -101,7 +102,7 @@ function BondAndNominateModal (props: Props): React.ReactElement<Props> {
             message: 'Funds nominated successfully!',
             status: 'success'
           };
-
+          toggleNominationModal();
           history.push('/manage');
           queueAction([message]);
           setIsNominating && setIsNominating(false);
@@ -113,7 +114,7 @@ function BondAndNominateModal (props: Props): React.ReactElement<Props> {
   const changeStrategy = useCallback((type) => {
     setManualStrategy(type);
     if (type === false) {
-      setKsi(3);
+      setKsi([5]);
     }
   }, [setKsi]);
 
@@ -151,6 +152,10 @@ function BondAndNominateModal (props: Props): React.ReactElement<Props> {
     }
   }, [selectedValidators]);
 
+  useEffect(() => {
+    setAccountId && setAccountId(accountId);
+  }, [accountId, setAccountId]);
+  console.log('ksi', ksi);
   return (
     <Modal
       className='range-modal'
@@ -182,7 +187,7 @@ function BondAndNominateModal (props: Props): React.ReactElement<Props> {
         />
         { nominationServerAvailable && (
           <RangeComponent
-            activeRange={[ksiRange.indexOf(ksi)]}
+            activeRange={[ksi]}
             setActiveRange={setActiveRange}
           />
         )}
@@ -201,7 +206,7 @@ function BondAndNominateModal (props: Props): React.ReactElement<Props> {
       </Modal.Content>
       <Modal.Actions  cancelLabel={'Cancel'} onCancel={toggleNominationModal}>
         <Button
-          disabled={!selectedValidators || !selectedValidators.length || !amountToNominate || !amountToNominate.gtn(0) || isNominating}
+          disabled={!selectedValidators || !selectedValidators.length || isNominating}
           loading={isNominating}
           onClick={startNomination}
           primary

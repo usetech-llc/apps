@@ -13,13 +13,14 @@ import TxButton from '../../components/TxButton';
 import '../../components/BondAndNominationModal.styles.scss';
 
 interface Props {
+  amount?: BN | null;
   onClose: () => void;
   stashId: string;
 }
 
 const ZERO = new BN(0);
 
-function BondExtra ({ onClose, stashId }: Props): React.ReactElement<Props> {
+function BondExtra ({ amount, onClose, stashId }: Props): React.ReactElement<Props> {
   const [amountError, setAmountError] = useState<string | null>(null);
   const [maxAdditional, setMaxAdditional] = useState<BN | undefined>();
   const [maxBalance] = useState<BN | undefined>();
@@ -58,6 +59,7 @@ function BondExtra ({ onClose, stashId }: Props): React.ReactElement<Props> {
           <Modal.Column>
             <InputBalance
               autoFocus
+              defaultValue={amount || undefined}
               isError={!!amountError || !maxAdditional || maxAdditional.eqn(0)}
               labelExtra={
                 <Available

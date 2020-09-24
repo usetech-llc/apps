@@ -40,7 +40,8 @@ interface Props {
   nominationServerAvailable: boolean;
   optimalValidators: ValidatorInfo[];
   queueAction: QueueAction$Add;
-  setKsi: (ksi: number) => void;
+  setAccountId: (accountId: string | null) => void;
+  setKsi: (ksi: Array<number>) => void;
   stakingOverview: DeriveStakingOverview | undefined;
   validators?: string[];
   validatorsFromServerLoading: boolean;
@@ -62,6 +63,7 @@ function Account (props: Props): React.ReactElement<Props> {
     nominationServerAvailable,
     optimalValidators,
     queueAction,
+    setAccountId,
     setKsi,
     stakingOverview,
     validatorsFromServerLoading,
@@ -140,6 +142,7 @@ function Account (props: Props): React.ReactElement<Props> {
             <BondAndNominateModal
               accountId={stashId}
               ksi={ksi}
+              setAccountId={setAccountId}
               setKsi={setKsi}
               nominating={nominating}
               nominationServerAvailable={nominationServerAvailable}
@@ -243,14 +246,14 @@ function Account (props: Props): React.ReactElement<Props> {
           >
             { isStashNominating ? (
             <>
+              { notOptimal && (
+                <Icon icon='exclamation-triangle' />
+              )}
               Update nomination
               <LabelHelp
                 className='small-help'
                 help={'Your nomination is not optimal. Update please!'}
               />
-              { notOptimal && (
-                <Icon icon='wind-warning' />
-              )}
             </>
             ) : 'Nominate'}
           </Button>

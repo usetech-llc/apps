@@ -1,4 +1,4 @@
-$nomination_light_gray_color: #E4E4E4;
+@import '../../../apps/src/variables';
 
 .manage-nomination-actions {
   font-family: 'Roboto', sans-serif;
@@ -90,6 +90,19 @@ $nomination_light_gray_color: #E4E4E4;
         margin: 0 8px;
         display: flex;
         align-items: center;
+      }
+
+      &.warning {
+        background-color: $nomination_warning_color;
+        color: white;
+
+        .small-help {
+          margin: 0 !important;
+        }
+
+        svg {
+          margin: 0 5px;
+        }
       }
     }
   }

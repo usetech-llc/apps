@@ -28,7 +28,8 @@ interface Props {
   optimalValidators: ValidatorInfo[];
   ownStashes?: StakerState[];
   queueAction: QueueAction$Add;
-  setKsi: (ksi: number) => void;
+  setAccountId: (accountId: string | null) => void;
+  setKsi: (ksi: Array<number>) => void;
   stakingOverview: DeriveStakingOverview | undefined;
   validatorsFromServerLoading: boolean;
 }
@@ -47,6 +48,7 @@ function Actions (props: Props): React.ReactElement<Props> {
     optimalValidators,
     ownStashes,
     queueAction,
+    setAccountId,
     setKsi,
     stakingOverview,
     validatorsFromServerLoading,
@@ -124,6 +126,7 @@ function Actions (props: Props): React.ReactElement<Props> {
                 info={info}
                 isDisabled={isInElection}
                 ksi={ksi}
+                setAccountId={setAccountId}
                 setKsi={setKsi}
                 key={info.stashId}
                 nominationServerAvailable={nominationServerAvailable}

@@ -63,32 +63,19 @@
   }
 
   .range-block {
-    margin: 30px 0;
+    margin: 50px 65px;
 
-    .range-list {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-      align-items: center;
+    .item {
+      margin-top: 10px;
 
-      .item {
-        display: flex;
-        align-items: flex-start;
-        height: 40px;
-        position: relative;
+      &.left {
+        position: absolute;
+        left: 20px;
+      }
 
-        .vertical-divider {
-          position: absolute;
-          height: 5px;
-          right: 0;
-          bottom: 0;
-          width: 1px;
-          background: black;
-          opacity: 0.5;
-        }
-
-        .small-help {
-          margin-left: 8px;
-        }
+      &.right {
+        position: absolute;
+        right: 10px;
       }
     }
 
@@ -135,25 +122,18 @@
   .range-header {
     position: absolute;
     display: flex;
+    width: 160px;
     word-break: keep-all;
     white-space: nowrap;
     font-size: 14px !important;
     background-color: $nomination_light_blue_color;
     border-radius: 4px;
-    color: white;
+    color: white !important;
     padding: 0 10px;
     justify-content: center;
     top: -40px;
-    left: 0;
+    left: -71;
     line-height: 21px;
-
-    &.right {
-      left: -137px;
-
-      .range-polygon {
-        left: 140px;
-      }
-    }
 
     .small-help {
       display: flex;
@@ -165,7 +145,7 @@
       position: absolute;
       width: 14px;
       height: 9px;
-      left: 4px;
+      left: 73px;
       top: 17px;
     }
   }

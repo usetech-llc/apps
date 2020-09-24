@@ -23,7 +23,6 @@ import NewNomination from './containers/NewNomination';
 import { useTranslation } from './translate';
 import Status from './components/Status';
 import ManageNominations from './containers/ManageNominations';
-import { ksiRange } from './utils';
 import useValidators from './hooks/useValidators';
 
 declare global {
@@ -51,7 +50,7 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
   const stakingOverview = useCall<DeriveStakingOverview>(api.derive.staking.overview, []);
   const [accountId, setAccountId] = useState<string | null>(null);
   const [accountsAvailable, setAccountsAvailable] = useState<boolean>(false);
-  const [ksi, setKsi] = useState<number>(0.5);
+  const [ksi, setKsi] = useState<number>(5);
   const {
     filteredValidators,
     nominationServerAvailable,
@@ -78,13 +77,12 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
     }
 
     const injected = await web3FromSource(source as string);
+    console.log('injected.signer', injected.signer);
     api.setSigner(injected.signer);
   }, [accountId, api]);
 
-  const onSetKsi = useCallback((ksi) => {
-    if (ksiRange[ksi]) {
-      setKsi(ksiRange[ksi]);
-    }
+  const onSetKsi = useCallback((ksi: Array<number>) => {
+    setKsi(ksi[0]);
   }, [setKsi]);
 
   useEffect((): void => {
@@ -180,6 +178,7 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
               ownStashes={ownStashes}
               optimalValidators={optimalValidators}
               queueAction={queueAction}
+              setAccountId={setAccountId}
               stakingOverview={stakingOverview}
               validatorsFromServerLoading={validatorsLoading}
             />

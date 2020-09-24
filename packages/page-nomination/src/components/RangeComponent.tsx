@@ -16,57 +16,40 @@ interface Props {
 }
 
 function RangeComponent (props: Props): React.ReactElement<Props> {
-  const [rangeHeaderClass, setRangeHeaderClass] = useState<string>('range-header');
-
   const {
     activeRange,
     setActiveRange,
   } = props;
+  const [strategyName, setStrategyName] = useState<string>('Balanced');
 
   useEffect(() => {
-    if (activeRange && activeRange[0] === 6) {
-      setRangeHeaderClass('range-header right');
-    } else {
-      setRangeHeaderClass('range-header');
+    if (activeRange && activeRange[0]) {
+      const range = activeRange[0];
+      console.log('strategyName', strategyName, 'range', range, 'activeRange', activeRange);
+      switch (range) {
+        case 0:
+          setStrategyName('Conservative');
+          break;
+        case 5:
+          setStrategyName('Balanced');
+          break;
+        case 10:
+          setStrategyName('Aggressive');
+          break;
+        default:
+          setStrategyName('Manual');
+          break;
+      }
     }
   }, [activeRange]);
 
   return (
     <>
       <div className='range-block'>
-        <div className='range-list'>
-          <div className='item'>
-            <div className='vertical-divider' />
-            Conservative strategy
-            <LabelHelp
-              className='small-help'
-              help='Conservative strategy'
-            />
-          </div>
-          <div className='item'>
-            <div className='vertical-divider' />
-          </div>
-          <div className='item'>
-            <div className='vertical-divider' />
-          </div>
-          <div className='item'>
-            <div className='vertical-divider' />
-          </div>
-          <div className='item'>
-            <div className='vertical-divider' />
-          </div>
-          <div className='item'>
-            Aggressive strategy
-            <LabelHelp
-              className='small-help'
-              help='Aggressive strategy'
-            />
-          </div>
-        </div>
         <Range
-          step={1}
+          step={0.1}
           min={0}
-          max={6}
+          max={10}
           values={activeRange}
           onChange={setActiveRange}
           renderTrack={({ props, children }) => (
@@ -87,8 +70,8 @@ function RangeComponent (props: Props): React.ReactElement<Props> {
               children={
                 <>
                   <img src={linesSvg} />
-                  <Header as='h2' className={rangeHeaderClass}>
-                    Balanced strategy
+                  <Header as='h2' className={'range-header'}>
+                    {strategyName} strategy
                     <LabelHelp
                       className='small-help'
                       help='Conservative strategy'
@@ -100,11 +83,25 @@ function RangeComponent (props: Props): React.ReactElement<Props> {
             />
           )}
         />
+        <div className='item left'>
+          Conservative strategy
+          <LabelHelp
+            className='small-help'
+            help='Conservative strategy'
+          />
+        </div>
+        <div className='item right'>
+          Aggressive strategy
+          <LabelHelp
+            className='small-help'
+            help='Aggressive strategy'
+          />
+        </div>
       </div>
       <span className='strategy-name'>
-             <Icon icon='info-circle' />
-             Now the 'Balanced strategy' is installed. If you change the candidates below, the strategy will become a 'Manual'
-           </span>
+        <Icon icon='info-circle' />
+        Now the 'Balanced strategy' is installed. If you change the candidates below, the strategy will become a 'Manual'
+      </span>
     </>
   )
 }
