@@ -29,7 +29,7 @@ function NewStake ({ className, isInElection }: Props): React.ReactElement<Props
   const [amountError, setAmountError] = useState<string | null>(null);
   const [, setControllerError] = useState<string | null>(null);
   const [controllerId, setControllerId] = useState<string | null>(null);
-  const [destination, setDestination] = useState(0);
+  const [destination, setDestination] = useState<string>('Controller');
   const [extrinsic, setExtrinsic] = useState<SubmittableExtrinsic<'promise'> | null>(null);
   const [stashId, setStashId] = useState<string | null>(null);
   const bondedBlocks = useUnbondDuration();
@@ -42,14 +42,13 @@ function NewStake ({ className, isInElection }: Props): React.ReactElement<Props
     );
   }, [api, amount, controllerId, destination]);
 
-  const hasValue = !!amount?.gtn(0);
+  const hasValue = !!(amount && amount.gtn(0));
   const canSubmit = hasValue && !!controllerId;
 
   return (
     <div className={className}>
       <Button.Group>
         <Button
-          icon='add'
           isDisabled={isInElection}
           key='new-stake'
           label={t('New stake')}
@@ -104,7 +103,7 @@ function NewStake ({ className, isInElection }: Props): React.ReactElement<Props
                   }
                   onChange={setAmount}
                 />
-                {bondedBlocks?.gtn(0) && (
+                {(bondedBlocks && bondedBlocks.gtn(0)) && (
                   <Static
                     help={t('The bonding duration for any staked funds. Needs to be unlocked and withdrawn to become available.')}
                     label={t('on-chain bonding duration')}
@@ -126,7 +125,7 @@ function NewStake ({ className, isInElection }: Props): React.ReactElement<Props
             <Modal.Columns>
               <Modal.Column>
                 <Dropdown
-                  defaultValue={0}
+                  defaultValue={'Controller'}
                   help={t('The destination account for any payments as either a nominator or validator')}
                   label={t('payment destination')}
                   onChange={setDestination}

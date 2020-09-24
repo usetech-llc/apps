@@ -273,6 +273,8 @@ class InputAddress extends React.PureComponent<Props, State> {
   }
 }
 
+// @ts-ignore
+// @ts-ignore
 const ExportedComponent = withMulti(
   InputAddress,
   /*
@@ -316,6 +318,8 @@ const ExportedComponent = withMulti(
     }
   `
    */
+
+  // @ts-ignore
   withObservable(keyringOption.optionsSubject, {
     propName: 'optionsAll',
     transform: (optionsAll: KeyringOptions): Record<string, (Option | React.ReactNode)[]> =>

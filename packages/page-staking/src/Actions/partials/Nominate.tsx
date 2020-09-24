@@ -3,7 +3,7 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import { NominateInfo } from './types';
-import { SortedTargets } from '../../types';
+import {SortedTargets, ValidatorInfo} from '../../types';
 
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -23,7 +23,7 @@ interface Props {
   withSenders?: boolean;
 }
 
-function Nominate ({ className = '', controllerId, nominating, onChange, stashId, targets: { validatorIds = [] }, withSenders }: Props): React.ReactElement<Props> {
+function Nominate ({ className = '', controllerId, nominating, onChange, stashId, targets: { validators = [] }, withSenders }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
   const [favorites] = useFavorites(STORE_FAVS_BASE);
@@ -31,13 +31,13 @@ function Nominate ({ className = '', controllerId, nominating, onChange, stashId
   const [available] = useState<string[]>((): string[] => {
     const shortlist = [
       // ensure that the favorite is included in the list of stashes
-      ...favorites.filter((acc) => validatorIds.includes(acc)),
+      ...favorites.filter((acc) => validators.map((validator: ValidatorInfo) => validator.accountId.toString()).includes(acc)),
       // make sure the nominee is not in our favorites already
       ...(nominating || []).filter((acc) => !favorites.includes(acc))
     ];
 
     return shortlist
-      .concat(...(validatorIds.filter((acc) => !shortlist.includes(acc))));
+      .concat(...(validators.map((validator: ValidatorInfo) => validator.accountId.toString()).filter((acc: string) => !shortlist.includes(acc))));
   });
 
   useEffect((): void => {

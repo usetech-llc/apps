@@ -17,6 +17,7 @@
   "Select the account you wish to vote with. You can approve \"aye\" or deny \"nay\" the proposal.": "Select the account you wish to vote with. You can approve \"aye\" or deny \"nay\" the proposal.",
   "Submit": "Submit",
   "Submit signed extrinsic": "Submit signed extrinsic",
+  "Telegram Notification": "Telegram Notification",
   "The amount that is associated with this vote. This value is is locked for the duration of the vote.": "The amount that is associated with this vote. This value is is locked for the duration of the vote.",
   "This operation does not remove the history of the account from the chain, nor any associated funds from the account. The forget operation only limits your access to the account on this browser.": "This operation does not remove the history of the account from the chain, nor any associated funds from the account. The forget operation only limits your access to the account on this browser.",
   "This operation does not remove the history of the account from the chain, nor any associated funds from the account. The forget operation only limits your access to the address on this browser.": "This operation does not remove the history of the account from the chain, nor any associated funds from the account. The forget operation only limits your access to the address on this browser.",

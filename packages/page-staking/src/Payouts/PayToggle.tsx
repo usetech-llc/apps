@@ -27,9 +27,7 @@ function PayToggle ({ className = '', onChange, options, selected }: Props): Rea
     <div className={`ui--ToggleButton ${className}`}>
       {options.map(({ text }, index): React.ReactNode => (
         <Button
-          icon={selected === index ? 'check' : 'circle'}
           isBasic
-          isSelected={selected === index}
           key={text}
           label={text}
           onClick={_onClick(index)}

@@ -10,7 +10,6 @@ interface ValidatorsFromServerInterface {
   nominationServerAvailable: boolean;
   validatorsFromServer: ValidatorInfo[];
   validatorsFromServerLoading: boolean;
-  validatorsFromServerFailed: boolean;
 }
 
 /**
@@ -21,8 +20,6 @@ function useValidatorsFromServer(ksi: number): ValidatorsFromServerInterface {
   const [validators, setValidators] = useState<Array<ValidatorInfo> | []>([]);
   const [validatorsLoading, setValidatorsLoading] = useState<boolean>(true);
   const [nominationServerAvailable, setNominationServerAvailable] = useState<boolean>(true);
-  const [validatorsFromServerFailed, setValidatorsFromServerFailed] = useState<boolean>(false);
-
   const fetchData = useCallback((url: string) => {
     const headers = {
       'accept': 'application/json',
@@ -40,7 +37,7 @@ function useValidatorsFromServer(ksi: number): ValidatorsFromServerInterface {
       }),
       catchError((err) => {
         setValidatorsLoading(false);
-        setValidatorsFromServerFailed(true);
+        setNominationServerAvailable(false);
         return of({ error: true, message: err.message });
       })
     );
@@ -52,7 +49,7 @@ function useValidatorsFromServer(ksi: number): ValidatorsFromServerInterface {
       if (resp.validators && resp.validators.length) {
         setValidators(resp.validators);
       } else {
-        setValidatorsFromServerFailed(true);
+        setNominationServerAvailable(false);
       }
       setValidatorsLoading(false);
     });
@@ -80,7 +77,6 @@ function useValidatorsFromServer(ksi: number): ValidatorsFromServerInterface {
     nominationServerAvailable,
     validatorsFromServer: validators,
     validatorsFromServerLoading: validatorsLoading,
-    validatorsFromServerFailed,
   };
 }
 

@@ -14,8 +14,10 @@ export interface ButtonProps extends BareProps {
   icon?: IconName;
   isAnimated?: SUIButtonProps['animated'];
   isBasic?: boolean;
+  isBusy?: boolean;
   isCircular?: boolean;
   isDisabled?: boolean;
+  isFull?: boolean;
   isFluid?: boolean;
   isIcon?: boolean;
   isLoading?: boolean;

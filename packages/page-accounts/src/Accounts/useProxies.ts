@@ -2,15 +2,13 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import { ProxyType } from '@polkadot/types/interfaces';
-
 import { useEffect, useState } from 'react';
 import { useAccounts, useApi, useIsMountedRef } from '@polkadot/react-hooks';
 
 interface Proxy {
   address: string;
   isOwned: boolean;
-  type: ProxyType;
+  type: any;
 }
 
 interface State {
@@ -37,12 +35,15 @@ export default function useProxies (address?: string | null): State {
     address && api.query.proxy &&
       api.query.proxy
         .proxies(address)
+        // @ts-ignore
         .then(([_proxies]): void => {
+          // @ts-ignore
           const proxies = _proxies.map(([accountId, type]): Proxy => ({
             address: accountId.toString(),
             isOwned: allAccounts.includes(accountId.toString()),
             type
           }));
+          // @ts-ignore
           const owned = proxies.filter(({ isOwned }) => isOwned);
 
           mountedRef.current && setState({

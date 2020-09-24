@@ -80,6 +80,9 @@ function Multisig ({ className = '', onClose, onStatusChange }: Props): React.Re
 
   const isValid = isNameValid && isThresholdValid;
 
+  // @ts-ignore
+  // @ts-ignore
+  // @ts-ignore
   return (
     <Modal
       className={className}

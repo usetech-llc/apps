@@ -15,17 +15,18 @@ interface Props {
   available: string[];
   availableLabel: React.ReactNode;
   className?: string;
-  defaultValue: string[];
+  defaultValue?: string[];
   help: React.ReactNode;
   maxCount: number;
   onChange: (values: string[]) => void;
-  setManualStrategy: (strategy: boolean) => void;
+  setManualStrategy?: (strategy: boolean) => void;
+  value?: any;
   valueLabel: React.ReactNode;
 }
 
 function InputAddressMulti ({ available, availableLabel, className = '', defaultValue, maxCount, onChange, setManualStrategy, valueLabel }: Props): React.ReactElement<Props> {
   const [_filter, setFilter] = useState<string>('');
-  const [selected, setSelected] = useState<string[]>(defaultValue);
+  const [selected, setSelected] = useState<string[]>(defaultValue || []);
   const filter = useDebounce(_filter);
   const isLoading = false; // useLoadingDelay();
 
@@ -34,7 +35,7 @@ function InputAddressMulti ({ available, availableLabel, className = '', default
   }, [onChange, selected]);
 
   const _onSelect = useCallback((address: string): void => {
-    setManualStrategy(true);
+    setManualStrategy && setManualStrategy(true);
     setSelected(
         (selected: string[]) =>
           !selected.includes(address) && (selected.length < maxCount)
@@ -44,7 +45,7 @@ function InputAddressMulti ({ available, availableLabel, className = '', default
   }, [maxCount]);
 
   const _onDeselect = useCallback((address: string): void => {
-    setManualStrategy(true);
+    setManualStrategy && setManualStrategy(true);
     setSelected(
         (selected: string[]) =>
           selected.includes(address)

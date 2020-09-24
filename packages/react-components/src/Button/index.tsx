@@ -9,6 +9,7 @@ import Group from './Group';
 
 const Button = IButton as unknown as ButtonType;
 
+// @ts-ignore
 Button.Group = Group;
 
 export default Button;

@@ -16,11 +16,12 @@ import {
   StakingBonded,
   StakingUnbonding,
   StatusContext,
-  LabelHelp
+  LabelHelp,
+  Icon,
+  StakingRedeemable
 } from '@polkadot/react-components';
 import { useApi, useCall, useToggle } from '@polkadot/react-hooks';
 import { FormatBalance } from '@polkadot/react-query';
-import StakingRedeemable from '@polkadot/react-components/StakingRedeemable';
 
 import BondExtra from './BondExtra';
 import Unbond from './Unbond';
@@ -236,7 +237,7 @@ function Account (props: Props): React.ReactElement<Props> {
             Bond more
           </Button>
           <Button
-            className='footer-button'
+            className={`footer-button ${notOptimal ? 'warning' : ''}`}
             disabled={!isStashNominating}
             onClick={toggleNominationModal}
           >
@@ -247,6 +248,9 @@ function Account (props: Props): React.ReactElement<Props> {
                 className='small-help'
                 help={'Your nomination is not optimal. Update please!'}
               />
+              { notOptimal && (
+                <Icon icon='wind-warning' />
+              )}
             </>
             ) : 'Nominate'}
           </Button>

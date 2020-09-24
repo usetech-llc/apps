@@ -9,11 +9,10 @@ import React from 'react';
 import styled from 'styled-components';
 import { useApi, useCall } from '@polkadot/react-hooks';
 import { BlockToTime, FormatBalance } from '@polkadot/react-query';
-import { BN_ZERO, formatBalance, formatNumber } from '@polkadot/util';
+import { BN_ZERO, formatBalance } from '@polkadot/util';
 
 import Icon from './Icon';
 import Tooltip from './Tooltip';
-import { useTranslation } from './translate';
 
 interface Props {
   className?: string;
@@ -31,7 +30,6 @@ function remainingBlocks (remainingEras: BN, { eraLength, eraProgress }: DeriveS
 function StakingUnbonding ({ className = '', stakingInfo, withLabel }: Props): React.ReactElement<Props> | null {
   const { api } = useApi();
   const progress = useCall<DeriveSessionProgress>(api.derive.session.progress, []);
-  const { t } = useTranslation();
 
   if (!stakingInfo?.unlocking || !progress) {
     return null;

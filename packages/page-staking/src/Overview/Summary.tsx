@@ -6,7 +6,7 @@ import { DeriveStakingOverview } from '@polkadot/api-derive/types';
 
 import React, { useContext } from 'react';
 import styled from 'styled-components';
-import SummarySession from '@polkadot/app-explorer/SummarySession';
+// import SummarySession from '@polkadot/app-explorer/SummarySession';
 import { CardSummary, IdentityIcon, SummaryBox } from '@polkadot/react-components';
 import { BlockAuthorsContext } from '@polkadot/react-query';
 
@@ -58,9 +58,9 @@ function Summary ({ className = '', isVisible, next, nominators, stakingOverview
           {lastBlockNumber}
         </CardSummary>
       </section>
-      <section>
+      {/*<section>
         <SummarySession />
-      </section>
+      </section>*/}
     </SummaryBox>
   );
 }

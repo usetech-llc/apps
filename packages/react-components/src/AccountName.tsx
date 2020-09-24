@@ -7,7 +7,6 @@ import { DeriveAccountInfo, DeriveAccountRegistration } from '@polkadot/api-deri
 import { AccountId, AccountIndex, Address } from '@polkadot/types/interfaces';
 
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import styled from 'styled-components';
 import registry from '@polkadot/react-api/typeRegistry';
 import { AccountSidebarToggle } from '@polkadot/app-accounts/Sidebar';
 import { useCall, useApi } from '@polkadot/react-hooks';

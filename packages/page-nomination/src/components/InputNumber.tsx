@@ -11,7 +11,7 @@ import { formatBalance, isBn } from '@polkadot/util';
 
 import { classes } from '@polkadot/react-components/util';
 import { BitLengthOption } from '@polkadot/react-components/constants';
-import Input, { KEYS, KEYS_PRE } from '@polkadot/react-components/Input';
+import Input, { KEYS_PRE } from '@polkadot/react-components/Input';
 
 import { useTranslation } from '@polkadot/react-components/translate';
 
@@ -57,9 +57,10 @@ function getGlobalMaxValue (bitLength?: number): BN {
 }
 
 function getRegex (isDecimal: boolean): RegExp {
+  const decimal = '.';
   return new RegExp(
     isDecimal
-      ? `^(0|[1-9]\\d*)(\\${KEYS.DECIMAL}\\d*)?$`
+      ? `^(0|[1-9]\\d*)(\\${decimal}\\d*)?$`
       : '^(0|[1-9]\\d*)$'
   );
 }

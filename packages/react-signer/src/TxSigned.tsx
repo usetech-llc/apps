@@ -160,13 +160,13 @@ function TxSigned ({ className, currentItem, requestAddress }: Props): React.Rea
   const [{ isQrHashed, qrAddress, qrPayload, qrResolve }, setQrState] = useState<QrState>({ isQrHashed: false, qrAddress: '', qrPayload: new Uint8Array() });
   const [isBusy, setBusy] = useState(false);
   const [isRenderError, toggleRenderError] = useToggle();
-  const [isSubmit, setIsSubmit] = useState(true);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [senderInfo, setSenderInfo] = useState<AddressProxy>({ isMultiCall: false, multiRoot: null, proxyRoot: null, signAddress: requestAddress, signPassword: '' });
   const [signedOptions, setSignedOptions] = useState<Partial<SignerOptions>>({});
   const [signedTx, setSignedTx] = useState<string | null>(null);
   const [multiCall, setMultiCall] = useState<string | null>(null);
   const [tip, setTip] = useState(BN_ZERO);
+  const isSubmit = true;
 
   useEffect((): void => {
     setFlags(extractExternal(senderInfo.signAddress));

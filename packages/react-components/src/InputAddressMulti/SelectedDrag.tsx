@@ -12,7 +12,7 @@ import AddressToggle from '../AddressToggle';
 interface Props {
   address: string;
   index: number;
-  onDeselect: (index: number) => void;
+  onDeselect: (index: any) => void;
 }
 
 const portal = document.getElementById(PORTAL_ID) as Element;

@@ -16,7 +16,6 @@ interface Props {
 
 function Backup ({ address, onClose }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-  const [isBusy, setIsBusy] = useState(false);
   const [{ isPassTouched, password }, setPassword] = useState({ isPassTouched: false, password: '' });
   const [backupFailed, setBackupFailed] = useState(false);
   const isPassValid = !backupFailed && keyring.isPassValid(password);
@@ -31,7 +30,6 @@ function Backup ({ address, onClose }: Props): React.ReactElement<Props> {
 
   const _doBackup = useCallback(
     (): void => {
-      setIsBusy(true);
       setTimeout((): void => {
         try {
           const addressKeyring = address && keyring.getPair(address);
@@ -41,13 +39,9 @@ function Backup ({ address, onClose }: Props): React.ReactElement<Props> {
           FileSaver.saveAs(blob, `${address}.json`);
         } catch (error) {
           setBackupFailed(true);
-          setIsBusy(false);
           console.error(error);
-
           return;
         }
-
-        setIsBusy(false);
         onClose();
       }, 0);
     },
@@ -83,7 +77,6 @@ function Backup ({ address, onClose }: Props): React.ReactElement<Props> {
       <Modal.Actions onCancel={onClose}>
         <Button
           icon='download'
-          isBusy={isBusy}
           isDisabled={!isPassValid}
           label={t<string>('Download')}
           onClick={_doBackup}

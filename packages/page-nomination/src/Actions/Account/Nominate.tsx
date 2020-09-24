@@ -94,8 +94,7 @@ function Nominate ({ className, controllerId, next, nominating, onClose, selecte
       <Modal.Actions onCancel={onClose}>
         <TxButton
           accountId={controllerId}
-          icon='hand paper outline'
-          isDisabled={!selection?.length}
+          isDisabled={!selection || !selection.length}
           isPrimary
           label={t('Nominate')}
           onStart={onClose}

@@ -40,7 +40,6 @@ function useValidators (ksi: number): UseValidatorsInterface {
     nominationServerAvailable,
     validatorsFromServer,
     validatorsFromServerLoading,
-    validatorsFromServerFailed,
   } = useValidatorsFromServer(ksi);
 
   const getElectedInfo = useCallback(() => {
@@ -86,13 +85,13 @@ function useValidators (ksi: number): UseValidatorsInterface {
 
   // if we have problems with server - we should use client elected info and filter
   useEffect(() => {
-    if (validatorsFromServerFailed) {
+    if (!nominationServerAvailable) {
       getLastEra();
       getElectedInfo();
     } else {
       setOptimalValidators(validatorsFromServer);
     }
-  }, [getElectedInfo, getLastEra, validatorsFromServer, validatorsFromServerFailed]);
+  }, [getElectedInfo, getLastEra, validatorsFromServer, nominationServerAvailable]);
 
   return {
     filteredValidators: optimalValidators,
