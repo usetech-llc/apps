@@ -4,7 +4,6 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDebounce } from '@polkadot/react-hooks';
-
 import Input from '../Input';
 import Spinner from '../Spinner';
 import Available from './Available';
@@ -36,10 +35,6 @@ function InputAddressMulti ({ available, availableLabel, className = '', default
   const filter = useDebounce(_filter);
   const isLoading = false; // useLoadingDelay();
 
-  useEffect((): void => {
-    selected && onChange(selected);
-  }, [onChange, selected]);
-
   const _onSelect = useCallback((address: string): void => {
     setUnSelectedValidators([]);
     setSelectedValidators((selectedItems: string[]) =>
@@ -70,6 +65,22 @@ function InputAddressMulti ({ available, availableLabel, className = '', default
     setSelected(selected.filter(item => !unSelectedValidators.includes(item)));
     setUnSelectedValidators([]);
   }, [selected, setManualStrategy, unSelectedValidators]);
+
+  /*useEffect((): void => {
+    if (defaultValue
+      && defaultValue.length
+      && !defaultValue.filter(item => !selected.includes(item)).length) {
+      selected && onChange(selected);
+    }
+  }, [onChange, selected]);
+
+  useEffect(() => {
+    setSelected(defaultValue);
+  }, [defaultValue]);*/
+
+  useEffect((): void => {
+    selected && onChange(selected);
+  }, [onChange, selected]);
 
   return (
     <div className={`ui--InputAddressMulti ${className}`}>

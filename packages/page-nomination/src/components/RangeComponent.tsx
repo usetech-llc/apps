@@ -25,7 +25,6 @@ function RangeComponent (props: Props): React.ReactElement<Props> {
   useEffect(() => {
     if (activeRange && activeRange[0]) {
       const range = activeRange[0];
-      console.log('strategyName', strategyName, 'range', range, 'activeRange', activeRange);
       switch (range) {
         case 0:
           setStrategyName('Conservative');

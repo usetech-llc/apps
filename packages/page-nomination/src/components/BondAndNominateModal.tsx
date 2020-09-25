@@ -155,7 +155,17 @@ function BondAndNominateModal (props: Props): React.ReactElement<Props> {
   useEffect(() => {
     setAccountId && setAccountId(accountId);
   }, [accountId, setAccountId]);
-  console.log('ksi', ksi);
+
+  useEffect(() => {
+    const message: ActionStatus = {
+      action: `change strategy`,
+      message: `${manualStrategy ? 'Manual' : 'Auto'} strategy was set`,
+      status: 'event'
+    };
+    queueAction([message]);
+  }, [manualStrategy]);
+  console.log('selectedValidators', selectedValidators);
+  console.log('validatorsFromServerLoading', validatorsFromServerLoading);
   return (
     <Modal
       className='range-modal'
