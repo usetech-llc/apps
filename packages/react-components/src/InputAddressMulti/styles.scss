@@ -1,3 +1,5 @@
+@import '../../../apps/src/variables';
+
 .ui--InputAddressMulti {
   border-top-width: 0;
 
@@ -14,12 +16,32 @@
     justify-content: space-between;
     width: 100%;
 
+    .ui--InputAddressMulti-arrows-column {
+      display: flex;
+      flex-direction: column;
+      min-height: 15rem;
+      max-height: 15rem;
+      width: 5%;
+      padding: 22px 0.5rem;
+      align-items: center;
+      justify-content: center;
+
+      img {
+        width: 24px;
+        margin: 15px 0;
+
+        &.selected {
+          cursor: pointer;
+        }
+      }
+    }
+
     .ui--InputAddressMulti-column {
       display: flex;
       flex-direction: column;
       min-height: 15rem;
       max-height: 15rem;
-      width: 50%;
+      width: 47%;
       padding: 0.25rem 0.5rem;
 
       .ui--InputAddressMulti-items {

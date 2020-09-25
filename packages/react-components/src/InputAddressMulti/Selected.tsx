@@ -10,10 +10,11 @@ interface Props {
   address: string;
   filter?: string;
   isHidden?: boolean;
+  isSelected?: boolean;
   onDeselect: (address: string) => void;
 }
 
-function Selected ({ address, filter, isHidden, onDeselect }: Props): React.ReactElement<Props> | null {
+function Selected ({ address, filter, isHidden, isSelected, onDeselect }: Props): React.ReactElement<Props> | null {
   const _onDeselect = useCallback(
     (): void => onDeselect(address),
     [address, onDeselect]
@@ -27,6 +28,7 @@ function Selected ({ address, filter, isHidden, onDeselect }: Props): React.Reac
     <AddressToggle
       address={address}
       filter={filter}
+      isSelected={isSelected}
       noLookup
       noToggle
       onChange={_onDeselect}
