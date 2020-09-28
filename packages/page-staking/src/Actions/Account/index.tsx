@@ -35,7 +35,7 @@ interface Props {
   validators?: string[];
 }
 
-function Account ({ className = '', info: { controllerId, destination, destinationId, hexSessionIdNext, hexSessionIdQueue, isLoading, isOwnController, isOwnStash, isStashNominating, isStashValidating, nominating, sessionIds, stakingLedger, stashId }, isDisabled, next, targets, validators }: Props): React.ReactElement<Props> {
+function Account ({ className = '', info: { controllerId, destination, hexSessionIdNext, hexSessionIdQueue, isLoading, isOwnController, isOwnStash, isStashNominating, isStashValidating, nominating, sessionIds, stakingLedger, stashId }, isDisabled, next, targets, validators }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
   const { queueExtrinsic } = useContext(StatusContext);
@@ -114,7 +114,7 @@ function Account ({ className = '', info: { controllerId, destination, destinati
         {isRewardDestinationOpen && controllerId && (
           <SetRewardDestination
             controllerId={controllerId}
-            defaultDestination={destinationId}
+            defaultDestination={undefined}
             onClose={toggleRewardDestination}
             stashId={stashId}
           />
