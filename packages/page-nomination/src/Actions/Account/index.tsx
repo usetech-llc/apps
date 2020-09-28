@@ -17,8 +17,7 @@ import {
   StakingUnbonding,
   StatusContext,
   LabelHelp,
-  Icon,
-  StakingRedeemable
+  Icon
 } from '@polkadot/react-components';
 import { useApi, useCall, useToggle } from '@polkadot/react-hooks';
 import { FormatBalance } from '@polkadot/react-query';
@@ -28,6 +27,7 @@ import Unbond from './Unbond';
 import useInactives from '../useInactives';
 import arrow from '../../assets/icons/arrow.svg';
 import BondAndNominateModal from '../../components/BondAndNominateModal';
+import StakingRedeemable from '../../components/StakingRedeemable';
 import NominatorRow from './NominatorRow';
 
 interface Props {

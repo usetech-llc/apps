@@ -63,6 +63,7 @@ function TxButton(props: Props): React.ReactElement<Props> {
 
   const _onSend = useCallback(
     (): void => {
+      console.log('_onSend!!!');
       let extrinsic: SubmittableExtrinsic<'promise'>;
 
       if (propsExtrinsic) {

@@ -337,7 +337,7 @@ function TxSigned ({ className, currentItem, requestAddress }: Props): React.Rea
       </Modal.Content>
       <Modal.Actions onCancel={_onCancel}>
         <Button
-          isDisabled={!senderInfo.signAddress || isRenderError}
+          disabled={!senderInfo.signAddress || isRenderError}
           onClick={_doStart}
           primary
           tabIndex={2}

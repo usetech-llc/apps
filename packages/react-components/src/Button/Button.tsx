@@ -7,9 +7,9 @@ import { ButtonProps } from './types';
 import React, { useState } from 'react';
 import SUIButton from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import { isUndefined } from '@polkadot/util';
+import { LabelHelp } from '@polkadot/react-components';
 
 import Icon from '../Icon';
-import Tooltip from '../Tooltip';
 
 let idCounter = 0;
 
@@ -63,10 +63,9 @@ function Button ({ children, className, floated, icon, isAnimated, isBasic = fal
         )
       }
       {tooltip && (
-        <Tooltip
-          place='top'
-          text={tooltip}
-          trigger={triggerId}
+        <LabelHelp
+          className='small-help'
+          help={tooltip}
         />
       )}
     </>
