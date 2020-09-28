@@ -81,14 +81,20 @@
 
   }
 
-  .strategy-name {
+  .info-text-string {
     font-size: 14px;
     line-height: 21px;
     display: block;
     padding: 0 10px;
+    margin-top: 18px;
 
     svg {
       margin-right: 10px;
+    }
+
+    .ui--FormatBalance {
+      display: inline;
+      font-weight: bold;
     }
   }
 

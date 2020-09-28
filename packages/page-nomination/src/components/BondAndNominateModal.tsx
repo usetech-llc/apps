@@ -13,7 +13,8 @@ import BN from 'bn.js';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import { useApi, useStashIds } from '@polkadot/react-hooks';
-import { InputAddressMulti, LabelHelp, Modal, Spinner, Toggle } from '@polkadot/react-components';
+import { FormatBalance } from '@polkadot/react-query';
+import {Icon, InputAddressMulti, LabelHelp, Modal, Spinner, Toggle} from '@polkadot/react-components';
 import { MAX_NOMINATIONS } from '@polkadot/app-staking/constants';
 import RangeComponent from './RangeComponent';
 import './BondAndNominationModal.styles.scss';
@@ -71,24 +72,12 @@ function BondAndNominateModal (props: Props): React.ReactElement<Props> {
   const [extrinsicBondMore, setExtrinsicBondMore] = useState<SubmittableExtrinsic<'promise'> | null>(null);
   const [extrinsicNominate, setExtrinsicNominate] = useState<SubmittableExtrinsic<'promise'> | null>(null);
   const [selectedValidators, setSelectedValidators] = useState<string[]>(nominating || optimalValidators.map(validator => validator.accountId.toString()));
+  const [transaction, setTransaction] = useState<SubmittableExtrinsic<'promise'> | null>(null);
+  const [transactionFees, setTransactionFees] = useState<BN>(new BN(0));
   const allStashes = useStashIds();
   const history = useHistory();
 
   const startNomination = useCallback(() => {
-    if (!extrinsicBond && !extrinsicNominate && !accountId) {
-      return;
-    }
-    // case for bond more with amount and update nomination with only validators
-    let transaction = null;
-    if (extrinsicBondMore) {
-      transaction = extrinsicBondMore;
-    } else if (!extrinsicBond && extrinsicNominate) {
-      transaction = extrinsicNominate;
-    } else if (extrinsicBond && extrinsicNominate) {
-      const txs = [extrinsicBond, extrinsicNominate];
-      transaction =  api.tx.utility.batch(txs)
-    }
-
     if (transaction && accountId) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       transaction.signAndSend(accountId, ({ status }) => {
@@ -109,7 +98,7 @@ function BondAndNominateModal (props: Props): React.ReactElement<Props> {
         }
       });
     }
-  }, [accountId, api.tx.utility, extrinsicBond, extrinsicNominate, queueAction]);
+  }, [accountId, api.tx.utility, extrinsicBond, extrinsicNominate, transaction, queueAction]);
 
   const changeStrategy = useCallback((type) => {
     setManualStrategy(type);
@@ -164,6 +153,29 @@ function BondAndNominateModal (props: Props): React.ReactElement<Props> {
     };
     queueAction([message]);
   }, [manualStrategy]);
+
+  useEffect(() => {
+    if (!extrinsicBond && !extrinsicNominate && !accountId) {
+      return;
+    }
+    // case for bond more with amount and update nomination with only validators
+    let transaction = null;
+    if (extrinsicBondMore) {
+      transaction = extrinsicBondMore;
+    } else if (!extrinsicBond && extrinsicNominate) {
+      transaction = extrinsicNominate;
+    } else if (extrinsicBond && extrinsicNominate) {
+      const txs = [extrinsicBond, extrinsicNominate];
+      transaction =  api.tx.utility.batch(txs)
+    }
+    setTransaction(transaction);
+    if (transaction && accountId) {
+      transaction.paymentInfo(accountId).then(res => {
+        const paymentInfo = res ? res.partialFee : new BN(0);
+        setTransactionFees(paymentInfo);
+      })
+    }
+  }, [accountId, api.tx.utility, extrinsicBond, extrinsicBondMore, extrinsicNominate]);
   console.log('selectedValidators', selectedValidators);
   console.log('validatorsFromServerLoading', validatorsFromServerLoading);
   return (
@@ -213,6 +225,13 @@ function BondAndNominateModal (props: Props): React.ReactElement<Props> {
             valueLabel={'Nominated accounts'}
           />
         ) || <><br /><Spinner /></>}
+
+        {transactionFees && transactionFees.gtn(0) && (
+          <span className='info-text-string'>
+            <Icon icon='info-circle'/>
+            Fees of {<FormatBalance value={transactionFees} />} will be aplied to the submission
+          </span>
+        )}
       </Modal.Content>
       <Modal.Actions  cancelLabel={'Cancel'} onCancel={toggleNominationModal}>
         <Button
