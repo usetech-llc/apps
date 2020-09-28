@@ -64,13 +64,12 @@ function useCollection(api: PolkadotApiInterface | null) {
     try {
       const collectionsCount = (await api.query.nft.nextCollectionID()).toNumber();
       const collections: Array<NftCollectionBigInterface> = [];
-      for (let i = 1; i < collectionsCount; i++) {
+      for (let i = 1; i <= collectionsCount; i++) {
         const collectionInf = await getDetailedCollectionInfo(i);
         if (collectionInf && collectionInf.Owner && collectionInf.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
           collections.push({ ...collectionInf, id: i });
         }
       }
-      // localStorage.setItem('tokenCollectionsPreset', JSON.stringify(collections));
       return collections;
     } catch (e) {
       console.log('preset tokens collections error', e);
