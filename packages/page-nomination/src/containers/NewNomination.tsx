@@ -148,7 +148,7 @@ function NewNomination (props: Props): React.ReactElement<Props> {
                 2. If you have several accounts, choose the one that has your funds which you want to nominate. We will show you the available balance on that account and calculate and pre-fill the field for the amount of nomination with a maximum available (some funds need to remain in the account for transaction fees). Be aware – Kusama nomination can be stopped at any time, but after you do that, the network will take around 7 days to unbond your funds, during which you will not earn any income on them.
               </p>
               <p>
-                3. Click start and we will take you to the next screen where you can choose the nomination strategy.
+                3. Click "Bond and Nominate" and we will take you to the next screen where you can choose the nomination strategy.
               </p>
             </div>
           }
@@ -163,7 +163,6 @@ function NewNomination (props: Props): React.ReactElement<Props> {
           <AccountSection
             accountId={accountId}
             accountsAvailable={accountsAvailable}
-            amount={accountBalance || new BN(0)}
             setAccountId={setAccountId}
           />
         )}

@@ -4,7 +4,6 @@
 
 import React from 'react';
 import styled from 'styled-components';
-import BN from 'bn.js';
 
 import AccountSelector from './AccountSelector';
 import Available from './Available';
@@ -13,10 +12,9 @@ interface Props {
   setAccountId: (accountId: string | null) => void;
   accountId: string | null;
   accountsAvailable: boolean;
-  amount: BN | undefined;
 }
 
-function AccountSection ({ accountId, accountsAvailable, amount, setAccountId }: Props): React.ReactElement<Props> {
+function AccountSection ({ accountId, accountsAvailable, setAccountId }: Props): React.ReactElement<Props> {
 
   return (
     <section className='account-section'>
@@ -25,11 +23,8 @@ function AccountSection ({ accountId, accountsAvailable, amount, setAccountId }:
         title={'Select your account:'}
         value={accountId}
       />
-      {!accountsAvailable &&
+      {(!accountsAvailable && !accountId) &&
       <div className='error-block'>You have no accounts in polkadot.js extension. Please create account and send funds to it.</div>
-      }
-      {amount && !amount.gtn(0) &&
-      <div className='error-block'>Your account`s balance is insufficient for nomination</div>
       }
       <div className='divider' />
       {accountId && (
