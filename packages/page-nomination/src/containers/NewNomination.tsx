@@ -4,6 +4,7 @@
 
 import { DeriveStakingOverview } from '@polkadot/api-derive/types';
 import { Balance } from '@polkadot/types/interfaces/runtime';
+import { ValidatorInfo } from '@polkadot/app-nomination/types';
 import { ActionStatus, QueueAction$Add } from '@polkadot/react-components/Status/types';
 import { StakerState } from '@polkadot/react-hooks/types';
 
@@ -11,18 +12,17 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import BN from 'bn.js';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
-import { Icon } from '@polkadot/react-components';
+import Icon from '@polkadot/react-components/Icon';
+import { useToggle } from '@polkadot/react-hooks';
+import LabelHelp from '@polkadot/react-components/LabelHelp';
 
 import AccountSection from '../components/AccountSection';
 import BondSection from '../components/BondSection';
 import { useBalanceClear, useFees, WholeFeesType } from '../hooks/useBalance';
 import { useSlashes } from '../hooks/useShalses';
 import BondAndNominateModal from '../components/BondAndNominateModal';
-import BondExtra from "@polkadot/app-nomination/Actions/Account/BondExtra";
-import {useToggle} from "@polkadot/react-hooks/index";
-import LabelHelp from "@polkadot/react-components/LabelHelp";
-import {ValidatorInfo} from "@polkadot/app-nomination/types";
-
+import BondExtra from '../Actions/Account/BondExtra';
+import BannerExtension from '../components/BannerExtension';
 
 interface Props {
   accountId: string | null;
@@ -67,7 +67,6 @@ function NewNomination (props: Props): React.ReactElement<Props> {
   const [isBondExtraOpen, toggleBondExtra] = useToggle();
   const [isNominating, setIsNominating] = useState<boolean>(false);
   const [stashIsCurrent, setStashIsCurrent] = useState<boolean>(false);
-
   const slashes = useSlashes(accountId);
   const currentAccountRef = useRef<string | null>();
 
@@ -156,9 +155,10 @@ function NewNomination (props: Props): React.ReactElement<Props> {
         />
       </Header>
       <div className='nomination-card'>
-        {!web3Enabled &&
+        {/*{!web3Enabled &&
         <div className='error-block'>Please enable the polkadot.js extension!</div>
-        }
+        }*/}
+        <BannerExtension />
         {web3Enabled && (
           <AccountSection
             accountId={accountId}
@@ -177,7 +177,7 @@ function NewNomination (props: Props): React.ReactElement<Props> {
             />
           </>
         )}
-         { !maxAmountToNominate && (
+         { (accountId && !maxAmountToNominate) && (
           <div className='error-block'>You have no enough balance for nomination</div>
         )}
         { slashes > 0 &&

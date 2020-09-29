@@ -47,6 +47,11 @@ export function useFees (accountId?: string | null, validators?: ValidatorInfo[]
   const api = useApi();
   const existentialDeposit = api.api.consts.balances.existentialDeposit;
 
+  const getFromSessionStorage = useCallback(() => {
+    const feesData: { wholeFees: BN | null | undefined, feesLoading: boolean | undefined } = JSON.parse(sessionStorage.getItem('feesData') || '{}');
+    return feesData;
+  }, []);
+
   const calculateAmount = useCallback((): void => {
     // any amount to get fees
     const si = formatBalance.findSi('-');
@@ -58,8 +63,8 @@ export function useFees (accountId?: string | null, validators?: ValidatorInfo[]
     setAmount(amount);
   }, []);
 
-  useEffect(() => {
-    if (!wholeFees && accountId && validators && validators.length) {
+  const calculateFees = useCallback(() => {
+    if (!wholeFees && accountId && validators && validators.length && amount) {
       setFeesLoading(true);
       const fessGetter = forkJoin({
         withdraw: api.api.tx.staking.withdrawUnbonded(0).paymentInfo(accountId),
@@ -92,6 +97,11 @@ export function useFees (accountId?: string | null, validators?: ValidatorInfo[]
   useEffect(() => {
     calculateAmount();
   }, [calculateAmount]);
+
+  useEffect(() => {
+    // if we have fees in sessionStorage
+    calculateFees();
+  }, [accountId, amount, existentialDeposit, validators, wholeFees]);
 
   return { feesLoading, wholeFees };
 }
