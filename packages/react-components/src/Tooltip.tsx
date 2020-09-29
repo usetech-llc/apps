@@ -54,6 +54,7 @@ function Tooltip ({ className = '', description, effect = 'solid', showDescripti
       afterHide={showDescription ? toggleDescription : () => {}}
       className={`ui--Tooltip ${className}`}
       clickable
+      isCapture={true}
       globalEventOff="click"
       event={'click'}
       effect={effect}
