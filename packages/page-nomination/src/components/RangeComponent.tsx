@@ -2,7 +2,7 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Range } from 'react-range';
 import { Icon, LabelHelp } from '@polkadot/react-components';
 import linesSvg from './lines.svg';

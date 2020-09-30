@@ -1,6 +1,7 @@
 // Copyright 2017-2020 @polkadot/app-staking authors & contributors
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
+import { ValidatorInfo } from '@polkadot/app-nomination/types';
 
 import BN from 'bn.js';
 import { forkJoin, of } from 'rxjs';
@@ -10,7 +11,6 @@ import { useApi, useCall } from '@polkadot/react-hooks';
 import { DeriveBalancesAll } from '@polkadot/api-derive/types';
 import { formatNumber, formatBalance } from '@polkadot/util';
 import { Balance } from '@polkadot/types/interfaces/runtime';
-import {ValidatorInfo} from "@polkadot/app-nomination/types";
 
 // Known account we want to use (available on dev chain, with funds)
 
@@ -47,10 +47,10 @@ export function useFees (accountId?: string | null, validators?: ValidatorInfo[]
   const api = useApi();
   const existentialDeposit = api.api.consts.balances.existentialDeposit;
 
-  const getFromSessionStorage = useCallback(() => {
+  /* const getFromSessionStorage = useCallback(() => {
     const feesData: { wholeFees: BN | null | undefined, feesLoading: boolean | undefined } = JSON.parse(sessionStorage.getItem('feesData') || '{}');
     return feesData;
-  }, []);
+  }, []); */
 
   const calculateAmount = useCallback((): void => {
     // any amount to get fees
