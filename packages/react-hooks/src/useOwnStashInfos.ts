@@ -99,7 +99,7 @@ export default function useOwnStashInfos (): StakerState[] | undefined {
       ? ownStashes
         .filter(([stashId]) => queried[stashId])
         .map(([stashId]) => getStakerState(stashId, allAccounts, allStashes, queried[stashId]))
-      : undefined,
+      : (allStashes ? [] : undefined),
     [allAccounts, allStashes, ownStashes, queried]
   );
 }

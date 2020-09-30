@@ -72,7 +72,7 @@ function Actions (props: Props): React.ReactElement<Props> {
       new BN(0)),
       foundStashes: ownStashes.sort((a, b) =>
         (a.isStashValidating ? 1 : (a.isStashNominating ? 5 : 99)) - (b.isStashValidating ? 1 : (b.isStashNominating ? 5 : 99))
-      )
+      ),
     });
   }, [ownStashes]);
 
@@ -91,7 +91,12 @@ function Actions (props: Props): React.ReactElement<Props> {
       <ElectionBanner isInElection={isInElection} />
       { (!foundStashes || !foundStashes.length) ? (
         <div className='table'>
-          <Spinner label={'No funds staked yet. Bond funds to validate or nominate a validator'} />
+          {!ownStashes &&
+          <Spinner label={'No funds staked yet. Bond funds to validate or nominate a validator'}/>
+          }
+          {ownStashes && !ownStashes.length &&
+          <div className='warning-block'>No funds staked yet. Bond funds to validate or nominate a validator</div>
+          }
         </div>
       ) : (
         <div className='table'>

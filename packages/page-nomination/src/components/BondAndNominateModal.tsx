@@ -18,6 +18,7 @@ import {Icon, InputAddressMulti, LabelHelp, Modal, Spinner, Toggle} from '@polka
 import { MAX_NOMINATIONS } from '@polkadot/app-staking/constants';
 import RangeComponent from './RangeComponent';
 import './BondAndNominationModal.styles.scss';
+import AccountSelector from "@polkadot/app-nomination/components/AccountSelector";
 
 interface Validators {
   next?: string[];
@@ -100,9 +101,9 @@ function BondAndNominateModal (props: Props): React.ReactElement<Props> {
     }
   }, [accountId, api.tx.utility, extrinsicBond, extrinsicNominate, transaction, queueAction]);
 
-  const changeStrategy = useCallback((type) => {
-    setManualStrategy(type);
-    if (type === false) {
+  const changeStrategy = useCallback((isManual) => {
+    setManualStrategy(isManual);
+    if (isManual === false) {
       setKsi([5]);
     }
   }, [setKsi]);
@@ -176,8 +177,7 @@ function BondAndNominateModal (props: Props): React.ReactElement<Props> {
       })
     }
   }, [accountId, api.tx.utility, extrinsicBond, extrinsicBondMore, extrinsicNominate]);
-  console.log('selectedValidators', selectedValidators);
-  console.log('validatorsFromServerLoading', validatorsFromServerLoading);
+
   return (
     <Modal
       className='range-modal'
@@ -197,6 +197,12 @@ function BondAndNominateModal (props: Props): React.ReactElement<Props> {
       size='large'
     >
       <Modal.Content>
+        <AccountSelector
+          className={'account-selector'}
+          isDisabled
+          title={'Select your account:'}
+          value={accountId}
+        />
         <Header as='h2'>
           Choose your nomination strategy
         </Header>
@@ -207,7 +213,7 @@ function BondAndNominateModal (props: Props): React.ReactElement<Props> {
           onChange={changeStrategy}
           value={manualStrategy}
         />
-        { nominationServerAvailable && (
+        { (nominationServerAvailable && !manualStrategy) && (
           <RangeComponent
             activeRange={[ksi]}
             setActiveRange={setActiveRange}

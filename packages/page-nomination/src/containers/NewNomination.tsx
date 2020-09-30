@@ -155,9 +155,6 @@ function NewNomination (props: Props): React.ReactElement<Props> {
         />
       </Header>
       <div className='nomination-card'>
-        {/*{!web3Enabled &&
-        <div className='error-block'>Please enable the polkadot.js extension!</div>
-        }*/}
         <BannerExtension />
         {web3Enabled && (
           <AccountSection
@@ -207,22 +204,26 @@ function NewNomination (props: Props): React.ReactElement<Props> {
               stashId={accountId}
             />
           )}
-          <Button
-            icon
-            disabled={!amountToNominate || !amountToNominate || !amountToNominate.gtn(0) || isNominating}
-            loading={isNominating}
-            onClick={openNominationModal}
-            primary
-          >
-            {stashIsCurrent ? 'Bond more' : 'Bond and Nominate'}
-            <Icon
-              icon={'play'}
-            />
-          </Button>
-          <LabelHelp
-            className='small-help'
-            help={'Start nomination process'}
-          />
+          { web3Enabled && (
+            <>
+              <Button
+                icon
+                disabled={!amountToNominate || !amountToNominate || !amountToNominate.gtn(0) || isNominating}
+                loading={isNominating}
+                onClick={openNominationModal}
+                primary
+              >
+                {stashIsCurrent ? 'Bond more' : 'Bond and Nominate'}
+                <Icon
+                  icon={'play'}
+                />
+              </Button>
+              <LabelHelp
+                className='small-help'
+                help={'Start nomination process'}
+              />
+            </>
+          )}
         </div>
       </div>
     </div>
