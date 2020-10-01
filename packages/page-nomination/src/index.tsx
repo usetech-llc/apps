@@ -119,7 +119,7 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
     const newApiUrl = 'wss://kusama-rpc.polkadot.io/';
 
     uiSettings.set({ ...settings, apiUrl: newApiUrl });
-
+    console.log('settings.apiUrl', settings.apiUrl);
     if (settings.apiUrl !== newApiUrl) {
       window.location.reload();
     }
