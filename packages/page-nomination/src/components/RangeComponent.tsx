@@ -17,6 +17,7 @@ function RangeComponent (props: Props): React.ReactElement<Props> {
     setActiveRange,
   } = props;
 
+  // https://gist.github.com/mlocati/7210513
   const percent2color = useCallback((perc: number) => {
     let r, g, b = 0;
     if(perc < 50) {
