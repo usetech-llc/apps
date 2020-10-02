@@ -103,7 +103,6 @@ function NewNomination (props: Props): React.ReactElement<Props> {
   useEffect(() => {
     if (accountBalance && wholeFees) {
       const maxAmount = accountBalance.sub(wholeFees).sub(wholeFees);
-
       if (maxAmount.gt(new BN(0))) {
         setMaxAmountToNominate(maxAmount);
       } else {
@@ -208,7 +207,7 @@ function NewNomination (props: Props): React.ReactElement<Props> {
             <>
               <Button
                 icon
-                disabled={!amountToNominate || !amountToNominate || !amountToNominate.gtn(0) || isNominating}
+                disabled={!amountToNominate || !amountToNominate || !amountToNominate.gtn(0) || isNominating || !maxAmountToNominate}
                 loading={isNominating}
                 onClick={openNominationModal}
                 primary
