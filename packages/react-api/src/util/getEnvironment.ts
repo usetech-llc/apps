@@ -6,15 +6,7 @@ import { Environment } from '../types';
 
 // https://github.com/electron/electron/issues/2288
 function isElectron () {
-  if (process?.versions?.electron) {
-    return true;
-  }
-
-  if (window?.process?.type === 'renderer') {
-    return true;
-  }
-
-  return navigator?.userAgent?.indexOf('Electron') >= 0;
+  return false;
 }
 
 export default function getEnvironment (): Environment {
