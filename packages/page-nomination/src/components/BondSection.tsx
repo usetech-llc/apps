@@ -9,7 +9,6 @@ import BN from 'bn.js';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import { LabelHelp } from '@polkadot/react-components';
 import { useApi, useBlockTime, useCall } from '@polkadot/react-hooks';
-import { formatNumber } from '@polkadot/util';
 
 import InputBalance from './InputBalance';
 
