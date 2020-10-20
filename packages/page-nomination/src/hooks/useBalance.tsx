@@ -59,7 +59,6 @@ export function useFees (accountId?: string | null, validators?: ValidatorInfo[]
     const basePower = formatBalance.getDefaults().decimals;
     const siPower = new BN(basePower + si.power);
     const amount = new BN(1).mul(TEN.pow(siPower));
-
     setAmount(amount);
   }, []);
 
@@ -82,13 +81,11 @@ export function useFees (accountId?: string | null, validators?: ValidatorInfo[]
         const startNominationFees = startNomination ? startNomination.partialFee : new BN(0);
         const stopNominationFees = stopNomination ? stopNomination.partialFee : new BN(0);
         const unbondFees = unbond ? unbond.partialFee : new BN(0);
-
         const whole = withdrawalFees
           .add(existentialDeposit)
           .add(startNominationFees)
           .add(stopNominationFees)
           .add(unbondFees);
-
         setWholeFees(whole);
       });
     }

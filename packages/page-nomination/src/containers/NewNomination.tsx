@@ -173,7 +173,7 @@ function NewNomination (props: Props): React.ReactElement<Props> {
           </>
         )}
          { (accountId && !maxAmountToNominate) && (
-          <div className='error-block'>You have no enough balance for nomination</div>
+          <div className='error-block'>You do not have enough balance for nomination on this account, add funds or change the account.</div>
         )}
         { slashes > 0 &&
         <div className='error-block'>Warning: You have been slashed. You need to update your nomination.</div>

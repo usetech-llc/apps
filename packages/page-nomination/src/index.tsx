@@ -105,7 +105,7 @@ function Nomination ({ className, queueAction, stqueue, txqueue }: AppProps): Re
   }, [ownStashes]);
 
   useEffect((): void => {
-    web3Enable('').then((res) => {
+    web3Enable('polkadot').then((res) => {
       setWeb3Enabled(!!res.length);
     });
 

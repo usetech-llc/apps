@@ -59,7 +59,7 @@ function BondSection ({ amountToNominate, maxAmountToNominate, setAmountToNomina
         />
       </div>
       <div className='warning-block'>
-        Warning: After bonding, your funds will be locked and will remain locked after the nomination is stopped for {formatNumber(eraLength)} blocks, which is approximately {text}.
+        Warning: After bonding your funds you can stop the operation at any time, but your funds will remain locked for additional {text}.
       </div>
     </section>
   );

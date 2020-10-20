@@ -95,7 +95,7 @@ function RangeComponent (props: Props): React.ReactElement<Props> {
       </div>
       <span className='info-text-string'>
         <Icon icon='info-circle' />
-        Now the 'Balanced strategy' is installed. If you change the candidates below, the strategy will become a 'Manual'
+        Use slider to change the automatic strategy. If you change the candidates bellow, the strategy mode will switch to Manual.
       </span>
     </>
   )
