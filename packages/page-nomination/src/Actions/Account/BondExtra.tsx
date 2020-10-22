@@ -48,11 +48,11 @@ function BondExtra ({ amount, onClose, stashId }: Props): React.ReactElement<Pro
             <InputAddress
               defaultValue={stashId}
               isDisabled
-              label={'Stash account'}
+              label={'Your account'}
             />
           </Modal.Column>
           <Modal.Column>
-            <p>{'Since this transaction deals with funding, the stash account will be used.'}</p>
+            <p>{''}</p>
           </Modal.Column>
         </Modal.Columns>
         <Modal.Columns>

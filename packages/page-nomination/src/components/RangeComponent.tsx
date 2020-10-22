@@ -93,10 +93,6 @@ function RangeComponent (props: Props): React.ReactElement<Props> {
           )}
         />
       </div>
-      <span className='info-text-string'>
-        <Icon icon='info-circle' />
-        Use slider to change the automatic strategy. If you change the candidates bellow, the strategy mode will switch to Manual.
-      </span>
     </>
   )
 }

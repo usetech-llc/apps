@@ -8,27 +8,27 @@ import { QueueAction$Add } from '@polkadot/react-components/Status/types';
 import { DeriveStakingOverview, DeriveEraPoints } from '@polkadot/api-derive/types';
 import { ValidatorInfo } from '@polkadot/app-nomination/types';
 
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import {
   AddressMini,
   StakingBonded,
   StakingUnbonding,
-  StatusContext,
   LabelHelp,
   Icon
 } from '@polkadot/react-components';
 import { useApi, useCall, useToggle } from '@polkadot/react-hooks';
 import { FormatBalance } from '@polkadot/react-query';
 
-import BondExtra from './BondExtra';
-import Unbond from './Unbond';
 import useInactives from '../useInactives';
 import arrow from '../../assets/icons/arrow.svg';
 import BondAndNominateModal from '../../components/BondAndNominateModal';
 import StakingRedeemable from '../../components/StakingRedeemable';
+import BondExtra from './BondExtra';
+import Unbond from './Unbond';
 import NominatorRow from './NominatorRow';
+import StopNomination from './StopNomination';
 
 interface Props {
   className?: string;
@@ -75,12 +75,13 @@ function Account (props: Props): React.ReactElement<Props> {
   const [isBondExtraOpen, toggleBondExtra] = useToggle();
   const [isAccordionOpen, toggleAccordion] = useToggle();
   const [nominationModalOpened, toggleNominationModal] = useToggle();
+  const [stopNominationModalOpened, toggleStopNominationModal] = useToggle();
   const [isUnbondOpen, toggleUnbond] = useToggle();
   const [notOptimal, setNotOptimal] = useState<boolean>(false);
   const { nomsActive, nomsInactive, nomsWaiting } = useInactives(stashId, nominating);
-  const { queueExtrinsic } = useContext(StatusContext);
+  // const { queueExtrinsic } = useContext(StatusContext);
 
-  const stopNomination = useCallback(() => {
+  /* const stopNomination = useCallback(() => {
     if (!stashId) {
       return;
     }
@@ -93,7 +94,30 @@ function Account (props: Props): React.ReactElement<Props> {
       extrinsic,
       isUnsigned
     });
-  }, [api.tx.staking, stashId, queueExtrinsic]);
+  }, [api.tx.staking, stashId, queueExtrinsic]); */
+
+  const onActionButtonClick = useCallback((type: string, e: any) => {
+    const target: HTMLElement = e.target;
+    if (target.classList.contains('footer-button')) {
+      switch (type) {
+        case 'openRewards' :
+          openRewards();
+          break;
+        case 'toggleBondExtra':
+          toggleBondExtra();
+          break;
+        case 'toggleNominationModal':
+          toggleNominationModal();
+          break;
+        case 'toggleStopNominationModal':
+          toggleStopNominationModal();
+          break;
+        case 'toggleUnbond':
+          toggleUnbond();
+          break;
+      }
+    }
+  }, []);
 
   const openRewards = useCallback(() => {
     window.open(`https://kusama.subscan.io/account/${stashId}?tab=reward`, '_blank');
@@ -159,6 +183,13 @@ function Account (props: Props): React.ReactElement<Props> {
               controllerId={controllerId}
               onClose={toggleUnbond}
               stakingLedger={stakingLedger}
+              stashId={stashId}
+            />
+          )}
+          {stopNominationModalOpened && (
+            <StopNomination
+              isStashNominating={isStashNominating}
+              onClose={toggleStopNominationModal}
               stashId={stashId}
             />
           )}
@@ -228,21 +259,29 @@ function Account (props: Props): React.ReactElement<Props> {
           <Button
             className='footer-button'
             disabled={!isOwnStash && (!balancesAll || balancesAll.freeBalance.gtn(0))}
-            onClick={openRewards}
+            onClick={onActionButtonClick.bind(null, 'openRewards')}
           >
             Rewards
+            <LabelHelp
+              className='small-help'
+              help={'Open rewards page'}
+            />
           </Button>
           <Button
             className='footer-button'
             disabled={!isOwnController}
-            onClick={toggleBondExtra}
+            onClick={onActionButtonClick.bind(null, 'toggleBondExtra')}
           >
             Bond more
+            <LabelHelp
+              className='small-help'
+              help={'Bond more funds'}
+            />
           </Button>
           <Button
             className={`footer-button ${notOptimal ? 'warning' : ''}`}
             disabled={!isStashNominating}
-            onClick={toggleNominationModal}
+            onClick={onActionButtonClick.bind(null, 'toggleNominationModal')}
           >
             { isStashNominating ? (
             <>
@@ -260,16 +299,24 @@ function Account (props: Props): React.ReactElement<Props> {
           <Button
             className='footer-button'
             disabled={!isStashNominating}
-            onClick={stopNomination}
+            onClick={onActionButtonClick.bind(null, 'toggleStopNominationModal')}
           >
             Stop nomination
+            <LabelHelp
+              className='small-help'
+              help={'Stop nomination'}
+            />
           </Button>
           <Button
             className='footer-button'
             disabled={!isOwnStash && (!balancesAll || !balancesAll.freeBalance.gtn(0))}
-            onClick={toggleUnbond}
+            onClick={onActionButtonClick.bind(null, 'toggleUnbond')}
           >
             Unbond
+            <LabelHelp
+              className='small-help'
+              help={'Unbond funds'}
+            />
           </Button>
         </div>
         <div className='column accordion'>

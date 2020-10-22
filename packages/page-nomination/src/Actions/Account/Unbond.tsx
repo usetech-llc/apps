@@ -34,7 +34,7 @@ function Unbond ({ className, controllerId, onClose, stakingLedger, stashId }: P
       header={
         <>
           <Header as={'h1'}>
-            Ubnond funds
+            Unbond funds
             <LabelHelp
               className='small-help'
               help={'Nomination strategy'}

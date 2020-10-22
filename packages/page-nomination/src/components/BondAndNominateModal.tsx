@@ -206,18 +206,32 @@ function BondAndNominateModal (props: Props): React.ReactElement<Props> {
         <Header as='h2'>
           Choose your nomination strategy
         </Header>
-        <Toggle
-          className={'blue-toggle'}
-          label='Auto'
-          labelRight='Manual'
-          onChange={changeStrategy}
-          value={manualStrategy}
-        />
+        { nominationServerAvailable && (
+          <Toggle
+            className={'blue-toggle'}
+            label='Auto'
+            labelRight='Manual'
+            onChange={changeStrategy}
+            value={manualStrategy}
+          />
+        )}
         { (nominationServerAvailable && !manualStrategy) && (
           <RangeComponent
             activeRange={[ksi]}
             setActiveRange={setActiveRange}
           />
+        )}
+        { nominationServerAvailable && !manualStrategy && (
+          <span className='info-text-string'>
+            <Icon icon='info-circle' />
+            Use slider to change the automatic strategy. If you change the candidates bellow, the strategy mode will switch to Manual.
+          </span>
+        )}
+        { nominationServerAvailable && manualStrategy && (
+          <span className='info-text-string'>
+            <Icon icon='info-circle' />
+             Add or remove candidates bellow. If you change the mode to Automatic, your current choices will remain in place until you move the slider.
+          </span>
         )}
         { (validators && selectedValidators && !validatorsFromServerLoading) && (
           <InputAddressMulti

@@ -38,7 +38,7 @@ function Tooltip ({ className = '', description, effect = 'solid', showDescripti
   );
 
   const onClickTooltipContent = useCallback((e) => {
-    e.stopPropagation();
+    // e.stopPropagation();
   }, []);
 
   useEffect((): () => void => {
