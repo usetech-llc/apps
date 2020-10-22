@@ -40,7 +40,7 @@ function FormatBalance ({ children, className = '', isShort, label, labelPost, v
   // labelPost here looks messy, however we ensure we have one less text node
   return (
     <div className={`ui--FormatBalance ${className}`}>
-      {label || ''}<span className='ui--FormatBalance-value'>{
+      {label || ''} <span className='ui--FormatBalance-value'>{
         value
           ? value === 'all'
             ? 'total {{labelPost}}'.replace('{{labelPost}}', labelPost || '')
