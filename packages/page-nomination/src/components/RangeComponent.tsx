@@ -4,7 +4,7 @@
 
 import React, { useCallback } from 'react';
 import { Range } from 'react-range';
-import { Icon, LabelHelp } from '@polkadot/react-components';
+import { LabelHelp } from '@polkadot/react-components';
 
 interface Props {
   activeRange: Array<number>;
