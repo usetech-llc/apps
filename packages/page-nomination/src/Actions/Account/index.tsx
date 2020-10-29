@@ -204,7 +204,6 @@ function Account (props: Props): React.ReactElement<Props> {
           ))}
         </div>
         <div className='column date'>
-          -
         </div>
         <div className='column all'>
           <StakingBonded

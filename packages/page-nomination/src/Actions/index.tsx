@@ -110,7 +110,6 @@ function Actions (props: Props): React.ReactElement<Props> {
               />
             </div>
             <div className='column'>
-              Nomination Date
             </div>
             <div className='column'>
               {bondedTotal && (
