@@ -16,7 +16,7 @@ import {
   StakingBonded,
   StakingUnbonding,
   LabelHelp,
-  Icon
+  // Icon
 } from '@polkadot/react-components';
 import { useApi, useCall, useToggle } from '@polkadot/react-hooks';
 import { FormatBalance } from '@polkadot/react-query';
@@ -211,6 +211,8 @@ function Account (props: Props): React.ReactElement<Props> {
             stakingInfo={stakingAccount}
             withLabel={'Total nominated'}
           />
+          {/* <StakingUnbonding stakingInfo={stakingAccount} />
+          <StakingRedeemable stakingInfo={stakingAccount} /> */}
         </div>
       </div>
       { isAccordionOpen && (
@@ -264,7 +266,7 @@ function Account (props: Props): React.ReactElement<Props> {
             Rewards
             <LabelHelp
               className='small-help'
-              help={'Open rewards page'}
+              help={'External link, view your rewards'}
             />
           </Button>
           <Button
@@ -275,7 +277,7 @@ function Account (props: Props): React.ReactElement<Props> {
             Bond more
             <LabelHelp
               className='small-help'
-              help={'Bond more funds'}
+              help={'Add funds to your nomination'}
             />
           </Button>
           <Button
@@ -285,13 +287,18 @@ function Account (props: Props): React.ReactElement<Props> {
           >
             { isStashNominating ? (
             <>
-              { notOptimal && (
+              {/* { notOptimal && (
                 <Icon icon='exclamation-triangle' />
-              )}
+              )} */}
               Update nomination
               <LabelHelp
                 className='small-help'
-                help={'Your nomination is not optimal. Update please!'}
+                description={
+                  <div>
+                    <p>Optimal set of validators changes all the time. Changing the set from time to time is recommended.</p>
+                  </div>
+                }
+                help={'Change the validator set'}
               />
             </>
             ) : 'Nominate'}
@@ -304,7 +311,12 @@ function Account (props: Props): React.ReactElement<Props> {
             Stop nomination
             <LabelHelp
               className='small-help'
-              help={'Stop nomination'}
+              description={
+                <div>
+                  <p>This operation does not free up your funds nor it starts the unbonding period, it just stops your nomination.</p>
+                </div>
+              }
+              help={'Stop your nominations'}
             />
           </Button>
           <Button
@@ -315,7 +327,12 @@ function Account (props: Props): React.ReactElement<Props> {
             Unbond
             <LabelHelp
               className='small-help'
-              help={'Unbond funds'}
+              description={
+                <div>
+                  <p>Unbonding period is 7 days for Kusama. You will see the countdown clock in some wallets.</p>
+                </div>
+              }
+              help={'Stop nominating and start unbonding your funds'}
             />
           </Button>
         </div>

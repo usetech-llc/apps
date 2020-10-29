@@ -66,9 +66,7 @@ function Actions (props: Props): React.ReactElement<Props> {
   useEffect((): void => {
     ownStashes && setState({
       bondedTotal: ownStashes.reduce((total: BN, { stakingLedger }) =>
-        stakingLedger
-          ? total.add(stakingLedger.total.unwrap())
-          : total,
+          total.add(stakingLedger ? stakingLedger.total.unwrap() : new BN(0)),
       new BN(0)),
       foundStashes: ownStashes.sort((a, b) =>
         (a.isStashValidating ? 1 : (a.isStashNominating ? 5 : 99)) - (b.isStashValidating ? 1 : (b.isStashNominating ? 5 : 99))
@@ -108,8 +106,7 @@ function Actions (props: Props): React.ReactElement<Props> {
               Active nomination
               <LabelHelp
                 className='small-help'
-                description={'Active nominations description Active nominations description Active nominations description Active nominations description Active nominations description '}
-                help={'Active nomination'}
+                help={'Validator you’re using in this era'}
               />
             </div>
             <div className='column'>
