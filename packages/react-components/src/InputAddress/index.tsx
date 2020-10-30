@@ -1,6 +1,5 @@
 // Copyright 2017-2020 @polkadot/react-components authors & contributors
-// This software may be modified and distributed under the terms
-// of the Apache-2.0 license. See the LICENSE file for details.
+// SPDX-License-Identifier: Apache-2.0
 
 import { KeyringOptions, KeyringSectionOption, KeyringSectionOptions, KeyringOption$Type } from '@polkadot/ui-keyring/options/types';
 import { Option } from './types';
@@ -61,7 +60,7 @@ function transformToAddress (value?: string | Uint8Array | null): string | null 
   try {
     return addressToAddress(value) || null;
   } catch (error) {
-    console.error('Unable to transform address', value);
+    // noop, handled by return
   }
 
   return null;
@@ -125,7 +124,7 @@ class InputAddress extends React.PureComponent<Props, State> {
       return {
         lastValue: lastValue || getLastValue(type),
         value: Array.isArray(value)
-          ? value.map(addressToAddress)
+          ? value.map((v) => addressToAddress(v))
           : (addressToAddress(value) || undefined)
       };
     } catch (error) {
@@ -290,9 +289,10 @@ const ExportedComponent = withMulti(
           left: -2.75rem;
           top: -1.05rem;
 
-          svg {
-            height: 32px;
-            width: 32px;
+          > div,
+          > svg {
+            height: 32px !important;
+            width: 32px !important;
           }
         }
 

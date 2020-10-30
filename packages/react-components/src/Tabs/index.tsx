@@ -1,7 +1,7 @@
 // Copyright 2017-2020 @polkadot/react-components authors & contributors
-// This software may be modified and distributed under the terms
-// of the Apache-2.0 license. See the LICENSE file for details.
+// SPDX-License-Identifier: Apache-2.0
 
+import { ThemeProps } from '../types';
 import { TabItem } from './types';
 
 import React, { useEffect } from 'react';
@@ -58,15 +58,18 @@ function Tabs ({ basePath, className = '', hidden, isSequence, items }: Props): 
   );
 }
 
-export default React.memo(styled(Tabs)`
-  border-bottom: 1px solid #e6e6e6;
-  margin: 0 -2em;
-  overflow-x: scroll;
-  padding: 2em 2em 0.75rem;
+export default React.memo(styled(Tabs)(({ theme }: ThemeProps) => `
+  align-items: flex-end;
+  background: ${theme.bgTabs};
+  border-bottom: 1px solid ${theme.borderTabs};
+  display: flex;
+  margin: 0 -1.5rem;
+  padding: 1.5rem 1.5rem 0;
   text-align: left;
+  z-index: 1;
 
   &::-webkit-scrollbar {
     display: none;
     width: 0px;
   }
-`);
+`));

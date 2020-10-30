@@ -1,14 +1,14 @@
 // Copyright 2017-2020 @polkadot/react-components authors & contributors
-// This software may be modified and distributed under the terms
-// of the Apache-2.0 license. See the LICENSE file for details.
+// SPDX-License-Identifier: Apache-2.0
 
 import { BitLength } from './types';
 
 import BN from 'bn.js';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { BitLengthOption } from '@polkadot/react-components/constants';
-import { BN_TEN, BN_THOUSAND, formatBalance, isBn } from '@polkadot/util';
+import { BN_TEN, formatBalance, isBn } from '@polkadot/util';
+
 import InputNumber from './InputNumber';
 
 interface Props {
@@ -35,12 +35,22 @@ interface Props {
   withMax?: boolean;
 }
 
+const BN_TEN_THOUSAND = new BN(10_000);
 const DEFAULT_BITLENGTH = BitLengthOption.CHAIN_SPEC as BitLength;
 
 function reformat (value: string | BN, isDisabled?: boolean): string {
   if (isBn(value)) {
-    let fmt = (value.mul(BN_THOUSAND).div(BN_TEN.pow(new BN(formatBalance.getDefaults().decimals))).toNumber() / 1000).toFixed(3);
+    // format for 4 decimals (align with util)
+    const valStr = value
+      .mul(BN_TEN_THOUSAND)
+      .div(BN_TEN.pow(new BN(formatBalance.getDefaults().decimals)))
+      .toString()
+      .padStart(5, '0'); // 4 after decimal, 1 before, min 5
 
+    // dive using string format (the value may be too large for 2^53-1)
+    let fmt = `${valStr.substr(0, valStr.length - 4)}.${valStr.slice(-4)}`;
+
+    // remove all trailing 0's until the decimal
     while (fmt.length !== 1 && ['.', '0'].includes(fmt[fmt.length - 1])) {
       const isLast = fmt.endsWith('.');
 
@@ -58,13 +68,10 @@ function reformat (value: string | BN, isDisabled?: boolean): string {
 }
 
 function InputBalance ({ autoFocus, children, className = '', defaultValue: inDefault, help, isDisabled, isError, isFull, isWarning, isZeroable, label, labelExtra, maxValue, onChange, onEnter, onEscape, placeholder, value, withEllipsis, withLabel, withMax }: Props): React.ReactElement<Props> {
-  const [defaultValue, setDefaultValue] = useState<string | undefined>();
-
-  useEffect((): void => {
-    inDefault && setDefaultValue(
-      reformat(inDefault, isDisabled)
-    );
-  }, [inDefault, isDisabled]);
+  const defaultValue = useMemo(
+    () => inDefault ? reformat(inDefault, isDisabled) : undefined,
+    [inDefault, isDisabled]
+  );
 
   return (
     <InputNumber
@@ -97,16 +104,27 @@ function InputBalance ({ autoFocus, children, className = '', defaultValue: inDe
 }
 
 export default React.memo(styled(InputBalance)`
-  &&:not(.label-small) .labelExtra {
+  &&:not(.isSmall) .labelExtra {
     right: 6.5rem;
   }
 
   .ui.action.input.ui--Input > .buttons {
     align-items: stretch;
 
-    .ui.disabled.button.compact.floating.selection.dropdown.ui--SiDropdown {
-      border-style: solid;
-      opacity: 1 !important;
+    .ui--SiDropdown.ui.button.compact.floating.selection.dropdown {
+      &.disabled {
+        border-style: solid;
+        opacity: 1 !important;
+      }
+
+      > div.text:first-child {
+        font-size: 0.9em;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 0.5rem;
+        width: 3rem;
+      }
     }
   }
 `);

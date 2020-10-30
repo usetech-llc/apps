@@ -1,6 +1,5 @@
 // Copyright 2017-2020 @polkadot/app-extrinsics authors & contributors
-// This software may be modified and distributed under the terms
-// of the Apache-2.0 license. See the LICENSE file for details.
+// SPDX-License-Identifier: Apache-2.0
 
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 
@@ -54,7 +53,6 @@ function Selection (): React.ReactElement {
         <TxButton
           extrinsic={extrinsic}
           icon='sign-in-alt'
-          isBasic
           isDisabled={!extrinsic}
           isUnsigned
           label={t<string>('Submit Unsigned')}

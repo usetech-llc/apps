@@ -1,6 +1,7 @@
 // Copyright 2017-2020 @polkadot/react-components authors & contributors
-// This software may be modified and distributed under the terms
-// of the Apache-2.0 license. See the LICENSE file for details.
+// SPDX-License-Identifier: Apache-2.0
+
+import { ThemeProps } from './types';
 
 import BN from 'bn.js';
 import React from 'react';
@@ -11,6 +12,7 @@ import { bnToBn } from '@polkadot/util';
 interface Props {
   className?: string;
   isDisabled?: boolean;
+  size?: 'normal' | 'small'
   total?: UInt | BN | number | null;
   value?: UInt | BN | number | null;
 }
@@ -24,7 +26,7 @@ function DivClip ({ angle, type }: RotateProps): React.ReactElement<RotateProps>
   return (
     <div className={`clip ${type}`}>
       <div
-        className='ui--highlight--bg'
+        className='highlight--bg'
         style={{ transform: `rotate(${angle}deg)` }}
       />
     </div>
@@ -33,7 +35,7 @@ function DivClip ({ angle, type }: RotateProps): React.ReactElement<RotateProps>
 
 const Clip = React.memo(DivClip);
 
-function Progress ({ className = '', isDisabled, total, value }: Props): React.ReactElement<Props> | null {
+function Progress ({ className = '', isDisabled, size = 'normal', total, value }: Props): React.ReactElement<Props> | null {
   const _total = bnToBn(total || 0);
   const angle = _total.gtn(0)
     ? (bnToBn(value || 0).muln(36000).div(_total).toNumber() / 100)
@@ -44,8 +46,8 @@ function Progress ({ className = '', isDisabled, total, value }: Props): React.R
   }
 
   return (
-    <div className={`ui--Progress${isDisabled ? ' isDisabled' : ''} ${className}`}>
-      <div className='background ui--highlight--bg' />
+    <div className={`ui--Progress${isDisabled ? ' isDisabled' : ''} ${size}Size ${className}`}>
+      <div className='background highlight--bg' />
       <Clip
         angle={
           angle <= 180
@@ -69,7 +71,7 @@ function Progress ({ className = '', isDisabled, total, value }: Props): React.R
   );
 }
 
-export default React.memo(styled(Progress)`
+export default React.memo(styled(Progress)(({ theme }: ThemeProps) => `
   border-radius: 100%;
   clip-path: circle(50%);
   height: 4.5rem;
@@ -125,9 +127,10 @@ export default React.memo(styled(Progress)`
 
   .inner {
     align-items: center;
-    background: rgba(245, 244, 243, 87.5%);
+    background: ${theme.bgInverse};
     border-radius: 100%;
     bottom: 0.375rem;
+    color: ${theme.colorSummary};
     display: flex;
     justify-content: center;
     left: 0.375rem;
@@ -138,7 +141,23 @@ export default React.memo(styled(Progress)`
     div {
       line-height: 1;
       font-size: 1.25rem;
-      text-shadow: 0 0 2px #f5f4f3;
+      text-shadow: 0 0 2px #f5f3f1;
     }
   }
-`);
+
+  &.smallSize {
+    height: 2.25rem;
+    width: 2.25rem;
+
+    .inner {
+      bottom: 0.1875rem;
+      left: 0.1875rem;
+      right: 0.1875rem;
+      top: 0.1875rem;
+    }
+
+    div {
+      font-size: 0.625rem;
+    }
+  }
+`));
