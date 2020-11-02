@@ -11,7 +11,7 @@ import styled from 'styled-components';
 
 import Labelled from './Labelled';
 
-type Input$Type = 'number' | 'password' | 'text';
+type Input$Type = 'number' | 'password' | 'text' | 'file';
 
 interface Props {
   autoFocus?: boolean;
