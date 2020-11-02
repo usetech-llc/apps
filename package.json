@@ -109,6 +109,8 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-is": "^17.0.1",
+    "sass": "^1.26.8",
+    "sass-loader": "^8.0.2",
     "source-map-explorer": "^2.5.0",
     "styled-components": "^5.2.0",
     "stylelint": "^13.7.2",

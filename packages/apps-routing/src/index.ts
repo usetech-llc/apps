@@ -15,6 +15,7 @@ import explorer from './explorer';
 import extrinsics from './extrinsics';
 import genericAsset from './generic-asset';
 import js from './js';
+import nft from './nft';
 import parachains from './parachains';
 import poll from './poll';
 import rpc from './rpc';
@@ -30,6 +31,7 @@ import treasury from './treasury';
 
 export default function create (t: TFunction): Routes {
   return [
+    nft(t),
     accounts(t),
     addresses(t),
     explorer(t),
