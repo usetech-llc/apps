@@ -118,6 +118,6 @@
     "webpack-plugin-serve": "^1.0.1"
   },
   "dependencies": {
-    "@brainhubeu/react-file-input": "^0.9.20"
+    "react-images-uploading": "^3.1.2"
   }
 }
