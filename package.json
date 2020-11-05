@@ -115,7 +115,7 @@
     "webpack": "^4.44.0",
     "webpack-cli": "^3.3.12",
     "webpack-merge": "^4.2.2",
-    "webpack-plugin-serve": "^1.0.1"
+    "webpack-plugin-serve": "^1.2.0"
   },
   "dependencies": {
     "react-images-uploading": "^3.1.2"

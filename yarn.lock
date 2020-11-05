@@ -9998,6 +9998,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"escalade@npm:^3.1.0":
+  version: 3.1.1
+  resolution: "escalade@npm:3.1.1"
+  checksum: 3/1e31ff50d66f47cd0dfffa702061127116ccf9886d1f54a802a7b3bc95b94cab0cbf5b145cc5ac199036df6fd9d1bb24af1fa1bfed87c94879e950fbee5f86d1
+  languageName: node
+  linkType: hard
+
 "escape-goat@npm:^2.0.0":
   version: 2.1.1
   resolution: "escape-goat@npm:2.1.1"
@@ -18161,7 +18168,7 @@ __metadata:
     webpack: ^4.44.0
     webpack-cli: ^3.3.12
     webpack-merge: ^4.2.2
-    webpack-plugin-serve: ^1.0.1
+    webpack-plugin-serve: ^1.2.0
   languageName: unknown
   linkType: soft
 
@@ -22172,6 +22179,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"superstruct@npm:^0.10.12":
+  version: 0.10.12
+  resolution: "superstruct@npm:0.10.12"
+  checksum: 3/80240b1630e0eb349bbcf043275a1d7461631aba3f011df997e6170ab12187e71e483f03e5ab0c7c448b9aaa70bc9028b0d125b2398da68856d7e4745804df9e
+  languageName: node
+  linkType: hard
+
 "supports-color@npm:^2.0.0":
   version: 2.0.0
   resolution: "supports-color@npm:2.0.0"
@@ -24364,13 +24378,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack-plugin-serve@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "webpack-plugin-serve@npm:1.0.1"
+"webpack-plugin-serve@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "webpack-plugin-serve@npm:1.2.0"
   dependencies:
-    "@hapi/joi": ^15.1.0
     chalk: ^4.0.0
     connect-history-api-fallback: ^1.5.0
+    escalade: ^3.1.0
     globby: ^11.0.0
     http-proxy-middleware: ^1.0.3
     is-path-cwd: ^2.2.0
@@ -24385,14 +24399,14 @@ __metadata:
     onetime: ^5.1.0
     open: ^7.0.3
     p-defer: ^3.0.0
-    read-pkg-up: ^7.0.1
     rimraf: ^3.0.2
     strip-ansi: ^6.0.0
+    superstruct: ^0.10.12
     webpack-plugin-ramdisk: ^0.1.2
     ws: ^7.1.0
   peerDependencies:
     webpack: ^4.20.2
-  checksum: 3/f8acf2454dac193ff830bda1692528d395df7f1a4f706e5a468aec4dce2f77f3613c6242efe2637884740d1d0f2f29ef1ec72d8e085994d7caa190be2d0a7efa
+  checksum: 3/70e86ccc3273bd832555601122e9c85c847b1d99261ee224310fb6fd494bd16326dd066c494ad8a046338fa4c9925af4fd3e7f90b480fa378bc2aa337a8f3d66
   languageName: node
   linkType: hard
 

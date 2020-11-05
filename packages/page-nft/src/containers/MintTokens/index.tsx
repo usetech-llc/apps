@@ -1,17 +1,18 @@
 // Copyright 2020 UseTech authors & contributors
 
 // global app props and types
+import { ImageInterface } from '../../types';
 
 // external imports
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Button, Input } from '@polkadot/react-components';
-import ImageUploading, { ImageListType } from "react-images-uploading";
+import ImageUploading, { ImageListType } from 'react-images-uploading';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 
 // local imports and components
-
+import useMintApi from '../../hooks/useMintApi';
 import './styles.scss';
 
 interface MintTokensProps {
@@ -22,20 +23,35 @@ const maxFileSize = 5000000;
 
 function MintTokens ({ className }: MintTokensProps): React.ReactElement<MintTokensProps> {
   const [images, setImages] = React.useState([]);
+  const [imageBase64, setImageBase64] = useState<string | undefined>();
+  const [imageName, setImageName] = useState<string | undefined>();
+  const { serverIsReady, uploadImage } = useMintApi();
 
-  const onChangeString = useCallback(() => {
-
-  }, []);
+  const onChangeString = useCallback((value) => {
+    console.log('onChangeString', value);
+    setImageName(value);
+  }, [setImageName]);
 
   const onFileUpload = useCallback((imageList: ImageListType, addUpdateIndex: number[] | undefined) => {
     // data for submit
-    console.log('onFileUpload',  'imageList', imageList, 'addUpdateIndex', addUpdateIndex);
     setImages(imageList as never[]);
+    setImageBase64(imageList[0] ? imageList[0].dataURL : undefined);
   }, []);
 
   const onSaveToken = useCallback(() => {
-    console.log('onSaveToken');
-  }, []);
+    if (imageBase64 && imageName && serverIsReady) {
+      console.log('onSaveToken');
+      const newToken: ImageInterface = {
+        address: '5G4WhxLhr9JtJhAggdz5v4G4v3nk9q32hQbepfXu9sCeAdWL',
+        image: imageBase64,
+        name: imageName
+      };
+
+      uploadImage(newToken);
+    }
+  }, [imageBase64, imageName]);
+
+  console.log('serverIsReady',  serverIsReady);
 
   return (
     <main className="mint-tokens">
@@ -111,7 +127,7 @@ function MintTokens ({ className }: MintTokensProps): React.ReactElement<MintTok
                   )}
                 </ImageUploading>
               </Form.Field>
-              { images.length > 0 && (
+              { (imageBase64 && imageName) && (
                 <Button
                   icon='check'
                   label='Save'

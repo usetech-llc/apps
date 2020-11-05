@@ -36,6 +36,16 @@ function createWebpack (ENV, context) {
     new WebpackPluginServe({
       hmr: false, // switch off, Chrome WASM memory leak
       liveReload: false, // explict off, overrides hmr
+      middleware: (app, builtins) => {
+        app.use(builtins.proxy('/health', {
+          changeOrigin: true,
+          target: 'http://localhost:3003/'
+        }));
+        app.use(builtins.proxy('/mint', {
+          changeOrigin: true,
+          target: 'http://localhost:3003/'
+        }));
+      },
       port: 3000,
       progress: false, // since we have hmr off, disable
       static: path.join(process.cwd(), '/build')

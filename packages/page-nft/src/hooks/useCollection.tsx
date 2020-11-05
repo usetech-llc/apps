@@ -1,9 +1,6 @@
 // Copyright 2020 UseTech authors & contributors
 import { useCallback } from 'react';
-
-interface PolkadotApiInterface {
-  query: any;
-}
+import { useApi } from '@polkadot/react-hooks';
 
 export interface NftCollectionBigInterface {
   id: number;
@@ -27,12 +24,14 @@ export interface NftCollectionInterface {
   prefix: string;
 }
 
-function useCollection(api: PolkadotApiInterface | null) {
+function useCollection() {
+  const { api } = useApi();
 
   const getTokensOfCollection = useCallback(async (collectionId: number, ownerId: string) => {
     if (!api) {
       return;
     }
+    // @ts-ignore
     return (await api.query.nft.addressTokens(collectionId, ownerId));
   }, [api]);
 
@@ -40,6 +39,7 @@ function useCollection(api: PolkadotApiInterface | null) {
     if (!api) {
       return;
     }
+    // @ts-ignore
     return (await api.query.nft.collection(collectionId));
   }, []);
 
@@ -47,6 +47,7 @@ function useCollection(api: PolkadotApiInterface | null) {
     if (!api) {
       return;
     }
+    // @ts-ignore
     return (await api.query.nft.itemList([collectionId, tokenId]));
   }, [api]);
 
@@ -54,6 +55,7 @@ function useCollection(api: PolkadotApiInterface | null) {
     if (!api) {
       return;
     }
+    // @ts-ignore
     return (await api.query.nft.reFungibleItemList(collectionId, tokenId));
   }, [api]);
 
@@ -62,6 +64,7 @@ function useCollection(api: PolkadotApiInterface | null) {
       return;
     }
     try {
+      // @ts-ignore
       const collectionsCount = (await api.query.nft.nextCollectionID()).toNumber();
       const collections: Array<NftCollectionBigInterface> = [];
       for (let i = 1; i <= collectionsCount; i++) {

@@ -21,7 +21,7 @@ function CollectionSearch({ addCollection, account, collections }: Props): React
   const [collectionsAvailable, setCollectionsAvailabe] = useState<Array<NftCollectionBigInterface>>([]);
   const [collectionsMatched, setCollectionsMatched] = useState<Array<NftCollectionBigInterface>>([]);
   const [searchString, setSearchString] = useState<string>('');
-  const { presetTokensCollections } = useCollection(api);
+  const { presetTokensCollections } = useCollection();
   const currentAccount = useRef<string | null | undefined>();
 
   const searchCollection = useCallback(async () => {

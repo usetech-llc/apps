@@ -23,7 +23,7 @@ module.exports = merge(
         PAGE_TITLE: 'Polkadot/Substrate Portal',
         inject: true,
         template: path.join(context, `${hasPublic ? 'public/' : ''}index.html`)
-      })
+      }),
     ]
   }
 );

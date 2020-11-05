@@ -5,7 +5,6 @@ import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
 import useCollection, { NftCollectionInterface } from '../../hooks/useCollection';
 import './NftTokenCard.scss';
-import {useApi} from "@polkadot/react-hooks/index";
 
 interface Props {
   account: string;
@@ -19,8 +18,7 @@ interface Props {
 }
 
 function NftTokenCard({ account, canTransferTokens, collection, openTransferModal, openDetailedInformationModal, shouldUpdateTokens, token, tokenUrl }: Props): React.ReactElement<Props> {
-  const { api } = useApi();
-  const { getDetailedRefungibleTokenInfo } = useCollection(api);
+  const { getDetailedRefungibleTokenInfo } = useCollection();
   const [balance, setBalance] = useState<number>(0);
 
   const getTokenDetails = useCallback(async () => {
