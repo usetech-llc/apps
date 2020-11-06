@@ -23,7 +23,7 @@ function NftTokenCard({ account, canTransferTokens, collection, openTransferModa
 
   const getTokenDetails = useCallback(async () => {
     try {
-      const tokenDetails = (await getDetailedRefungibleTokenInfo(collection.id, token)) || { Owner: [] };
+      const tokenDetails = (await getDetailedRefungibleTokenInfo(collection.id, token)) as any;
       const owner = tokenDetails.Owner.find((item: any) => item.owner.toString() === account);
       if (!owner) {
         return;
