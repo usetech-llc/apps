@@ -79,8 +79,8 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
     if (collection.offchainSchema.indexOf('image/{id}.pn') !== -1) {
       return collection.offchainSchema.replace('{id}.pn', `${tokenId}.png`)
     }
-    if (collection.offchainSchema.indexOf('image/{id') !== -1) {
-      return collection.offchainSchema.replace('{id', `${tokenId}`)
+    if (collection.offchainSchema.indexOf('images/{id') !== -1) {
+      return collection.offchainSchema.replace('{id', `${tokenId.toString()}`)
     }
     return '';
   },  []);

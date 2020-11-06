@@ -37,13 +37,13 @@ function createWebpack (ENV, context) {
       hmr: false, // switch off, Chrome WASM memory leak
       liveReload: false, // explict off, overrides hmr
       middleware: (app, builtins) => {
-        app.use(builtins.proxy('/health', {
+        app.use(builtins.proxy('/api/health', {
           changeOrigin: true,
-          target: 'http://localhost:3003/'
+          target: 'https://uniqueapps.usetech.com'
         }));
-        app.use(builtins.proxy('/mint', {
+        app.use(builtins.proxy('/api/mint', {
           changeOrigin: true,
-          target: 'http://localhost:3003/'
+          target: 'https://uniqueapps.usetech.com'
         }));
       },
       port: 3000,

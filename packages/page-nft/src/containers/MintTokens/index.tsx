@@ -37,7 +37,12 @@ function MintTokens ({ className }: MintTokensProps): React.ReactElement<MintTok
   const onFileUpload = useCallback((imageList: ImageListType, addUpdateIndex: number[] | undefined) => {
     // data for submit
     setImages(imageList as never[]);
-    setImageBase64(imageList[0] ? imageList[0].dataURL : undefined);
+    const imageBase64String = imageList[0] && imageList[0].dataURL ? imageList[0].dataURL : '';
+    const indexRemoveTo = imageBase64String.indexOf('base64,');
+    const shortBase64String = imageBase64String.length >= indexRemoveTo + 7
+      ? imageBase64String.replace(imageBase64String.substring(0, indexRemoveTo + 7), "")
+      : imageBase64String;
+    setImageBase64(shortBase64String);
   }, []);
 
   const onSaveToken = useCallback(() => {
