@@ -55,13 +55,13 @@ function useMintApi (): UseMintApiInterface {
       });
       localStorage.setItem('tokenCollections', JSON.stringify(collections));
     }
-    history.push('/api/wallet');
+    history.push('/wallet');
   }, []);
 
   const uploadImage = useCallback(async (file: ImageInterface) => {
     setImgLoading(true);
     try {
-      const response = await fetch('/mint', { // Your POST endpoint
+      const response = await fetch('/api/mint', { // Your POST endpoint
         method: 'POST',
         headers: {
           "Content-Type": "application/json"
