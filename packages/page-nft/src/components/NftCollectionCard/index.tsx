@@ -36,7 +36,7 @@ function NftCollectionCard({ account, canTransferTokens, collection, removeColle
     if (!account) {
       return;
     }
-    const tokensOfCollection = (await getTokensOfCollection(collection.id, account));
+    const tokensOfCollection = (await getTokensOfCollection(collection.id, account)) || [];
     setTokensOfCollection(tokensOfCollection);
   }, [account, collection, setTokensOfCollection]);
 

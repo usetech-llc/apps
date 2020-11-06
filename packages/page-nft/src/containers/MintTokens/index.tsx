@@ -31,7 +31,6 @@ function MintTokens ({ className }: MintTokensProps): React.ReactElement<MintTok
   const { imgLoading, serverIsReady, uploadImage } = useMintApi();
 
   const onChangeString = useCallback((value) => {
-    console.log('onChangeString', value);
     setImageName(value);
   }, [setImageName]);
 
