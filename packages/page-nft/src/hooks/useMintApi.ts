@@ -55,7 +55,7 @@ function useMintApi (): UseMintApiInterface {
       });
       localStorage.setItem('tokenCollections', JSON.stringify(collections));
     }
-    history.push('/wallet');
+    history.push('/api/wallet');
   }, []);
 
   const uploadImage = useCallback(async (file: ImageInterface) => {
@@ -79,7 +79,7 @@ function useMintApi (): UseMintApiInterface {
   }, []);
 
   useEffect(() => {
-    fetchData('/health').subscribe((result) => {
+    fetchData('/api/health').subscribe((result) => {
       if (result && result.connected) {
         setServerIsReady(true);
       } else {
