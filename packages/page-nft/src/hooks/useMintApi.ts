@@ -2,6 +2,7 @@
 import { ImageInterface } from '../types';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useHistory } from 'react-router-dom';
 import { of } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { switchMap, catchError } from 'rxjs/operators';
@@ -21,6 +22,7 @@ function useMintApi (): UseMintApiInterface {
   const [imgLoading, setImgLoading] = useState<boolean>(false);
   const [serverIsReady, setServerIsReady] = useState<boolean>(false);
   const [uploadedSuccessfully, setUploadedSuccessfully] = useState<boolean>(false);
+  const history = useHistory();
 
   const fetchData = useCallback((url: string) => {
     return fromFetch(url).pipe(
@@ -39,6 +41,23 @@ function useMintApi (): UseMintApiInterface {
     );
   }, []);
 
+  const addMintedTokenToWallet = useCallback(() => {
+    const collections: Array<any> = JSON.parse(localStorage.getItem('tokenCollections') || '[]');
+    if (!collections.length || !collections.find(collection => collection.id === 14)) {
+      collections.push({
+        decimalPoints: 0,
+        description: "The NFT collection for artists to mint and display their work",
+        id: 14,
+        isReFungible: false,
+        name: "Unique Gallery",
+        offchainSchema: "https://uniqueapps.usetech.com/gallery/api/images/{id",
+        prefix: "GAL",
+      });
+      localStorage.setItem('tokenCollections', JSON.stringify(collections));
+    }
+    history.push('/wallet');
+  }, []);
+
   const uploadImage = useCallback(async (file: ImageInterface) => {
     setImgLoading(true);
     try {
@@ -49,8 +68,9 @@ function useMintApi (): UseMintApiInterface {
         },
         body: JSON.stringify(file)
       });
-      console.log('response', response);
+      console.log('token added', response);
       setUploadedSuccessfully(true);
+      addMintedTokenToWallet();
       setImgLoading(false);
     } catch (e) {
       console.log('error uploading image', e);

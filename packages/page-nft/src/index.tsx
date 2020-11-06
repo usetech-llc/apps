@@ -4,8 +4,8 @@
 import { AppProps as Props } from '@polkadot/react-components/types';
 
 // external imports
-import React, { useCallback, useEffect, useState, useRef, useMemo } from 'react';
-import {Redirect, Route, Switch} from 'react-router';
+import React, { useMemo } from 'react';
+import { Redirect, Route, Switch } from 'react-router';
 
 // local imports and components
 import Tabs from '@polkadot/react-components/Tabs';

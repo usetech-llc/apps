@@ -10,10 +10,12 @@ import ImageUploading, { ImageListType } from 'react-images-uploading';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
+import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 // local imports and components
 import useMintApi from '../../hooks/useMintApi';
 import './styles.scss';
+import AccountSelector from "../../components/AccountSelector";
 
 interface MintTokensProps {
   className?: string;
@@ -25,7 +27,8 @@ function MintTokens ({ className }: MintTokensProps): React.ReactElement<MintTok
   const [images, setImages] = React.useState([]);
   const [imageBase64, setImageBase64] = useState<string | undefined>();
   const [imageName, setImageName] = useState<string | undefined>();
-  const { serverIsReady, uploadImage } = useMintApi();
+  const [account, setAccount] = useState<string | null>(null);
+  const { imgLoading, serverIsReady, uploadImage } = useMintApi();
 
   const onChangeString = useCallback((value) => {
     console.log('onChangeString', value);
@@ -39,10 +42,9 @@ function MintTokens ({ className }: MintTokensProps): React.ReactElement<MintTok
   }, []);
 
   const onSaveToken = useCallback(() => {
-    if (imageBase64 && imageName && serverIsReady) {
-      console.log('onSaveToken');
+    if (imageBase64 && imageName && serverIsReady && account) {
       const newToken: ImageInterface = {
-        address: '5G4WhxLhr9JtJhAggdz5v4G4v3nk9q32hQbepfXu9sCeAdWL',
+        address: account,
         image: imageBase64,
         name: imageName
       };
@@ -51,13 +53,16 @@ function MintTokens ({ className }: MintTokensProps): React.ReactElement<MintTok
     }
   }, [imageBase64, imageName]);
 
-  console.log('serverIsReady',  serverIsReady);
-
   return (
     <main className="mint-tokens">
       <Header as='h1'>Mint Tokens</Header>
       <Form className='collection-search'>
-        <Grid>
+        <Grid className='mint-grid'>
+          <Grid.Row>
+            <Grid.Column width={16}>
+              <AccountSelector onChange={setAccount} />
+            </Grid.Column>
+          </Grid.Row>
           <Grid.Row>
             <Grid.Column width={16}>
               <Form.Field>
@@ -137,6 +142,11 @@ function MintTokens ({ className }: MintTokensProps): React.ReactElement<MintTok
             </Grid.Column>
           </Grid.Row>
         </Grid>
+        { imgLoading && (
+          <div className='dimmer-loader'>
+            <Loader active inline='centered'>Loading transactions...</Loader>
+          </div>
+        )}
       </Form>
     </main>
   );
