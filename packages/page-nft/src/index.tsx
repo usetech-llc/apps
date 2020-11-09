@@ -18,7 +18,7 @@ function App ({ basePath, className }: Props): React.ReactElement<Props> {
   const items = useMemo(() => [
     {
       name: 'wallet',
-      text: 'Nft Wallet'
+      text: 'NFT Wallet'
     },
     {
       name: 'mintTokens',

@@ -50,7 +50,7 @@ function useMintApi (): UseMintApiInterface {
         id: 14,
         isReFungible: false,
         name: "Unique Gallery",
-        offchainSchema: "https://uniqueapps.usetech.com/gallery/api/images/{id",
+        offchainSchema: "https://uniqueapps.usetech.com/api/images/{id",
         prefix: "GAL",
       });
       localStorage.setItem('tokenCollections', JSON.stringify(collections));

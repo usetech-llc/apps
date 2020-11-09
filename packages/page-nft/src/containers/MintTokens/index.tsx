@@ -34,7 +34,7 @@ function MintTokens ({ className }: MintTokensProps): React.ReactElement<MintTok
     setImageName(value);
   }, [setImageName]);
 
-  const onFileUpload = useCallback((imageList: ImageListType, addUpdateIndex: number[] | undefined) => {
+  const onFileUpload = useCallback((imageList: ImageListType) => {
     // data for submit
     setImages(imageList as never[]);
     const imageBase64String = imageList[0] && imageList[0].dataURL ? imageList[0].dataURL : '';
@@ -148,7 +148,7 @@ function MintTokens ({ className }: MintTokensProps): React.ReactElement<MintTok
         </Grid>
         { imgLoading && (
           <div className='dimmer-loader'>
-            <Loader active inline='centered'>Loading transactions...</Loader>
+            <Loader active inline='centered'>Minting NFT...</Loader>
           </div>
         )}
       </Form>

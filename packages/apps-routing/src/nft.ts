@@ -14,6 +14,6 @@ export default function create (t: <T = string> (key: string, text: string, opti
     },
     icon: 'users',
     name: 'nft',
-    text: t<string>('nav.nft', 'Nft', { ns: 'apps-routing' }),
+    text: t<string>('nav.nft', 'NFT', { ns: 'apps-routing' }),
   };
 }
