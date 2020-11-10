@@ -11,6 +11,7 @@ import { Redirect, Route, Switch } from 'react-router';
 import Tabs from '@polkadot/react-components/Tabs';
 import NftWallet from './containers/NftWallet';
 import MintTokens from './containers/MintTokens';
+import BuyTokens from './containers/BuyTokens';
 import './styles.scss';
 
 function App ({ basePath, className }: Props): React.ReactElement<Props> {
@@ -23,6 +24,10 @@ function App ({ basePath, className }: Props): React.ReactElement<Props> {
     {
       name: 'mintTokens',
       text: 'Mint Tokens'
+    },
+    {
+      name: 'buyTokens',
+      text: 'Buy Tokens'
     },
   ], []);
 
@@ -40,6 +45,9 @@ function App ({ basePath, className }: Props): React.ReactElement<Props> {
         </Route>
         <Route path={`${basePath}/mintTokens`}>
           <MintTokens />
+        </Route>
+        <Route path={`${basePath}/buyTokens`}>
+          <BuyTokens />
         </Route>
         <Redirect to='/nft/wallet' />
       </Switch>
