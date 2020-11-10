@@ -3,7 +3,7 @@
 // global app props and types
 
 // external imports
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { memo, useCallback, useEffect, useState, useRef } from 'react';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 import { Table, LabelHelp } from '@polkadot/react-components';
@@ -177,4 +177,4 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
   );
 }
 
-export default React.memo(NftWallet);
+export default memo(NftWallet);

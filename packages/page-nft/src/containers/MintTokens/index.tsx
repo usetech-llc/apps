@@ -4,7 +4,7 @@
 import { ImageInterface } from '../../types';
 
 // external imports
-import React, { useCallback, useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { Button, Input } from '@polkadot/react-components';
 import ImageUploading, { ImageListType } from 'react-images-uploading';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
@@ -156,4 +156,4 @@ function MintTokens ({ className }: MintTokensProps): React.ReactElement<MintTok
   );
 }
 
-export default React.memo(MintTokens);
+export default memo(MintTokens);
