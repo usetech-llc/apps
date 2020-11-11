@@ -5,7 +5,7 @@ import { AppProps as Props } from '@polkadot/react-components/types';
 
 // external imports
 import React, { useMemo } from 'react';
-import { Redirect, Route, Switch } from 'react-router';
+import { Redirect, Route, Switch } from 'react-router-dom'
 
 // local imports and components
 import Tabs from '@polkadot/react-components/Tabs';
@@ -40,16 +40,19 @@ function App ({ basePath, className }: Props): React.ReactElement<Props> {
         />
       </header>
       <Switch>
-        <Route path={`${basePath}/wallet`}>
-          <NftWallet />
-        </Route>
-        <Route path={`${basePath}/mintTokens`}>
-          <MintTokens />
-        </Route>
-        <Route path={`${basePath}/buyTokens`}>
-          <BuyTokens />
-        </Route>
-        <Redirect to='/nft/wallet' />
+        <Route
+          component={NftWallet}
+          path={`${basePath}/wallet`}
+        />
+        <Route
+          component={MintTokens}
+          path={`${basePath}/mintTokens`}
+        />
+        <Route
+          component={BuyTokens}
+          path={`${basePath}/buyTokens`}
+        />
+        <Redirect to={`${basePath}/wallet`} />
       </Switch>
     </main>
   );

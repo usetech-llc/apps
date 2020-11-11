@@ -1,11 +1,12 @@
 .buy-tokens {
 
   .punks-for-sale {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
 
     .punk {
       line-height: 1.2em;
       margin-top: 20px;
-      min-height: 200px;
       width: 144px;
       display: flex;
       flex-direction: column;

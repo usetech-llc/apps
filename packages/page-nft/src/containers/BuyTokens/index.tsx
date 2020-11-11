@@ -6,10 +6,12 @@ import { url, imgPath } from '../../contants';
 
 // external imports
 import React, { memo, ReactElement } from 'react';
+import { Route, Switch } from 'react-router-dom'
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 
 // local imports and components
 import useMarketplace from '../../hooks/useMarketplace';
+import NftDetailsModal from '../../components/NftDetailsModal';
 import './styles.scss';
 
 interface BuyTokensProps {
@@ -37,10 +39,8 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
             <div className='punk' key={punkForSale.id}>
               <div className='punk-card'>
                 <a
-                  href={`${url}${imgPath}/details?id=${punkForSale.id}`}
-                  target='_blank'
+                  href={`/#/nft/buyTokens/token-details?id=${punkForSale.id}`}
                   title='Punk #${id}'
-                  rel='noopener noreferer'
                 >
                   <img
                     alt='Punk ${punkForSale.id}'
@@ -59,6 +59,13 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
           )
           })}
       </div>
+      <Switch>
+        <Route
+          component={NftDetailsModal}
+          path="*/token-details"
+          key="TokenDetailsModal"
+        />
+      </Switch>
     </div>
   )
 };
