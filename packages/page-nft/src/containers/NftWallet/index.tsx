@@ -4,36 +4,30 @@
 
 // external imports
 import React, { memo, useCallback, useEffect, useState, useRef } from 'react';
-import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 import { Table, LabelHelp } from '@polkadot/react-components';
 
 // local imports and components
 import { NftCollectionInterface } from '../../hooks/useCollection';
-import useBalance from '../../hooks/useBalance';
 import TransferModal from '../../components/TransferModal/';
 import TokenDetailsModal from '../../components/TokenDetailsModal/';
 import NftCollectionCard from '../../components/NftCollectionCard';
 import CollectionSearch from '../../components/CollectionSearch';
-import AccountSelector from '../../components/AccountSelector';
-import FormatBalance from '../../components/FormatBalance';
 import './styles.scss';
 
 interface NftWalletProps {
+  account: string | null;
   className?: string;
 }
 
-function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWalletProps> {
+function NftWallet ({ account, className }: NftWalletProps): React.ReactElement<NftWalletProps> {
   const collectionsStorage = JSON.parse(localStorage.getItem('tokenCollections') || '[]');
   const [openDetailedInformation, setOpenDetailedInformation] = useState<{ collection: NftCollectionInterface, tokenId: string } | null>(null);
   const [openTransfer, setOpenTransfer] = useState<{ collection: NftCollectionInterface, tokenId: string, balance: number } | null>(null);
-  const [account, setAccount] = useState<string | null>(null);
   const [shouldUpdateTokens, setShouldUpdateTokens] = useState<number | null>(null);
   const [collections, setCollections] = useState<Array<NftCollectionInterface>>(collectionsStorage);
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface | null>(null);
   const [canTransferTokens] = useState<boolean>(true);
-  // @ts-ignore
-  const { balance, existentialDeposit } = useBalance(account);
   const currentAccount = useRef<string | null | undefined>();
 
   const addCollection = useCallback((collection: NftCollectionInterface) => {
@@ -66,24 +60,7 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
     setOpenDetailedInformation(null);
   }, []);
 
-  const tokenUrl = useCallback((collection, tokenId: string): string => {
-    if (collection.offchainSchema.indexOf('image{id}.pn') !== -1) {
-      return collection.offchainSchema.replace('image{id}.pn', `image${tokenId}.png`)
-    }
-    if (collection.offchainSchema.indexOf('image{id}.jp') !== -1) {
-      return collection.offchainSchema.replace('image{id}.jp', `image${tokenId}.jpg`)
-    }
-    if (collection.offchainSchema.indexOf('image/{id}.jp') !== -1) {
-      return collection.offchainSchema.replace('{id}.jp', `${tokenId}.jpg`)
-    }
-    if (collection.offchainSchema.indexOf('image/{id}.pn') !== -1) {
-      return collection.offchainSchema.replace('{id}.pn', `${tokenId}.png`)
-    }
-    if (collection.offchainSchema.indexOf('images/{id') !== -1) {
-      return collection.offchainSchema.replace('{id', `${tokenId.toString()}`)
-    }
-    return '';
-  },  []);
+
 
   const updateTokens = useCallback((collectionId) => {
     setShouldUpdateTokens(collectionId);
@@ -100,25 +77,10 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
     localStorage.setItem('tokenCollections', JSON.stringify(collections));
   }, [collections]);
 
+  console.log('collections', collections);
+
   return (
     <div className="nft-wallet">
-      <Header as='h1'>Usetech NFT wallet</Header>
-      <Header as='h2'>Account</Header>
-      <Grid className='account-selector'>
-        <Grid.Row>
-          <Grid.Column width={12}>
-            <AccountSelector onChange={setAccount} />
-          </Grid.Column>
-          <Grid.Column width={4}>
-            { balance && (
-              <div className='balance-block'>
-                <label>Your account balance is:</label>
-                <FormatBalance value={balance.free} className='balance' />
-              </div>
-            )}
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
       <CollectionSearch
         account={account}
         addCollection={addCollection}
@@ -148,7 +110,6 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
                 removeCollection={removeCollection}
                 setShouldUpdateTokens={setShouldUpdateTokens}
                 shouldUpdateTokens={shouldUpdateTokens}
-                tokenUrl={tokenUrl}
               />
             </td>
           </tr>
@@ -159,7 +120,6 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
           collection={openDetailedInformation.collection}
           closeModal={closeDetailedInformationModal}
           tokenId={openDetailedInformation.tokenId}
-          tokenUrl={tokenUrl}
         />
       )}
       { openTransfer && openTransfer.tokenId && openTransfer.collection && (

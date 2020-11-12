@@ -10,3 +10,11 @@ export interface PunkForSaleInterface {
   my: boolean;
   price: string;
 }
+
+export interface Punk {
+  originalId : string;
+  owner: string;
+  sex: string;
+  attributes: Array<string>,
+  isOwned: boolean;
+}

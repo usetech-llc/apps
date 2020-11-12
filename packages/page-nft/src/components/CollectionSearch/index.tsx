@@ -8,7 +8,7 @@ import { Button, Input, Table, Label, LabelHelp } from '@polkadot/react-componen
 import { useApi } from '@polkadot/react-hooks';
 
 import useCollection, { NftCollectionInterface, NftCollectionBigInterface } from '../../hooks/useCollection';
-import './CollectionSearch.scss';
+import './styles.scss';
 
 interface Props {
   account: string | null | undefined;

@@ -11,6 +11,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      min-height: 200px;
+      justify-content: center;
 
       .punk-card {
         height: 144px;
@@ -23,6 +25,13 @@
             width: 100%;
           }
         }
+      }
+
+      .punk-id {
+        margin-top: 10px;
+        font-weight: bold;
+        font-size: 20px;
+        color: #A2DD18;
       }
 
       .punk-status {

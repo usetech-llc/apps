@@ -15,19 +15,18 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 // local imports and components
 import useMintApi from '../../hooks/useMintApi';
 import './styles.scss';
-import AccountSelector from "../../components/AccountSelector";
 
 interface MintTokensProps {
+  account: string | null;
   className?: string;
 }
 
 const maxFileSize = 5000000;
 
-function MintTokens ({ className }: MintTokensProps): React.ReactElement<MintTokensProps> {
+function MintTokens ({ account, className }: MintTokensProps): React.ReactElement<MintTokensProps> {
   const [images, setImages] = React.useState([]);
   const [imageBase64, setImageBase64] = useState<string | undefined>();
   const [imageName, setImageName] = useState<string | undefined>();
-  const [account, setAccount] = useState<string | null>(null);
   const { imgLoading, serverIsReady, uploadImage } = useMintApi();
 
   const onChangeString = useCallback((value) => {
@@ -59,14 +58,9 @@ function MintTokens ({ className }: MintTokensProps): React.ReactElement<MintTok
 
   return (
     <main className="mint-tokens">
-      <Header as='h1'>Mint Tokens</Header>
+      <Header as='h2'>Mint Tokens</Header>
       <Form className='collection-search'>
         <Grid className='mint-grid'>
-          <Grid.Row>
-            <Grid.Column width={16}>
-              <AccountSelector onChange={setAccount} />
-            </Grid.Column>
-          </Grid.Row>
           <Grid.Row>
             <Grid.Column width={16}>
               <Form.Field>

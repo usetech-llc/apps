@@ -1,15 +1,17 @@
 // Copyright 2020 @polkadot/app-nft authors & contributors
 
-import { PunkForSaleInterface } from '../types';
-import { url, path } from '../contants';
+import { PunkForSaleInterface, Punk } from '../types';
+import { url, path, attributes } from '../contants';
 
 import { useCallback, useEffect, useState } from 'react';
 import useFetch from '../hooks/useFetch';
 import useAccounts from './useAccounts';
+import {useApi} from "@polkadot/react-hooks/index";
 
 interface MarketPlaceInterface {
   errorWhileFetchingPunks: boolean;
   punksForSale: Array<PunkForSaleInterface>;
+  loadPunkFromChain: (contractAddress: string, collectionId: string, punkId: string) => Promise<Punk>;
 }
 
 interface PunkFromServerInterface {
@@ -22,12 +24,10 @@ const useMarketplace = (): MarketPlaceInterface => {
   const [errorWhileFetchingPunks, setErrorWhileFetchingPunks] = useState<boolean>(false);
   const { fetchData } = useFetch();
   const { allAccounts } = useAccounts();
-
-  console.log('punksForSale', punksForSale);
+  const { api } = useApi();
 
   const getTokensFromMarketplace = useCallback(() => {
     fetchData(`${url}${path}`).subscribe((result) => {
-      console.log('result', result);
       if (!result || result.error) {
         setErrorWhileFetchingPunks(true)
       } else {
@@ -43,11 +43,32 @@ const useMarketplace = (): MarketPlaceInterface => {
     });
   }, []);
 
+  const loadPunkFromChain = useCallback(async (contractAddress, collectionId, punkId) => {
+    console.log(`Loading punk ${punkId} from collection ${collectionId}`);
+
+    const item = await api.query.nft.nftItemList(collectionId, punkId) as { Data: any, Owner: any };
+    console.log("Received item: ", item);
+
+    let attrArray = [];
+    for (let i = 0; i < 7; i++) {
+      if (item.Data[i+3] != 255)
+        attrArray.push(attributes[item.Data[i+3]]);
+    }
+
+    return {
+      originalId : item.Data[0] + item.Data[1] * 256,
+      owner: item.Owner.toString(),
+      sex: (item.Data[2] == 1) ? "Female" : "Male",
+      attributes: attrArray,
+      isOwned: contractAddress === item.Owner
+    } as Punk;
+  }, []);
+
   useEffect(() => {
     getTokensFromMarketplace();
   }, []);
 
-  return { errorWhileFetchingPunks, punksForSale }
+  return { errorWhileFetchingPunks, punksForSale, loadPunkFromChain }
 };
 
 export default useMarketplace;

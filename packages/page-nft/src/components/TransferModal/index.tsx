@@ -6,9 +6,9 @@ import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
 import { Button, Input } from '@polkadot/react-components';
 import { TxButton } from '@polkadot/react-components';
 
-import './transferModal.scss';
 import useBalance from '../../hooks/useBalance';
 import { NftCollectionInterface } from '../../hooks/useCollection';
+import './styles.scss';
 
 interface Props {
   account: string | null;

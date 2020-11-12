@@ -4,7 +4,8 @@ import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
 import useCollection, { NftCollectionInterface } from '../../hooks/useCollection';
-import './NftTokenCard.scss';
+import useTokenUrl from '../../hooks/useTokenUrl';
+import './styles.scss';
 
 interface Props {
   account: string;
@@ -14,12 +15,12 @@ interface Props {
   openDetailedInformationModal: (collection: NftCollectionInterface, tokenId: string) => void;
   shouldUpdateTokens: number | null;
   token: string;
-  tokenUrl: (collection: NftCollectionInterface, tokenId: string) => string;
 }
 
-function NftTokenCard({ account, canTransferTokens, collection, openTransferModal, openDetailedInformationModal, shouldUpdateTokens, token, tokenUrl }: Props): React.ReactElement<Props> {
+function NftTokenCard({ account, canTransferTokens, collection, openTransferModal, openDetailedInformationModal, shouldUpdateTokens, token }: Props): React.ReactElement<Props> {
   const { getDetailedRefungibleTokenInfo } = useCollection();
   const [balance, setBalance] = useState<number>(0);
+  const src = useTokenUrl(collection, token);
 
   const getTokenDetails = useCallback(async () => {
     try {
@@ -53,7 +54,7 @@ function NftTokenCard({ account, canTransferTokens, collection, openTransferModa
     <tr className='token-row' key={token}>
       <td className='token-image'>
         <a onClick={openDetailedInformationModal.bind(null, collection, token)}>
-          <Item.Image size='mini' src={tokenUrl(collection, token)} />
+          <Item.Image size='mini' src={src} />
         </a>
       </td>
       <td className='token-name'>

@@ -3,7 +3,7 @@ import { MessageInterface } from '../types';
 
 import React from 'react';
 import Message from 'semantic-ui-react/dist/commonjs/collections/Message/Message';
-import './MessageWrapper.scss';
+import './styles.scss';
 
 interface Props {
   messages: Array<MessageInterface>;

@@ -3,62 +3,69 @@
 // global app props and types
 import { PunkForSaleInterface } from '../../types';
 import { url, imgPath } from '../../contants';
+import { NftCollectionInterface } from '../../hooks/useCollection';
 
 // external imports
 import React, { memo, ReactElement } from 'react';
 import { Route, Switch } from 'react-router-dom'
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
+import { Table } from '@polkadot/react-components';
 
 // local imports and components
 import useMarketplace from '../../hooks/useMarketplace';
 import NftDetailsModal from '../../components/NftDetailsModal';
+import NftCollectionCardForSale from '../../components/NftCollectionCardForSale';
 import './styles.scss';
 
 interface BuyTokensProps {
+  account: string | null;
   className?: string;
 }
 
-const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> => {
- const { punksForSale } = useMarketplace();
+const collectionsForSale: Array<NftCollectionInterface> = [
+  {
+    decimalPoints: 0,
+    description: 'Remake of classic CryptoPunks game',
+    id: 4,
+    isReFungible: false,
+    name: 'Substrapunks',
+    offchainSchema: 'https://ipfs-gateway.usetech.com/ipns/QmaMtDqE9nhMX9RQLTpaCboqg7bqkb6Gi67iCKMe8NDpCE/images/punks/image{id}.pn',
+    prefix: 'PNK'
+  },
+  {
+    decimalPoints: 0,
+    description: 'The NFT collection for artists to mint and display their work',
+    id: 14,
+    isReFungible: false,
+    name: 'Unique Gallery',
+    offchainSchema: 'https://uniqueapps.usetech.com/api/images/{id',
+    prefix: 'GAL',
+  }
+];
 
+const BuyTokens = ({ account, className }: BuyTokensProps): ReactElement<BuyTokensProps> => {
   return (
     <div className='buy-tokens'>
-      <Header as='h1'>Buy Tokens</Header>
-      <div className='punks-for-sale'>
-        { (punksForSale && punksForSale.length > 0) && punksForSale.map((punkForSale: PunkForSaleInterface) => {
-
-          let backgroundColor = 'd6adad';
-
-          if (punkForSale.isOwned) {
-            backgroundColor = 'adc9d6';
-          } if (punkForSale.price) {
-            backgroundColor = 'b8a7ce';
-          }
-
-          return (
-            <div className='punk' key={punkForSale.id}>
-              <div className='punk-card'>
-                <a
-                  href={`/#/nft/buyTokens/token-details?id=${punkForSale.id}`}
-                  title='Punk #${id}'
-                >
-                  <img
-                    alt='Punk ${punkForSale.id}'
-                    className='pixelated'
-                    src={`${url}${imgPath}/images/punks/image${punkForSale.id}.png`}
-                    style={{ backgroundColor }}
-                  />
-                </a>
-              </div>
-              <div className='punk-status'>
-                { (punkForSale.price && punkForSale.my) && <span>I'm selling: ${punkForSale.price} KSM</span> }
-                { (punkForSale.price && !punkForSale.my) && <span>For sale: ${punkForSale.price} KSM</span> }
-                { !punkForSale.price && <span>Idle</span> }
-              </div>
-            </div>
-          )
-          })}
-      </div>
+      <Header as='h2'>Buy Tokens</Header>
+      <Table
+        empty={'No collections added'}
+        header={[]}
+      >
+        { collectionsForSale.map((collection) => (
+          <tr key={collection.id}>
+            <td className='overflow'>
+              <NftCollectionCardForSale
+                account={account}
+                canTransferTokens
+                collection={collection}
+                openTransferModal={() => {}}
+                openDetailedInformationModal={() => {}}
+                shouldUpdateTokens={null}
+              />
+            </td>
+          </tr>
+        ))}
+      </Table>
       <Switch>
         <Route
           component={NftDetailsModal}

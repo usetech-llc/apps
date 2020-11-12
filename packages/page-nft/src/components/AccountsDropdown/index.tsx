@@ -1,10 +1,10 @@
 // Copyright 2020 UseTech authors & contributors
 import React, { useCallback, useEffect, useState, SyntheticEvent } from 'react';
 import { web3Accounts } from '@polkadot/extension-dapp';
-import Dropdown, {DropdownProps} from 'semantic-ui-react/dist/commonjs/modules/Dropdown';
+import Dropdown, { DropdownProps}  from 'semantic-ui-react/dist/commonjs/modules/Dropdown';
 
 import useAccounts from '../../hooks/useAccounts';
-import './accountsDropdown.scss';
+import './styles.scss';
 
 interface Props {
   account: string | null | undefined;
