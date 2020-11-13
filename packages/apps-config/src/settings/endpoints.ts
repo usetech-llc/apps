@@ -110,6 +110,12 @@ function createLiveNetworks (t: TFunction): LinkOption[] {
       value: 'wss://crab.darwinia.network'
     },
     {
+      info: 'darwinia',
+      text: t('rpc.darwinia', 'Darwinia', { ns: 'apps-config' }),
+      textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Darwinia Network' } }),
+      value: 'wss://cc1.darwinia.network'
+    },
+    {
       info: 'dock-mainnet',
       text: t('rpc.dock-mainnet', 'Dock Mainnet', { ns: 'apps-config' }),
       textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Dock Association' } }),
@@ -121,6 +127,12 @@ function createLiveNetworks (t: TFunction): LinkOption[] {
       text: t('rpc.edgeware', 'Edgeware', { ns: 'apps-config' }),
       textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Commonwealth Labs' } }),
       value: 'wss://mainnet1.edgewa.re'
+    },
+    {
+      info: 'equilibrium',
+      text: t('rpc.equilibrium', 'Equilibrium Mainnet', { ns: 'apps-config' }),
+      textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Equilibrium' } }),
+      value: 'wss://tge.equilibrium.io:9944'
     },
     {
       info: 'hanonycash',
@@ -165,69 +177,69 @@ function createLiveNetworks (t: TFunction): LinkOption[] {
 function createTestNetworks (t: TFunction): LinkOption[] {
   return [
     // polkadot test relays
-    {
-      dnslink: 'rococo',
-      info: 'rococo',
-      text: t('rpc.rococo', 'Rococo', { ns: 'apps-config' }),
-      textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Parity' } }),
-      value: 'wss://rococo-rpc.polkadot.io'
-    },
-    {
-      info: 'rococoTick',
-      isChild: true,
-      text: t('rpc.rococo.tick', 'Tick', { ns: 'apps-config' }),
-      textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Parity' } }),
-      value: 'wss://tick-rpc.polkadot.io'
-    },
-    {
-      info: 'rococoTrick',
-      isChild: true,
-      text: t('rpc.rococo.trick', 'Trick', { ns: 'apps-config' }),
-      textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Prity' } }),
-      value: 'wss://trick-rpc.polkadot.io'
-    },
-    {
-      info: 'rococoTrack',
-      isChild: true,
-      text: t('rpc.rococo.track', 'Track', { ns: 'apps-config' }),
-      textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Parity' } }),
-      value: 'wss://track-rpc.polkadot.io'
-    },
-    {
-      info: 'rococoAcala',
-      isChild: true,
-      text: t('rpc.rococo.acala', 'Mandala PC1', { ns: 'apps-config' }),
-      textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Acala' } }),
-      value: 'wss://rococo-1.acala.laminar.one'
-    },
-    {
-      info: 'rococoDarwinia',
-      isChild: true,
-      text: t('rpc.rococo.darwinia', 'Darwinia PC1', { ns: 'apps-config' }),
-      textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Darwinia Network' } }),
-      value: 'wss://parachain-rpc.darwinia.network'
-    },
-    {
-      info: 'rococoPlasm',
-      isChild: true,
-      text: t('rpc.rococo.plasm', 'Plasm PC1', { ns: 'apps-config' }),
-      textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Stake Technologies' } }),
-      value: 'wss://rpc.parachain.plasmnet.io'
-    },
-    {
-      info: 'rococoRobonomics',
-      isChild: true,
-      text: t('rpc.rococo.robonomics', 'Robonomics PC1', { ns: 'apps-config' }),
-      textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Airalab' } }),
-      value: 'wss://parachain-rpc.robonomics.network'
-    },
-    {
-      info: 'rococoLaminar',
-      isChild: true,
-      text: t('rpc.rococo.laminar', 'Turbulence PC1', { ns: 'apps-config' }),
-      textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Laminar' } }),
-      value: 'wss://rococo-1.laminar-chain.laminar.one'
-    },
+    // {
+    //   dnslink: 'rococo',
+    //   info: 'rococo',
+    //   text: t('rpc.rococo', 'Rococo', { ns: 'apps-config' }),
+    //   textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Parity' } }),
+    //   value: 'wss://rococo-rpc.polkadot.io'
+    // },
+    // {
+    //   info: 'rococoTick',
+    //   isChild: true,
+    //   text: t('rpc.rococo.tick', 'Tick', { ns: 'apps-config' }),
+    //   textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Parity' } }),
+    //   value: 'wss://tick-rpc.polkadot.io'
+    // },
+    // {
+    //   info: 'rococoTrick',
+    //   isChild: true,
+    //   text: t('rpc.rococo.trick', 'Trick', { ns: 'apps-config' }),
+    //   textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Prity' } }),
+    //   value: 'wss://trick-rpc.polkadot.io'
+    // },
+    // {
+    //   info: 'rococoTrack',
+    //   isChild: true,
+    //   text: t('rpc.rococo.track', 'Track', { ns: 'apps-config' }),
+    //   textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Parity' } }),
+    //   value: 'wss://track-rpc.polkadot.io'
+    // },
+    // {
+    //   info: 'rococoAcala',
+    //   isChild: true,
+    //   text: t('rpc.rococo.acala', 'Mandala PC1', { ns: 'apps-config' }),
+    //   textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Acala' } }),
+    //   value: 'wss://rococo-1.acala.laminar.one'
+    // },
+    // {
+    //   info: 'rococoDarwinia',
+    //   isChild: true,
+    //   text: t('rpc.rococo.darwinia', 'Darwinia PC1', { ns: 'apps-config' }),
+    //   textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Darwinia Network' } }),
+    //   value: 'wss://parachain-rpc.darwinia.network'
+    // },
+    // {
+    //   info: 'rococoPlasm',
+    //   isChild: true,
+    //   text: t('rpc.rococo.plasm', 'Plasm PC1', { ns: 'apps-config' }),
+    //   textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Stake Technologies' } }),
+    //   value: 'wss://rpc.parachain.plasmnet.io'
+    // },
+    // {
+    //   info: 'rococoRobonomics',
+    //   isChild: true,
+    //   text: t('rpc.rococo.robonomics', 'Robonomics PC1', { ns: 'apps-config' }),
+    //   textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Airalab' } }),
+    //   value: 'wss://parachain-rpc.robonomics.network'
+    // },
+    // {
+    //   info: 'rococoLaminar',
+    //   isChild: true,
+    //   text: t('rpc.rococo.laminar', 'Turbulence PC1', { ns: 'apps-config' }),
+    //   textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Laminar' } }),
+    //   value: 'wss://rococo-1.laminar-chain.laminar.one'
+    // },
     // alphabetical based on chain name
     {
       info: 'centrifuge',
@@ -246,6 +258,12 @@ function createTestNetworks (t: TFunction): LinkOption[] {
       text: t('rpc.beresheet', 'Beresheet', { ns: 'apps-config' }),
       textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Commonwealth Labs' } }),
       value: 'wss://beresheet1.edgewa.re'
+    },
+    {
+      info: 'bifrost',
+      text: t('rpc.bifrost', 'Bifrost Asgard', { ns: 'apps-config' }),
+      textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Bifrost' } }),
+      value: 'wss://testnet.liebi.com'
     },
     {
       info: 'canvas',
@@ -280,9 +298,9 @@ function createTestNetworks (t: TFunction): LinkOption[] {
     },
     {
       info: 'equilibrium',
-      text: t('rpc.equilibriumr', 'Equilibrium', { ns: 'apps-config' }),
+      text: t('rpc.equilibriumtestnet', 'Equilibrium Testnet', { ns: 'apps-config' }),
       textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Equilibrium' } }),
-      value: 'wss://api.testnet.equilibrium.io:9944'
+      value: 'wss://api.mvp.testnet.equilibrium.io'
     },
     {
       info: 'substrate',
@@ -294,13 +312,19 @@ function createTestNetworks (t: TFunction): LinkOption[] {
       info: 'acala',
       text: t('rpc.mandala', 'Mandala', { ns: 'apps-config' }),
       textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Acala' } }),
-      value: 'wss://node-6684611762228215808.jm.onfinality.io/ws'
+      value: 'wss://node-6714447553211260928.rz.onfinality.io/ws'
     },
     {
       info: 'kilt',
       text: t('rpc.kilt', 'Mashnet', { ns: 'apps-config' }),
       textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'KILT Protocol' } }),
       value: 'wss://full-nodes.kilt.io:9944/'
+    },
+    {
+      info: 'moonbaseAlpha',
+      text: t('rpc.moonbeam', 'Moonbase Alpha', { ns: 'apps-config' }),
+      textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Moonbeam Protocol' } }),
+      value: 'wss://wss.testnet.moonbeam.network'
     },
     {
       info: 'phala',
@@ -348,7 +372,7 @@ function createCustom (t: TFunction): LinkOption[] {
     : [];
 }
 
-export default function create (t: TFunction): LinkOption[] {
+export function createEndpoints (t: TFunction): LinkOption[] {
   return [
     ...createCustom(t),
     {
