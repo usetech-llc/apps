@@ -2221,7 +2221,7 @@ __metadata:
   resolution: "@polkadot/app-nft@workspace:packages/page-nft"
   dependencies:
     "@babel/runtime": ^7.9.2
-    "@polkadot/react-components": ^0.64.2-4
+    "@polkadot/react-components": ^0.66.2-13
   languageName: unknown
   linkType: soft
 
