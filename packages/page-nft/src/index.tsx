@@ -4,45 +4,17 @@
 import { AppProps as Props } from '@polkadot/react-components/types';
 
 // external imports
-import React, { useMemo } from 'react';
-import { Redirect, Route, Switch } from 'react-router';
+import React from 'react';
 
 // local imports and components
-import Tabs from '@polkadot/react-components/Tabs';
 import NftWallet from './containers/NftWallet';
-import MintTokens from './containers/MintTokens';
 import './styles.scss';
 
 function App ({ basePath, className }: Props): React.ReactElement<Props> {
 
-  const items = useMemo(() => [
-    {
-      name: 'wallet',
-      text: 'NFT Wallet'
-    },
-    {
-      name: 'mintTokens',
-      text: 'Mint Tokens'
-    },
-  ], []);
-
   return (
     <main className="nft--App">
-      <header>
-        <Tabs
-          basePath={basePath}
-          items={items}
-        />
-      </header>
-      <Switch>
-        <Route path={`${basePath}/wallet`}>
-          <NftWallet />
-        </Route>
-        <Route path={`${basePath}/mintTokens`}>
-          <MintTokens />
-        </Route>
-        <Redirect to='/nft/wallet' />
-      </Switch>
+      <NftWallet />
     </main>
   );
 }
