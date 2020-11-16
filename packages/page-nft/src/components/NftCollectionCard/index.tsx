@@ -1,7 +1,7 @@
 // Copyright 2020 UseTech authors & contributors
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
-import { ExpanderWithCallBack } from '@polkadot/react-components';
+import { Expander } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks';
 
 import useCollection, { NftCollectionInterface } from '../../hooks/useCollection';
@@ -27,11 +27,9 @@ function NftCollectionCard({ account, canTransferTokens, collection, removeColle
   const { getTokensOfCollection } = useCollection(api);
   const currentAccount = useRef<string | null | undefined>();
 
-  const openCollection = useCallback(() => {
-    if (!opened) {
-      void updateTokens();
-    }
-    setOpened(!opened);
+  const openCollection = useCallback((isOpen) => {
+    console.log('openCollection');
+    setOpened(isOpen);
   }, [account, opened, setTokensOfCollection]);
 
   const updateTokens = useCallback(async () => {
@@ -39,7 +37,7 @@ function NftCollectionCard({ account, canTransferTokens, collection, removeColle
       return;
     }
     const tokensOfCollection = (await getTokensOfCollection(collection.id, account));
-    setTokensOfCollection(tokensOfCollection);
+    setTokensOfCollection(tokensOfCollection || []);
   }, [account, collection, setTokensOfCollection]);
 
   // clear search results if account changed
@@ -58,8 +56,14 @@ function NftCollectionCard({ account, canTransferTokens, collection, removeColle
     }
   }, [shouldUpdateTokens]);
 
+  useEffect(() => {
+    if (opened) {
+      void updateTokens();
+    }
+  }, [opened]);
+
   return (
-    <ExpanderWithCallBack
+    <Expander
       className='nft-collection-item'
       isOpen={opened}
       summary={
@@ -76,7 +80,7 @@ function NftCollectionCard({ account, canTransferTokens, collection, removeColle
             }
           </>
         }
-      toggleOpen={openCollection}
+      onClick={openCollection}
     >
       <table className='table'>
         <tbody>
@@ -97,7 +101,7 @@ function NftCollectionCard({ account, canTransferTokens, collection, removeColle
       <Button onClick={removeCollection.bind(null, collection.id)} basic color='red'>
         Remove collection
       </Button>
-    </ExpanderWithCallBack>
+    </Expander>
   )
 }
 

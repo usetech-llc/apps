@@ -18,7 +18,8 @@ export interface NftCollectionInterface {
 function useCollection(api: PolkadotApiInterface | null) {
 
   const getTokensOfCollection = useCallback(async (collectionId: number, ownerId: string) => {
-    if (!api) {
+    console.log('api', api);
+    if (!api || !api.query.nft) {
       return;
     }
     return (await api.query.nft.addressTokens(collectionId, ownerId));
