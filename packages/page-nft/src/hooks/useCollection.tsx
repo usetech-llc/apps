@@ -1,8 +1,17 @@
 // Copyright 2020 UseTech authors & contributors
 import { useCallback } from 'react';
+import { useApi } from '@polkadot/react-hooks';
 
-interface PolkadotApiInterface {
-  query: any;
+export interface NftCollectionBigInterface {
+  id: number;
+  DecimalPoints: any;
+  Description: any;
+  Mode: {
+    isReFungible: boolean;
+  }
+  Name: any;
+  OffchainSchema: any;
+  TokenPrefix: any;
 }
 
 export interface NftCollectionInterface {
@@ -15,13 +24,14 @@ export interface NftCollectionInterface {
   prefix: string;
 }
 
-function useCollection(api: PolkadotApiInterface | null) {
+function useCollection() {
+  const { api } = useApi();
 
   const getTokensOfCollection = useCallback(async (collectionId: number, ownerId: string) => {
-    console.log('api', api);
-    if (!api || !api.query.nft) {
+    if (!api) {
       return;
     }
+    // @ts-ignore
     return (await api.query.nft.addressTokens(collectionId, ownerId));
   }, [api]);
 
@@ -29,6 +39,7 @@ function useCollection(api: PolkadotApiInterface | null) {
     if (!api) {
       return;
     }
+    // @ts-ignore
     return (await api.query.nft.collection(collectionId));
   }, []);
 
@@ -36,6 +47,7 @@ function useCollection(api: PolkadotApiInterface | null) {
     if (!api) {
       return;
     }
+    // @ts-ignore
     return (await api.query.nft.itemList([collectionId, tokenId]));
   }, [api]);
 
@@ -43,10 +55,38 @@ function useCollection(api: PolkadotApiInterface | null) {
     if (!api) {
       return;
     }
+    // @ts-ignore
     return (await api.query.nft.reFungibleItemList(collectionId, tokenId));
   }, [api]);
 
-  return { getTokensOfCollection, getDetailedTokenInfo, getDetailedCollectionInfo, getDetailedRefungibleTokenInfo };
+  const presetTokensCollections = useCallback(async () => {
+    if (!api) {
+      return;
+    }
+    try {
+      // @ts-ignore
+      const collectionsCount = (await api.query.nft.nextCollectionID()).toNumber();
+      const collections: Array<NftCollectionBigInterface> = [];
+      for (let i = 1; i <= collectionsCount; i++) {
+        const collectionInf = await getDetailedCollectionInfo(i) as any;
+        if (collectionInf && collectionInf.Owner && collectionInf.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
+          collections.push({ ...collectionInf, id: i });
+        }
+      }
+      return collections;
+    } catch (e) {
+      console.log('preset tokens collections error', e);
+      return [];
+    }
+  }, [api]);
+
+  return {
+    getTokensOfCollection,
+    getDetailedTokenInfo,
+    getDetailedCollectionInfo,
+    getDetailedRefungibleTokenInfo,
+    presetTokensCollections
+  };
 }
 
 export default useCollection;

@@ -14354,6 +14354,7 @@ fsevents@^1.2.7:
     i18next-scanner: ^2.11.0
     react: ^17.0.1
     react-dom: ^17.0.1
+    react-images-uploading: ^3.1.2
     react-is: ^17.0.1
     sass: ^1.26.8
     sass-loader: ^8.0.2
@@ -15064,6 +15065,16 @@ fsevents@^1.2.7:
     i18next: ">= 19.0.0"
     react: ">= 16.8.0"
   checksum: 7f0b0535bf2577b534b3c163761f3151a204ae0cd2c2cf286385f6af4401cfc74500f3843328c70c46e5a115ffcfbc007bfee6bea0961b92f7103f26204e8c3a
+  languageName: node
+  linkType: hard
+
+"react-images-uploading@npm:^3.1.2":
+  version: 3.1.2
+  resolution: "react-images-uploading@npm:3.1.2"
+  peerDependencies:
+    react: ^16.8.0
+    react-dom: ^16.8.0
+  checksum: b93dc20b4c5eec163694a4b4993bcbc244c9dd6302b10f0ad0337119551ff9c33ca2eef66dae4830ff14cdbf59df15309558f9deb45a249637ff20e5a1a72c61
   languageName: node
   linkType: hard
 

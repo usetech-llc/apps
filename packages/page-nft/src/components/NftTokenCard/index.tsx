@@ -5,7 +5,6 @@ import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
 import useCollection, { NftCollectionInterface } from '../../hooks/useCollection';
 import './NftTokenCard.scss';
-import {useApi} from "@polkadot/react-hooks/index";
 
 interface Props {
   account: string;
@@ -13,18 +12,18 @@ interface Props {
   collection: NftCollectionInterface;
   openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
   openDetailedInformationModal: (collection: NftCollectionInterface, tokenId: string) => void;
+  shouldUpdateTokens: number | null;
   token: string;
   tokenUrl: (collection: NftCollectionInterface, tokenId: string) => string;
 }
 
-function NftTokenCard({ account, canTransferTokens, collection, openTransferModal, openDetailedInformationModal, token, tokenUrl }: Props): React.ReactElement<Props> {
-  const { api } = useApi();
-  const { getDetailedRefungibleTokenInfo } = useCollection(api);
+function NftTokenCard({ account, canTransferTokens, collection, openTransferModal, openDetailedInformationModal, shouldUpdateTokens, token, tokenUrl }: Props): React.ReactElement<Props> {
+  const { getDetailedRefungibleTokenInfo } = useCollection();
   const [balance, setBalance] = useState<number>(0);
 
   const getTokenDetails = useCallback(async () => {
     try {
-      const tokenDetails = (await getDetailedRefungibleTokenInfo(collection.id, token));
+      const tokenDetails = (await getDetailedRefungibleTokenInfo(collection.id, token)) as any;
       const owner = tokenDetails.Owner.find((item: any) => item.owner.toString() === account);
       if (!owner) {
         return;
@@ -35,6 +34,12 @@ function NftTokenCard({ account, canTransferTokens, collection, openTransferModa
       console.error('token balance calculation error', e);
     }
   }, []);
+
+  useEffect(() => {
+    if (shouldUpdateTokens && shouldUpdateTokens === collection.id) {
+      void getTokenDetails();
+    }
+  }, [shouldUpdateTokens]);
 
   useEffect(() => {
     void getTokenDetails();

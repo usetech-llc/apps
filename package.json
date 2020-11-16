@@ -100,5 +100,8 @@
     "webpack-cli": "^3.3.12",
     "webpack-merge": "^5.2.0",
     "webpack-plugin-serve": "^1.2.0"
+  },
+  "dependencies": {
+    "react-images-uploading": "^3.1.2"
   }
 }

@@ -1,12 +1,13 @@
 // Copyright 2020 UseTech authors & contributors
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
 import { Button, Input } from '@polkadot/react-components';
 import { TxButton } from '@polkadot/react-components';
 
 import './transferModal.scss';
+import useBalance from '../../hooks/useBalance';
 import { NftCollectionInterface } from '../../hooks/useCollection';
 
 interface Props {
@@ -21,21 +22,21 @@ interface Props {
 
 function TransferModal({ account, balance, canTransferTokens, collection, closeModal, tokenId, updateTokens }: Props): React.ReactElement<Props> {
   const [recipient, setRecipient] = useState<string | null>(null);
-  const [tokenPart, setTokenPart] = useState<number | undefined>(0);
+  const [tokenPart, setTokenPart] = useState<number>(0);
+  const [isAddressError, setIsAddressError] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
-  // @ts-ignore
-  const [validationError, setValidationError] = useState<string | null>(null);
+  const balanceInfo = useBalance(recipient);
 
   const setRecipientAddress = useCallback((value) => {
     // setRecipient
     if (!value) {
-      console.log('setRecipientAddress error');
+      setIsAddressError(true);
     }
     if(value.length !== '5D73wtH5pqN99auP4b6KQRQAbketaSj4StkBJxACPBUAUdiq'.length) {
-      setValidationError('Wrong address');
+      setIsAddressError(true);
     }
     setRecipient(value);
-  }, [setValidationError, setRecipient]);
+  }, [setIsAddressError, setRecipient]);
 
   const setTokenPartToTransfer = useCallback((value) => {
     const numberValue = parseFloat(value);
@@ -50,6 +51,11 @@ function TransferModal({ account, balance, canTransferTokens, collection, closeM
     setTokenPart(parseFloat(value));
   }, []);
 
+  useEffect(() => {
+    const { balanceError } = balanceInfo;
+    setIsAddressError(balanceError);
+  }, [balanceInfo]);
+
   // @todo address validation
   return (
     <Modal size='tiny' open onClose={closeModal}>
@@ -61,6 +67,7 @@ function TransferModal({ account, balance, canTransferTokens, collection, closeM
           <Form.Field>
             <Input
               className='label-small'
+              isError={isAddressError}
               label='Please enter an address you want to transfer'
               onChange={setRecipientAddress}
               placeholder='Recipient address'
@@ -94,7 +101,7 @@ function TransferModal({ account, balance, canTransferTokens, collection, closeM
           label='Submit'
           onStart={closeModal}
           onSuccess={updateTokens.bind(null, collection.id)}
-          params={[recipient, collection.id, tokenId, tokenPart]}
+          params={[recipient, collection.id, tokenId, (tokenPart * Math.pow(10, collection.decimalPoints))]}
           tx='nft.transfer'
         />
       </Modal.Actions>

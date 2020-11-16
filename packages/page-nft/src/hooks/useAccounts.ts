@@ -4,7 +4,6 @@
 
 import { useEffect, useState } from 'react';
 import accountObservable from '@polkadot/ui-keyring/observable/accounts';
-// import keyringOptionInstance from '@polkadot/ui-keyring/options';
 
 import useIsMountedRef from './useIsMountedRef';
 

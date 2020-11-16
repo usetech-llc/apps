@@ -1,49 +1,41 @@
 // Copyright 2020 UseTech authors & contributors
 
-import React, { useCallback, useMemo, useState, useRef, useEffect } from 'react';
+import React, { useCallback, useState, useRef, useEffect } from 'react';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
-import { Button, Input, Table } from '@polkadot/react-components';
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
+import { Button, Input, Table, Label, LabelHelp } from '@polkadot/react-components';
+import { useApi } from '@polkadot/react-hooks';
 
-import useCollection, { NftCollectionInterface } from '../../hooks/useCollection';
+import useCollection, { NftCollectionInterface, NftCollectionBigInterface } from '../../hooks/useCollection';
 import './CollectionSearch.scss';
 
 interface Props {
   account: string | null | undefined;
   addCollection: (item: NftCollectionInterface) => void;
-  api: any;
   collections: Array<{ id: number, name: string }>;
 }
 
-function CollectionSearch({ api, addCollection, account, collections }: Props): React.ReactElement<Props> {
-  const [collectionInfo, setCollectionInfo] = useState<any>(null);
-  const [collectionId, setCollectionId] = useState<number | null>(null);
+function CollectionSearch({ addCollection, account, collections }: Props): React.ReactElement<Props> {
+  const { api } = useApi();
+  const [collectionsAvailable, setCollectionsAvailabe] = useState<Array<NftCollectionBigInterface>>([]);
+  const [collectionsMatched, setCollectionsMatched] = useState<Array<NftCollectionBigInterface>>([]);
   const [searchString, setSearchString] = useState<string>('');
-  const { getDetailedCollectionInfo } = useCollection(api);
+  const { presetTokensCollections } = useCollection();
   const currentAccount = useRef<string | null | undefined>();
 
-  const setCollection = useCallback((value: string) => {
-    setSearchString(value);
-    // setCollection to search
-    if (!value && value !== '0') {
-      return
-    }
-    setCollectionId(parseInt(value, 10));
-  }, []);
-
   const searchCollection = useCallback(async () => {
-    if (!collectionId) {
-      return;
-    }
-
-    const collectionInf = await getDetailedCollectionInfo(collectionId);
-
-    if (collectionInf && collectionInf.Owner && collectionInf.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
-      setCollectionInfo({ ...collectionInf, id: collectionId });
-    } else {
-      setCollectionInfo(null);
-    }
-  }, [collectionId]);
+    const filteredCollections = collectionsAvailable.filter((collection) => {
+      const collectionName = collectionName16Decoder(collection.Name).toLowerCase();
+      if (
+        collectionName.indexOf(searchString.toLowerCase()) !== -1
+        || collection.id.toString().toLowerCase().indexOf(searchString.toLowerCase()) !== -1
+      ) {
+        return collection;
+      } return null;
+    });
+    setCollectionsMatched(filteredCollections);
+  }, [collectionsAvailable, searchString]);
 
   const hasThisCollection = useCallback((collectionInfo) => {
     return !!collections.find(collection => collection.id === collectionInfo.id);
@@ -61,83 +53,101 @@ function CollectionSearch({ api, addCollection, account, collections }: Props): 
     return String.fromCharCode(...collectionNameArr);
   }, []);
 
-  const addCollectionToAccount = useCallback(() => {
-    if (!collectionId || !collectionInfo) {
-      return;
-    }
+  const addCollectionToAccount = useCallback((item: NftCollectionBigInterface) => {
     addCollection({
-      id: collectionId,
-      decimalPoints: collectionInfo.DecimalPoints.toNumber(),
-      description: collectionName16Decoder(collectionInfo.Description),
-      name: collectionName16Decoder(collectionInfo.Name),
-      offchainSchema: collectionName8Decoder(collectionInfo.OffchainSchema),
-      prefix: collectionName8Decoder(collectionInfo.TokenPrefix),
-      isReFungible: collectionInfo.Mode.isReFungible,
+      id: item.id,
+      decimalPoints: item.DecimalPoints.toNumber(),
+      description: collectionName16Decoder(item.Description),
+      name: collectionName16Decoder(item.Name),
+      offchainSchema: collectionName8Decoder(item.OffchainSchema),
+      prefix: collectionName8Decoder(item.TokenPrefix),
+      isReFungible: item.Mode.isReFungible,
     })
-  }, [addCollection, collectionId, collectionInfo]);
+  }, [addCollection]);
 
-  const header = useMemo(() => [
-    ['Search results', 'start'],
-    [],
-  ], []);
+  const getCollections = useCallback(async () => {
+    const collections = await presetTokensCollections();
+    if (collections && collections.length) {
+      setCollectionsAvailabe(collections);
+    }
+  }, []);
 
   // clear search results if account changed
   useEffect(() => {
     if (currentAccount.current && currentAccount.current !== account) {
-      setCollectionInfo(null);
-      setCollectionId(null);
+      setCollectionsMatched([]);
       setSearchString('');
     }
     currentAccount.current = account;
   }, [account]);
 
+  useEffect(() => {
+    void getCollections();
+  }, [api]);
+
   return (
-    <Form className='collection-search' onSubmit={searchCollection}>
-      <Grid>
-        { account && (
-          <Grid.Row>
-            <Grid.Column width={16}>
-              <Form.Field>
-                <Input
-                  className='explorer--query label-small'
-                  label='Find and add your token collection'
-                  onChange={setCollection}
-                  value={searchString}
-                  placeholder='Search...'
-                  withLabel
-                >
-                  <Button
-                    icon='play'
-                    onClick={searchCollection}
-                  />
-                </Input>
-              </Form.Field>
-            </Grid.Column>
-          </Grid.Row>
-        )}
-        <Table
-          empty={'No results'}
-          header={header}
-        >
-          {(collectionId && collectionInfo) && (
-            <tr className='collection-row'>
-              <td className='collection-name'>
-                Collection name: <strong>{collectionName16Decoder(collectionInfo.Name)}</strong>
-              </td>
-              <td className='collection-actions'>
-                <Button
-                  isBasic
-                  isDisabled={hasThisCollection(collectionInfo)}
-                  icon='plus'
-                  label='Add collection'
-                  onClick={addCollectionToAccount}
-                />
-              </td>
-            </tr>
+    <>
+      <Header as='h2'>
+        Find token collection
+        <LabelHelp
+          className='small-help'
+          help={'Enter the collection number or name'}
+        />
+      </Header>
+      <Form className='collection-search' onSubmit={searchCollection}>
+        <Grid>
+          { account && (
+            <Grid.Row>
+              <Grid.Column width={16}>
+                <Form.Field>
+                  <Input
+                    className='explorer--query label-small'
+                    isDisabled={!collectionsAvailable.length}
+                    label={<span>Find and add your token collection. For example, you can add tokens from <a href='https://ipfs-gateway.usetech.com/ipns/QmaMtDqE9nhMX9RQLTpaCboqg7bqkb6Gi67iCKMe8NDpCE/' target='_blank' rel='noopener noreferrer'>SubstraPunks</a></span>}
+                    onChange={setSearchString}
+                    value={searchString}
+                    placeholder='Search...'
+                    withLabel
+                  >
+                    <Button
+                      icon='play'
+                      onClick={searchCollection}
+                    />
+                  </Input>
+                </Form.Field>
+              </Grid.Column>
+            </Grid.Row>
           )}
-        </Table>
-      </Grid>
-    </Form>
+          <Label
+            className='small-help-label'
+            help={'Add the collection you want'}
+            label={'Search results'}
+          />
+          <Table
+            empty={'No results'}
+            header={[]}
+          >
+            {collectionsMatched.map((item) => (
+              <tr className='collection-row' key={item.id}>
+                <td className='collection-name'>
+                  Collection name: <strong>{collectionName16Decoder(item.Name)}</strong>
+                </td>
+                <td className='collection-actions'>
+                  <Button
+                    isBasic
+                    isDisabled={hasThisCollection(item)}
+                    icon='plus'
+                    label='Add collection'
+                    onClick={addCollectionToAccount.bind(null, item)}
+                  />
+                </td>
+              </tr>
+            ))}
+          </Table>
+        </Grid>
+      </Form>
+    </>
+
   )
 }
 

@@ -2,7 +2,6 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import { Expander } from '@polkadot/react-components';
-import { useApi } from '@polkadot/react-hooks';
 
 import useCollection, { NftCollectionInterface } from '../../hooks/useCollection';
 import NftTokenCard from '../NftTokenCard';
@@ -23,12 +22,10 @@ interface Props {
 function NftCollectionCard({ account, canTransferTokens, collection, removeCollection, openTransferModal, openDetailedInformationModal, setShouldUpdateTokens, shouldUpdateTokens, tokenUrl }: Props): React.ReactElement<Props> {
   const [opened, setOpened] = useState(false);
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
-  const { api } = useApi();
-  const { getTokensOfCollection } = useCollection(api);
+  const { getTokensOfCollection } = useCollection();
   const currentAccount = useRef<string | null | undefined>();
 
   const openCollection = useCallback((isOpen) => {
-    console.log('openCollection');
     setOpened(isOpen);
   }, [account, opened, setTokensOfCollection]);
 
@@ -36,8 +33,8 @@ function NftCollectionCard({ account, canTransferTokens, collection, removeColle
     if (!account) {
       return;
     }
-    const tokensOfCollection = (await getTokensOfCollection(collection.id, account));
-    setTokensOfCollection(tokensOfCollection || []);
+    const tokensOfCollection = (await getTokensOfCollection(collection.id, account)) as any;
+    setTokensOfCollection(tokensOfCollection);
   }, [account, collection, setTokensOfCollection]);
 
   // clear search results if account changed
@@ -92,6 +89,7 @@ function NftCollectionCard({ account, canTransferTokens, collection, removeColle
               key={token}
               openTransferModal={openTransferModal}
               openDetailedInformationModal={openDetailedInformationModal}
+              shouldUpdateTokens={shouldUpdateTokens}
               token={token}
               tokenUrl={tokenUrl}
             />
