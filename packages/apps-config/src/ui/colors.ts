@@ -23,6 +23,7 @@ const chainRoccoTick = '#22bb22';
 const chainRoccoTrack = '#bb2222';
 const chainRoccoTrick = '#2222bb';
 const chainWestend = '#da68a7';
+const nftTestnet = '#A2DD18';
 
 // based on node name
 // alphabetical
@@ -61,7 +62,8 @@ const chainColors: Record<string, any> = [
   ['Tick', chainRoccoTick],
   ['Track', chainRoccoTrack],
   ['Trick', chainRoccoTrick],
-  ['Westend', chainWestend]
+  ['Westend', chainWestend],
+  ['NFT Testnet', nftTestnet]
 ].reduce((colors, [chain, color]): Record<string, any> => ({
   ...colors,
   [chain.toLowerCase()]: color
