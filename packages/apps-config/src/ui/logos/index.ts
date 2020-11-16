@@ -11,6 +11,7 @@ import chainRococo from './chains/rococo.svg';
 import chainRococoTick from './chains/rococo-tick.svg';
 import chainRococoTrack from './chains/rococo-track.svg';
 import chainRococoTrick from './chains/rococo-trick.svg';
+import chainUseTech from './chains/usetech.svg';
 
 // defaults for the node type, assuming we don't have a specific chain, but rather match on the implementation
 // alphabetical
@@ -61,6 +62,7 @@ import emptyLogo from './empty.svg';
 // NOTE: this matches up with RPC system.chain
 // alphabetical
 const chainLogos: Record<string, any> = [
+  ['NFT Testnet', chainUseTech],
   ['darwinia crab', nodeCrab],
   ['Dusty', chainDusty],
   ['Kusama', chainKusama], // new name after CC3
