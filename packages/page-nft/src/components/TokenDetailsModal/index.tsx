@@ -4,7 +4,7 @@ import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 import { Button } from '@polkadot/react-components';
 
 import { NftCollectionInterface } from '../../hooks/useCollection';
-import './tokenDetailsModal.scss';
+import './styles.scss';
 
 interface Props {
   collection: NftCollectionInterface;
