@@ -1,8 +1,8 @@
 {
-  "name": "@polkadot/app-nft",
+  "name": "@polkadot/app-nft-wallet",
   "private": true,
   "version": "1",
-  "description": "Nft functional",
+  "description": "Nft wallet functional",
   "main": "index.js",
   "scripts": {},
   "author": "Konstantin Pozdnikin <kpozdnikin@usetech.ru>",
