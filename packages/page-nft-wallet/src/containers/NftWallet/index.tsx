@@ -32,8 +32,7 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
   const [collections, setCollections] = useState<Array<NftCollectionInterface>>(collectionsStorage);
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface | null>(null);
   const [canTransferTokens] = useState<boolean>(true);
-  // @ts-ignore
-  const { balance, existentialDeposit } = useBalance(account);
+  const { balance } = useBalance(account);
   const currentAccount = useRef<string | null | undefined>();
 
   const addCollection = useCallback((collection: NftCollectionInterface) => {
@@ -100,6 +99,8 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
     localStorage.setItem('tokenCollections', JSON.stringify(collections));
   }, [collections]);
 
+  console.log('balance.free', balance);
+
   return (
     <div className="nft-wallet">
       <Header as='h1'>Usetech NFT wallet</Header>
@@ -114,6 +115,7 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
               <div className='balance-block'>
                 <label>Your account balance is:</label>
                 <FormatBalance value={balance.free} className='balance' />
+                { balance && balance.free.toNumber() }
               </div>
             )}
           </Grid.Column>
