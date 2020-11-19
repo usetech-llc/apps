@@ -70,8 +70,8 @@ function useMintApi (): UseMintApiInterface {
       });
       console.log('token added', response);
       setUploadedSuccessfully(true);
-      addMintedTokenToWallet();
       setImgLoading(false);
+      addMintedTokenToWallet();
     } catch (e) {
       console.log('error uploading image', e);
       setImgLoading(false)
@@ -79,13 +79,16 @@ function useMintApi (): UseMintApiInterface {
   }, []);
 
   useEffect(() => {
-    fetchData('/api/health').subscribe((result) => {
+    const fetchHealth = fetchData('/api/health').subscribe((result) => {
       if (result && result.connected) {
         setServerIsReady(true);
       } else {
         setServerIsReady(false);
       }
     });
+    return () => {
+      fetchHealth.unsubscribe();
+    }
   }, [fetchData, setServerIsReady]);
 
   return { imgLoading, serverIsReady, uploadImage, uploadedSuccessfully };

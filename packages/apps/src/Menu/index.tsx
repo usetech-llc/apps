@@ -124,8 +124,6 @@ function Menu ({ className = '' }: Props): React.ReactElement<Props> {
 
   const isLoading = !apiProps.isApiReady || !apiProps.isApiConnected;
 
-  console.log('visibleGroups', visibleGroups);
-
   return (
     <div className={`${className}${isLoading ? ' isLoading' : ''} highlight--bg`}>
       <div className='menuSection'>
