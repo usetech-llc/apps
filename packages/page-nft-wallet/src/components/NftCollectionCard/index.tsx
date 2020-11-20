@@ -3,7 +3,7 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import { Expander } from '@polkadot/react-components';
 
-import useCollection, { NftCollectionInterface } from '../../hooks/useCollection';
+import { useCollections, NftCollectionInterface } from '@polkadot/react-hooks';
 import NftTokenCard from '../NftTokenCard';
 import './NftCollectionCard.scss';
 
@@ -22,7 +22,7 @@ interface Props {
 function NftCollectionCard({ account, canTransferTokens, collection, removeCollection, openTransferModal, openDetailedInformationModal, setShouldUpdateTokens, shouldUpdateTokens, tokenUrl }: Props): React.ReactElement<Props> {
   const [opened, setOpened] = useState(false);
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
-  const { getTokensOfCollection } = useCollection();
+  const { getTokensOfCollection } = useCollections();
   const currentAccount = useRef<string | null | undefined>();
 
   const openCollection = useCallback((isOpen) => {

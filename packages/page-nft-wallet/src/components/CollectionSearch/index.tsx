@@ -5,9 +5,10 @@ import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import { Button, Input, Table, Label, LabelHelp } from '@polkadot/react-components';
+import { useCollections, NftCollectionInterface, NftCollectionBigInterface } from '@polkadot/react-hooks';
+
 import { useApi } from '@polkadot/react-hooks';
 
-import useCollection, { NftCollectionInterface, NftCollectionBigInterface } from '../../hooks/useCollection';
 import './CollectionSearch.scss';
 
 interface Props {
@@ -21,7 +22,7 @@ function CollectionSearch({ addCollection, account, collections }: Props): React
   const [collectionsAvailable, setCollectionsAvailabe] = useState<Array<NftCollectionBigInterface>>([]);
   const [collectionsMatched, setCollectionsMatched] = useState<Array<NftCollectionBigInterface>>([]);
   const [searchString, setSearchString] = useState<string>('');
-  const { presetTokensCollections } = useCollection();
+  const { presetTokensCollections } = useCollections();
   const currentAccount = useRef<string | null | undefined>();
 
   const searchCollection = useCallback(async () => {

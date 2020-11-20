@@ -24,7 +24,7 @@ export interface NftCollectionInterface {
   prefix: string;
 }
 
-function useCollection() {
+export function useCollections() {
   const { api } = useApi();
 
   const getTokensOfCollection = useCallback(async (collectionId: number, ownerId: string) => {
@@ -88,5 +88,3 @@ function useCollection() {
     presetTokensCollections
   };
 }
-
-export default useCollection;

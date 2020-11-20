@@ -5,10 +5,10 @@ import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
 import { Button, Input } from '@polkadot/react-components';
 import { TxButton } from '@polkadot/react-components';
+import { NftCollectionInterface } from '@polkadot/react-hooks';
 
 import './transferModal.scss';
 import useBalance from '../../hooks/useBalance';
-import { NftCollectionInterface } from '../../hooks/useCollection';
 
 interface Props {
   account: string | null;

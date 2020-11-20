@@ -11,6 +11,8 @@ export { useBlockTime } from './useBlockTime';
 export { useCacheKey } from './useCacheKey';
 export { useCall } from './useCall';
 export { useContracts } from './useContracts';
+export { useCollections, NftCollectionInterface, NftCollectionBigInterface } from './useCollections';
+export { useFetch } from './useFetch';
 export { useFormField } from './useFormField';
 export { useDebounce } from './useDebounce';
 export { useFavorites } from './useFavorites';

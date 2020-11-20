@@ -9,13 +9,15 @@ import { Route, Switch } from 'react-router';
 
 // local imports and components
 import Tabs from '@polkadot/react-components/Tabs';
+import NftStore from './containers/NftStore';
 import './styles.scss';
 
 function App ({ basePath, className }: Props): React.ReactElement<Props> {
 
   const items = useMemo(() => [
     {
-      name: 'nftStore',
+      isRoot: true,
+      name: 'store',
       text: 'NFT Store'
     }
   ], []);
@@ -29,8 +31,8 @@ function App ({ basePath, className }: Props): React.ReactElement<Props> {
         />
       </header>
       <Switch>
-        <Route path={`${basePath}/nftStore`}>
-          NftStore
+        <Route path={basePath}>
+          <NftStore />
         </Route>
         {/* <Redirect to='/nft/wallet' /> */}
       </Switch>

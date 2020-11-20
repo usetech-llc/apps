@@ -2,8 +2,8 @@
 import React, { useCallback, useEffect } from 'react';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 import { Button } from '@polkadot/react-components';
+import { NftCollectionInterface } from '@polkadot/react-hooks';
 
-import { NftCollectionInterface } from '../../hooks/useCollection';
 import './styles.scss';
 
 interface Props {

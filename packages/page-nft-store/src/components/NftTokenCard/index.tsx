@@ -4,7 +4,7 @@ import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 import { NftCollectionInterface, useCollections } from '@polkadot/react-hooks';
 
-import './NftTokenCard.scss';
+import './styles.scss';
 
 interface Props {
   account: string;
