@@ -1,19 +1,22 @@
 // Copyright 2020 UseTech authors & contributors
 import { imgPath, url } from '../../constants';
 
-import React, { useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useCallback, useState } from 'react';
+import { useLocation, Link } from 'react-router-dom';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 import { Button } from '@polkadot/react-components';
 
+import TradeContainer from '../TradeContainer';
 import './styles.scss';
 
 interface Props {
+  account: string;
   className?: string;
 }
 
-function NftDetailsModal({ className }: Props): React.ReactElement<Props> {
+function NftDetailsModal({ account, className }: Props): React.ReactElement<Props> {
+  const [accessories, setAccessories] = useState<Array<string>>([]);
   const search = useLocation().search;
   console.log('search', search);
 
@@ -32,7 +35,7 @@ function NftDetailsModal({ className }: Props): React.ReactElement<Props> {
 
 
   return (
-    <Modal className="nft-details" size='small' open onClose={closeModal}>
+    <Modal className="nft-details" size='large' open onClose={closeModal}>
       <Modal.Header>NFT Token Details</Modal.Header>
       <Modal.Content>
         <div className='token-image'>
@@ -40,7 +43,19 @@ function NftDetailsModal({ className }: Props): React.ReactElement<Props> {
         </div>
         <div className='token-info'>
           <Header as='h3'>{collectionName} #{punkId}</Header>
+          <p><strong>Mail punk</strong></p>
+          <Header as='h4'>Accessories</Header>
+          { accessories.map((accessory) => (
+            <div className='accessory'>Red Glasses</div>
+          ))}
+          <Header as='h4'>Ownership</Header>
+          <p><strong>You own it!</strong> (address: {account})</p>
+          <Header as='h4'>Selling this NFT</Header>
         </div>
+        <TradeContainer />
+        <p>
+          Also you can use the <Link to='/wallet'>NFT Wallet</Link> to find SubstraPunks collection (search for Collection #4 there) and transfer your character to someone else. By the way, the transfers for SubstraPunks collection are free!
+        </p>
       </Modal.Content>
       <Modal.Actions>
         <Button

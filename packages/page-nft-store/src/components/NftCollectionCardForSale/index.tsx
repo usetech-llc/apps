@@ -78,7 +78,7 @@ function Index({ account, canTransferTokens, collection, openTransferModal, open
               <div className='punk' key={punkForSale.id}>
                 <div className='punk-card'>
                   <a
-                    href={`/#/nft/buyTokens/token-details?collection=${collection.name}&id=${punkForSale.id}`}
+                    href={`/#/store/token-details?collection=${collection.name}&id=${punkForSale.id}`}
                     title='Punk #${id}'
                   >
                     <img

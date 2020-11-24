@@ -76,13 +76,18 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
           </Grid.Column>
         </Grid.Row>
       </Grid>
-      <Switch>
-        <Route
-          component={NftDetailsModal}
-          path="*/token-details"
-          key="TokenDetailsModal"
-        />
-      </Switch>
+      { account && (
+        <Switch>
+          <Route
+            path="*/token-details"
+            key="TokenDetailsModal"
+          >
+            <NftDetailsModal
+              account={account}
+            />
+          </Route>
+        </Switch>
+      )}
     </div>
   )
 };
