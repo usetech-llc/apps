@@ -10,3 +10,13 @@ export const attributes = [
   "Up Hair", "Down Hair", "Mahawk", "Red Mahawk", "Orange Hair", "Bubble Hair", "Emo Hair", "Thin Hair", "Bald", "Blonde Hair", "Caret Hair", "Pony Tails",
   "Cigar", "Pipe"
 ];
+
+export const wsEndpoint = "wss://unique.usetech.com";
+export const wsEndpointKusama = "wss://kusama-rpc.polkadot.io";
+export const punkCollectionId = 4;
+export const collectionDataSize = 20;
+export const punksToImport = 10000;
+export const punksContractAddress = "5HcHQXGHxMCgdf7w7oRZ3Gws2BtSsGqzzs316V7ZtCs5nWb2";
+export const marketContractAddress = "5H3Cu2eJS5ipiQRoFaMTvgdeAGdEbEZrdA58WCWXdLSD8mGn";
+export const vaultAddress = "5Gs3Vmbsr2xaBLCKwTqvUfT511u14QB9jqks2WEsQyWvNvLC";
+export const offchainSchema = "https://ipfs-gateway.usetech.com/ipns/QmaMtDqE9nhMX9RQLTpaCboqg7bqkb6Gi67iCKMe8NDpCE/images/punks/image{id}.png";

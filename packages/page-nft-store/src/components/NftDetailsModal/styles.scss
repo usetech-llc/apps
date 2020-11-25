@@ -31,4 +31,9 @@
   h4.ui.header {
     margin: 1.5rem 0;
   }
+
+  .attributes {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
 }

@@ -1,7 +1,7 @@
 // Copyright 2020 @polkadot/app-nft authors & contributors
 
 import { PunkForSaleInterface, Punk } from '../types';
-import { url, path, attributes } from '../constants';
+import { url, path, attributes, punkCollectionId, punksContractAddress } from '../constants';
 
 import { useCallback, useEffect, useState } from 'react';
 import { useFetch, useAccounts, useApi } from '@polkadot/react-hooks';
@@ -9,7 +9,7 @@ import { useFetch, useAccounts, useApi } from '@polkadot/react-hooks';
 interface MarketPlaceInterface {
   errorWhileFetchingPunks: boolean;
   punksForSale: Array<PunkForSaleInterface>;
-  loadPunkFromChain: (contractAddress: string, collectionId: string, punkId: string) => Promise<Punk>;
+  loadPunkFromChain: (punkId: string, collectionId?: string, contractAddress?: string) => Promise<Punk>;
 }
 
 interface PunkFromServerInterface {
@@ -41,15 +41,15 @@ const useMarketplace = (): MarketPlaceInterface => {
     });
   }, []);
 
-  const loadPunkFromChain = useCallback(async (contractAddress, collectionId, punkId) => {
-    console.log(`Loading punk ${punkId} from collection ${collectionId}`);
+  const loadPunkFromChain = useCallback(async (punkId, collectionId = punkCollectionId, contractAddress = punksContractAddress) => {
+    console.log(`Loading punk ${punkId} from collection ${punkCollectionId}`);
 
-    const item = await api.query.nft.nftItemList(collectionId, punkId) as unknown as { Data: any, Owner: any };
+    const item = await api.query.nft.nftItemList(punkCollectionId, punkId) as unknown as { Data: any, Owner: any };
     console.log("Received item: ", item);
 
     let attrArray = [];
     for (let i = 0; i < 7; i++) {
-      if (item.Data[i+3] != 255)
+      if (item.Data[i + 3] != 255)
         attrArray.push(attributes[item.Data[i+3]]);
     }
 
