@@ -19,10 +19,11 @@ interface Props {
   setAccount: (account: string | null) => void;
 }
 
-function NftDetailsModal({ account, className, setAccount }: Props): React.ReactElement<Props> {
+function NftPunkDetailsModal({ account, className, setAccount }: Props): React.ReactElement<Props> {
   const [punk, setPunk] = useState<Punk>();
+  const [backgroundColor, setBackgroundColor] = useState<string>('#d6adad');
   const search = useLocation().search;
-  const { loadPunkFromChain } = useMarketplace();
+  const { loadPunkFromChain } = useMarketplace(account);
   console.log('search', search);
 
   const useQuery = useCallback(() => {
@@ -49,13 +50,22 @@ function NftDetailsModal({ account, className, setAccount }: Props): React.React
     void loadPunkInfo();
   }, [punkId]);
 
+  useEffect(() => {
+    if (punk && punk.isOwned) {
+      setBackgroundColor('#adc9d6');
+    }
+    if (punk && punk.price) {
+      setBackgroundColor('#b8a7ce');
+    }
+  }, [punk]);
+
   console.log('Modal!!!');
 
   return (
     <Modal className="nft-details" size='large' open onClose={closeModal}>
       <Modal.Header>NFT Token Details</Modal.Header>
       <Modal.Content>
-        <div className='token-image'>
+        <div className='token-image' style={{ backgroundColor }}>
           <img src={`${url}${imgPath}/images/punks/image${punkId}.png`} alt='punk' />
         </div>
         <div className='token-info'>
@@ -91,6 +101,12 @@ function NftDetailsModal({ account, className, setAccount }: Props): React.React
             <button>Buy - 0.224 KSM</button>
             Fee: 0.004, Price: 0.22
           </> */}
+          {/*
+            <>
+              Your KSM balance is too low: 0.196433341766
+              You need at least: 0.2274 KSM
+            </>
+          */}
         </div>
         <TradeContainer />
         <p>
@@ -108,4 +124,4 @@ function NftDetailsModal({ account, className, setAccount }: Props): React.React
   )
 }
 
-export default React.memo(NftDetailsModal);
+export default React.memo(NftPunkDetailsModal);

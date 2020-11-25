@@ -11,4 +11,5 @@ export interface Punk {
   sex: string;
   attributes: Array<string>,
   isOwned: boolean;
+  price?: number;
 }

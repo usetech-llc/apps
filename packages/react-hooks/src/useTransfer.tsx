@@ -1,17 +1,18 @@
 // Copyright 2020 UseTech authors & contributors
 
-import { MessageInterface } from '../components/types';
+import {useApi} from "@polkadot/react-hooks/useApi";
 
-interface PolkadotApiInterface {
-  query: any;
-  tx: {
-    nft: {
-      transfer: (collectionId: string, tokenId: string, recipient: string) => any;
-    }
-  };
+export interface MessageInterface {
+  negative?: boolean;
+  success?: boolean;
+  warning?: boolean;
+  info?: boolean;
+  messageText: string;
+  messageDescription?: string;
 }
 
-function useTransfer(account: string | null, api: PolkadotApiInterface) {
+export function useTransfer(account: string | null) {
+  const { api } = useApi();
 
   const transferToken = async(collectionId: string, tokenId: string, recipient: string, pushMessage: (message: MessageInterface) => void) => {
     if (!account || !tokenId || !recipient) {
@@ -45,5 +46,3 @@ function useTransfer(account: string | null, api: PolkadotApiInterface) {
 
   return { transferToken };
 }
-
-export default useTransfer;

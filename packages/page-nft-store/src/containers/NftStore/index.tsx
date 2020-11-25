@@ -11,7 +11,7 @@ import { Table, AccountSelector } from '@polkadot/react-components';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 
 // local imports and components
-import NftDetailsModal from '../../components/NftDetailsModal';
+import NftPunkDetailsModal from '../../components/NftPunkDetailsModal';
 import NftCollectionCardForSale from '../../components/NftCollectionCardForSale';
 import './styles.scss';
 
@@ -82,8 +82,9 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
             path="*/token-details"
             key="TokenDetailsModal"
           >
-            <NftDetailsModal
+            <NftPunkDetailsModal
               account={account}
+              setAccount={setAccount}
             />
           </Route>
         </Switch>

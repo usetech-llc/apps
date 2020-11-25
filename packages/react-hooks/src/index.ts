@@ -32,5 +32,6 @@ export { useRegistrars } from './useRegistrars';
 export { useStashIds } from './useStashIds';
 export { useSudo } from './useSudo';
 export { useToggle } from './useToggle';
+export { useTransfer } from './useTransfer';
 export { useVotingStatus } from './useVotingStatus';
 export { useWeight } from './useWeight';

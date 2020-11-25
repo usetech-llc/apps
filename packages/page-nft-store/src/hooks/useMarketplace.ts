@@ -1,10 +1,13 @@
 // Copyright 2020 @polkadot/app-nft authors & contributors
 
 import { PunkForSaleInterface, Punk } from '../types';
-import { url, path, attributes, punkCollectionId, punksContractAddress } from '../constants';
+import { url, path, attributes, punkCollectionId, punksContractAddress, vaultAddress, marketContractAddress } from '../constants';
 
 import { useCallback, useEffect, useState } from 'react';
-import { useFetch, useAccounts, useApi } from '@polkadot/react-hooks';
+import { useFetch, useAccounts, useApi, useTransfer } from '@polkadot/react-hooks';
+import { MessageInterface } from '@polkadot/react-hooks/useTransfer';
+import { Abi, ContractPromise } from '@polkadot/api-contract';
+import marketContractAbi from '../market_metadata.json';
 
 interface MarketPlaceInterface {
   errorWhileFetchingPunks: boolean;
@@ -17,12 +20,31 @@ interface PunkFromServerInterface {
   price: string;
 }
 
-const useMarketplace = (): MarketPlaceInterface => {
+const useMarketplace = (account: string | null): MarketPlaceInterface => {
   const [punksForSale, setPunksForSale] = useState<Array<PunkForSaleInterface>>([]);
   const [errorWhileFetchingPunks, setErrorWhileFetchingPunks] = useState<boolean>(false);
+  const [transactionStatus, setTransactionStatus] = useState<MessageInterface>();
+  const [abi, setAbi] = useState();
   const { fetchData } = useFetch();
   const { allAccounts } = useAccounts();
   const { api } = useApi();
+  const { transferToken } = useTransfer(account);
+
+  const getDepositor = useCallback(async (punkId, readerAddress) => {
+    const keyring = new Keyring({ type: 'sr25519' });
+    const result = await this.contractInstance.call('rpc', 'get_nft_deposit', value, maxgas, collectionId, punkId).send(readerAddress);
+    if (result.output) {
+      const address = keyring.encodeAddress(result.output.toString());
+      console.log("Deposit address: ", address);
+      return address;
+    }
+    return null;
+  }, [])
+
+  // deposit token to vaultAddress
+  const depositTransaction = useCallback(async (account, address = vaultAddress, collectionId = punkCollectionId, tokenId) => {
+    await transferToken(collectionId, tokenId, address, setTransactionStatus);
+  }, []);
 
   const getTokensFromMarketplace = useCallback(() => {
     fetchData(`${url}${path}`).subscribe((result) => {
@@ -64,6 +86,14 @@ const useMarketplace = (): MarketPlaceInterface => {
 
   useEffect(() => {
     getTokensFromMarketplace();
+  }, []);
+
+  useEffect(() => {
+    const contractInstance = new ContractPromise(api, abi, marketContractAddress);
+  }, []);
+
+  useEffect(() => {
+    const abi = new Abi(api.registry, marketContractAbi);
   }, []);
 
   return { errorWhileFetchingPunks, punksForSale, loadPunkFromChain }
