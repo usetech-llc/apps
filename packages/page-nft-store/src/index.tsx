@@ -34,7 +34,6 @@ function App ({ basePath, className }: Props): React.ReactElement<Props> {
         <Route path={basePath}>
           <NftStore />
         </Route>
-        {/* <Redirect to='/nft/wallet' /> */}
       </Switch>
     </main>
   );

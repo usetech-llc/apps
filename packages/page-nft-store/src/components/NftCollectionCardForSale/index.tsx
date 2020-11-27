@@ -1,6 +1,6 @@
 // Copyright 2020 UseTech authors & contributors
 import { PunkForSaleInterface } from '../../types';
-import { imgPath, url } from '../../constants';
+import { imgPath, url, vaultAddress } from '../../constants';
 
 import React, { useCallback, useState, useEffect } from 'react';
 import { NftCollectionInterface, useCollections } from '@polkadot/react-hooks';
@@ -24,7 +24,9 @@ function Index({ account, canTransferTokens, collection, openTransferModal, open
   // @ts-ignore
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
   const { getTokensOfCollection } = useCollections();
-  const { punksForSale } = useMarketplace();
+  const { punksForSale } = useMarketplace(account);
+  // address for transfer
+  console.log('vaultAddress', vaultAddress);
 
   const openCollection = useCallback((isOpen) => {
     setOpened(isOpen);
