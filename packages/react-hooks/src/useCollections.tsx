@@ -1,5 +1,6 @@
 // Copyright 2020 UseTech authors & contributors
 import { useCallback } from 'react';
+import BN from 'bn.js';
 import { useApi } from '@polkadot/react-hooks';
 
 export interface NftCollectionBigInterface {
@@ -64,8 +65,9 @@ export function useCollections() {
       return;
     }
     try {
-      // @ts-ignore
-      const collectionsCount = (await api.query.nft.nextCollectionID()).toNumber();
+      console.log('presetTokensCollections');
+      const collectionsCount = (await api.query.nft.collectionCount() as unknown as BN).toNumber();
+      console.log('collectionsCount', collectionsCount);
       const collections: Array<NftCollectionBigInterface> = [];
       for (let i = 1; i <= collectionsCount; i++) {
         const collectionInf = await getDetailedCollectionInfo(i) as any;

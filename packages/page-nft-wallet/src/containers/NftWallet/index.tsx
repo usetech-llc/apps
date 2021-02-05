@@ -115,7 +115,6 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
               <div className='balance-block'>
                 <label>Your account balance is:</label>
                 <FormatBalance value={balance.free} className='balance' />
-                { balance && balance.free.toNumber() }
               </div>
             )}
           </Grid.Column>
