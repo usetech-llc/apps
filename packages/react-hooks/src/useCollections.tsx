@@ -65,9 +65,7 @@ export function useCollections() {
       return;
     }
     try {
-      console.log('presetTokensCollections');
       const collectionsCount = (await api.query.nft.collectionCount() as unknown as BN).toNumber();
-      console.log('collectionsCount', collectionsCount);
       const collections: Array<NftCollectionBigInterface> = [];
       for (let i = 1; i <= collectionsCount; i++) {
         const collectionInf = await getDetailedCollectionInfo(i) as any;
