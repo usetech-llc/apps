@@ -1,7 +1,7 @@
 // Copyright 2020 @polkadot/app-nft authors & contributors
 
 import { useCallback } from 'react';
-import { of } from 'rxjs/observable/of';
+import { of } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { switchMap, catchError } from 'rxjs/operators';
 

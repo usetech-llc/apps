@@ -99,8 +99,6 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
     localStorage.setItem('tokenCollections', JSON.stringify(collections));
   }, [collections]);
 
-  console.log('balance.free', balance);
-
   return (
     <div className="nft-wallet">
       <Header as='h1'>Usetech NFT wallet</Header>

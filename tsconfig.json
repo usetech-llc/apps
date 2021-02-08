@@ -10,16 +10,16 @@
     "paths": {
       "@polkadot/apps/*": ["packages/apps/src/*"],
       "@polkadot/apps": ["packages/apps/src"],
+      "@polkadot/apps-config": [ "packages/apps-config/src" ],
       "@polkadot/apps-config/*": [ "packages/apps-config/src/*" ],
       "@polkadot/apps-routing": [ "packages/apps-routing/src" ],
       "@polkadot/apps-routing/*": [ "packages/apps-routing/src/*" ],
-      "@polkadot/app-nft-wallet": [ "packages/page-nft-wallet/src" ],
-      "@polkadot/app-nft-mint": [ "packages/page-nft-mint/src" ],
-      "@polkadot/app-nft-store": [ "packages/page-nft-store/src" ],
       "@polkadot/app-accounts": [ "packages/page-accounts/src" ],
       "@polkadot/app-accounts/*": [ "packages/page-accounts/src/*" ],
       "@polkadot/app-addresses": [ "packages/page-addresses/src" ],
       "@polkadot/app-addresses/*": [ "packages/page-addresses/src/*" ],
+      "@polkadot/app-bounties": [ "packages/page-bounties/src" ],
+      "@polkadot/app-bounties/*": [ "packages/page-bounties/src/*" ],
       "@polkadot/app-calendar": [ "packages/page-calendar/src" ],
       "@polkadot/app-calendar/*": [ "packages/page-calendar/src/*" ],
       "@polkadot/app-claims": [ "packages/page-claims/src" ],
@@ -28,14 +28,14 @@
       "@polkadot/app-contracts/*": [ "packages/page-contracts/src/*" ],
       "@polkadot/app-council": [ "packages/page-council/src" ],
       "@polkadot/app-council/*": [ "packages/page-council/src/*" ],
+      "@polkadot/app-crowdloan": [ "packages/page-crowdloan/src" ],
+      "@polkadot/app-crowdloan/*": [ "packages/page-crowdloan/src/*" ],
       "@polkadot/app-democracy": [ "packages/page-democracy/src" ],
       "@polkadot/app-democracy/*": [ "packages/page-democracy/src/*" ],
       "@polkadot/app-extrinsics": [ "packages/page-extrinsics/src" ],
       "@polkadot/app-extrinsics/*": [ "packages/page-extrinsics/src/*" ],
       "@polkadot/app-explorer": [ "packages/page-explorer/src" ],
       "@polkadot/app-explorer/*": [ "packages/page-explorer/src/*" ],
-      "@polkadot/app-generic-asset": [ "packages/page-generic-asset/src" ],
-      "@polkadot/app-generic-asset/*": [ "packages/page-generic-asset/src/*" ],
       "@polkadot/app-i18n": [ "packages/page-i18n/src" ],
       "@polkadot/app-i18n/*": [ "packages/page-i18n/src/*" ],
       "@polkadot/app-js": [ "packages/page-js/src" ],
@@ -73,13 +73,18 @@
       "@polkadot/react-query": [ "packages/react-query/src" ],
       "@polkadot/react-query/*": [ "packages/react-query/src/*" ],
       "@polkadot/react-signer": [ "packages/react-signer/src" ],
-      "@polkadot/react-signer/*": [ "packages/react-signer/src/*" ]
+      "@polkadot/react-signer/*": [ "packages/react-signer/src/*" ],
+      "@polkadot/test-support/": [ "packages/test-support/src/" ],
+      "@polkadot/test-support/*": [ "packages/test-support/src/*" ],
+      "@polkadot/app-mint": [ "packages/page-mint/src" ],
+      "@polkadot/app-mint/*": [ "packages/page-mint/src/*" ],
+      "@polkadot/app-wallet": [ "packages/page-wallet/src" ],
+      "@polkadot/app-wallet/*": [ "packages/page-wallet/src/*" ]
     },
     "skipLibCheck": true,
     "typeRoots": [
       "./node_modules/@polkadot/ts",
       "./node_modules/@types"
-    ],
-    "resolveJsonModule": true
+    ]
   }
 }

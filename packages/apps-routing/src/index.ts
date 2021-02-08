@@ -1,23 +1,21 @@
-// Copyright 2017-2020 @polkadot/apps-routing authors & contributors
+// Copyright 2017-2021 @polkadot/apps-routing authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { TFunction } from 'i18next';
-import { Routes } from './types';
+import type { TFunction } from 'i18next';
+import type { Routes } from './types';
 
 import accounts from './accounts';
 import addresses from './addresses';
+import bounties from './bounties';
 import calendar from './calendar';
 import claims from './claims';
 import contracts from './contracts';
 import council from './council';
+import crowdloan from './crowdloan';
 import democracy from './democracy';
 import explorer from './explorer';
 import extrinsics from './extrinsics';
-import genericAsset from './generic-asset';
 import js from './js';
-import nftWallet from './nft-wallet';
-// import nftMint from './nft-mint';
-// import nftStore from './nft-store';
 import parachains from './parachains';
 import poll from './poll';
 import rpc from './rpc';
@@ -30,25 +28,26 @@ import sudo from './sudo';
 import techcomm from './techcomm';
 import transfer from './transfer';
 import treasury from './treasury';
+import nftWallet from './nft-wallet';
+// import nftMint from './nft-mint';
 
 export default function create (t: TFunction): Routes {
   return [
     nftWallet(t),
-    // nftMint(t),
-    // nftStore(t),
     accounts(t),
     addresses(t),
     explorer(t),
     claims(t),
     poll(t),
     transfer(t),
-    genericAsset(t),
     staking(t),
     democracy(t),
     council(t),
     treasury(t),
+    bounties(t),
     techcomm(t),
     parachains(t),
+    crowdloan(t),
     society(t),
     calendar(t),
     contracts(t),
@@ -58,6 +57,6 @@ export default function create (t: TFunction): Routes {
     signing(t),
     sudo(t),
     js(t),
-    settings(t)
+    settings(t),
   ];
 }

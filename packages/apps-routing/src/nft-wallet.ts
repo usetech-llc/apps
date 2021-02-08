@@ -2,7 +2,7 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import { TFunction } from 'i18next';
+import type { TFunction } from 'i18next';
 import { Route } from './types';
 
 import Component  from '@polkadot/app-nft-wallet';
@@ -16,6 +16,6 @@ export default function create (t: TFunction): Route {
     group: 'nft',
     icon: 'users',
     name: 'wallet',
-    text: t<string>('nav.nftWallet', 'Wallet', { ns: 'apps-routing' }),
+    text: t('nav.nftWallet', 'Wallet', { ns: 'apps-routing' }),
   };
 }
