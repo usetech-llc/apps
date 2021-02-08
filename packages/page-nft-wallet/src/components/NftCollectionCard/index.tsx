@@ -16,10 +16,9 @@ interface Props {
   openDetailedInformationModal: (collection: NftCollectionInterface, tokenId: string) => void;
   setShouldUpdateTokens: (collectionId: number | null) => void;
   shouldUpdateTokens: number | null;
-  tokenUrl: (collection: NftCollectionInterface, tokenId: string) => string;
 }
 
-function NftCollectionCard({ account, canTransferTokens, collection, removeCollection, openTransferModal, openDetailedInformationModal, setShouldUpdateTokens, shouldUpdateTokens, tokenUrl }: Props): React.ReactElement<Props> {
+function NftCollectionCard({ account, canTransferTokens, collection, removeCollection, openTransferModal, openDetailedInformationModal, setShouldUpdateTokens, shouldUpdateTokens }: Props): React.ReactElement<Props> {
   const [opened, setOpened] = useState(false);
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
   const { getTokensOfCollection } = useCollections();
@@ -65,12 +64,9 @@ function NftCollectionCard({ account, canTransferTokens, collection, removeColle
       isOpen={opened}
       summary={
           <>
-            <strong>{collection.name}</strong>
-            {collection.prefix &&
-            <span> ({collection.prefix})</span>
-            }
-            {collection.description &&
-            <span> {collection.description}</span>
+            <strong>{collection.Name}</strong>
+            {collection.Description &&
+            <span> {collection.Description}</span>
             }
             {collection.isReFungible &&
             <strong>, re-fungible</strong>
@@ -91,7 +87,6 @@ function NftCollectionCard({ account, canTransferTokens, collection, removeColle
               openDetailedInformationModal={openDetailedInformationModal}
               shouldUpdateTokens={shouldUpdateTokens}
               token={token}
-              tokenUrl={tokenUrl}
             />
         ))}
         </tbody>

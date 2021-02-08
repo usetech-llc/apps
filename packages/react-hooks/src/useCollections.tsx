@@ -3,26 +3,35 @@ import { useCallback } from 'react';
 import BN from 'bn.js';
 import { useApi } from '@polkadot/react-hooks';
 
-export interface NftCollectionBigInterface {
-  id: number;
-  DecimalPoints: any;
-  Description: any;
-  Mode: {
-    isReFungible: boolean;
-  }
-  Name: any;
-  OffchainSchema: any;
-  TokenPrefix: any;
+export type MetadataType = {
+  metadata: string;
 }
 
 export interface NftCollectionInterface {
+  Access: 'Normal'
   id: number;
-  decimalPoints: number;
-  description: string;
+  DecimalPoints: BN | number;
+  Description: string;
+  TokenPrefix: number | string;
+  MintMode: boolean;
   isReFungible: boolean;
-  name: string;
-  offchainSchema: string;
-  prefix: string;
+  Mode: {
+    'NFT': any;
+    'isReFungible': any;
+  };
+  Name: string;
+  OffchainSchema: string | MetadataType;
+  SchemaVersion: 'ImageURL' | 'Unique';
+  Sponsor: string; // account
+  SponsorConfirmed: boolean;
+  Limits: {
+    AccountTokenOwnershipLimit: string;
+    SponsoredMintSize: string;
+    TokenLimit: string;
+    SponsorTimeout: string;
+  },
+  VariableOnChainSchema: any;
+  ConstOnChainSchema: any;
 }
 
 export function useCollections() {
@@ -66,7 +75,7 @@ export function useCollections() {
     }
     try {
       const collectionsCount = (await api.query.nft.collectionCount() as unknown as BN).toNumber();
-      const collections: Array<NftCollectionBigInterface> = [];
+      const collections: Array<NftCollectionInterface> = [];
       for (let i = 1; i <= collectionsCount; i++) {
         const collectionInf = await getDetailedCollectionInfo(i) as any;
         if (collectionInf && collectionInf.Owner && collectionInf.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {

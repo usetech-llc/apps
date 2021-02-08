@@ -5,6 +5,7 @@ import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 import { NftCollectionInterface, useCollections } from '@polkadot/react-hooks';
 
 import './NftTokenCard.scss';
+import useSchema from "../../hooks/useSchema";
 
 interface Props {
   account: string;
@@ -14,12 +15,12 @@ interface Props {
   openDetailedInformationModal: (collection: NftCollectionInterface, tokenId: string) => void;
   shouldUpdateTokens: number | null;
   token: string;
-  tokenUrl: (collection: NftCollectionInterface, tokenId: string) => string;
 }
 
-function NftTokenCard({ account, canTransferTokens, collection, openTransferModal, openDetailedInformationModal, shouldUpdateTokens, token, tokenUrl }: Props): React.ReactElement<Props> {
+function NftTokenCard({ account, canTransferTokens, collection, openTransferModal, openDetailedInformationModal, shouldUpdateTokens, token }: Props): React.ReactElement<Props> {
   const { getDetailedRefungibleTokenInfo } = useCollections();
   const [balance, setBalance] = useState<number>(0);
+  const { tokenUrl } = useSchema(collection.id, token);
 
   const getTokenDetails = useCallback(async () => {
     try {
@@ -28,7 +29,7 @@ function NftTokenCard({ account, canTransferTokens, collection, openTransferModa
       if (!owner) {
         return;
       }
-      const balance = owner.fraction.toNumber() / Math.pow(10, collection.decimalPoints);
+      const balance = owner.fraction.toNumber() / Math.pow(10, collection.DecimalPoints);
       setBalance(balance);
     } catch (e) {
       console.error('token balance calculation error', e);
@@ -53,11 +54,11 @@ function NftTokenCard({ account, canTransferTokens, collection, openTransferModa
     <tr className='token-row' key={token}>
       <td className='token-image'>
         <a onClick={openDetailedInformationModal.bind(null, collection, token)}>
-          <Item.Image size='mini' src={tokenUrl(collection, token)} />
+          <Item.Image size='mini' src={tokenUrl} />
         </a>
       </td>
       <td className='token-name'>
-        {collection.prefix} #{token.toString()}
+        #{token.toString()}
       </td>
       { collection.isReFungible && (
         <td className='token-balance'>

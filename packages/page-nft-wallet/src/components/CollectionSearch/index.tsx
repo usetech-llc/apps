@@ -1,6 +1,7 @@
 // Copyright 2020 UseTech authors & contributors
 
 import React, { useCallback, useState, useRef, useEffect } from 'react';
+import BN from 'bn.js';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
@@ -14,7 +15,7 @@ import './CollectionSearch.scss';
 interface Props {
   account: string | null | undefined;
   addCollection: (item: NftCollectionInterface) => void;
-  collections: Array<{ id: number, name: string }>;
+  collections: NftCollectionInterface[];
 }
 
 function CollectionSearch({ addCollection, account, collections }: Props): React.ReactElement<Props> {
@@ -54,14 +55,15 @@ function CollectionSearch({ addCollection, account, collections }: Props): React
     return String.fromCharCode(...collectionNameArr);
   }, []);
 
-  const addCollectionToAccount = useCallback((item: NftCollectionBigInterface) => {
+  const addCollectionToAccount = useCallback((item: NftCollectionInterface) => {
     addCollection({
+      ...item,
       id: item.id,
-      decimalPoints: item.DecimalPoints.toNumber(),
-      description: collectionName16Decoder(item.Description),
-      name: collectionName16Decoder(item.Name),
-      offchainSchema: collectionName8Decoder(item.OffchainSchema),
-      prefix: collectionName8Decoder(item.TokenPrefix),
+      DecimalPoints: item.DecimalPoints instanceof BN ? item.DecimalPoints.toNumber() : item.DecimalPoints,
+      Description: collectionName16Decoder(item.Description),
+      Name: collectionName16Decoder(item.Name),
+      OffchainSchema: collectionName8Decoder(item.OffchainSchema),
+      TokenPrefix: collectionName8Decoder(item.TokenPrefix),
       isReFungible: item.Mode.isReFungible,
     })
   }, [addCollection]);

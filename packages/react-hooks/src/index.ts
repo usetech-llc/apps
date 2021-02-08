@@ -13,7 +13,7 @@ export { useCacheKey } from './useCacheKey';
 export { useCall } from './useCall';
 export { useCallMulti } from './useCallMulti';
 export { useContracts } from './useContracts';
-export { useCollections, NftCollectionInterface, NftCollectionBigInterface } from './useCollections';
+export { useCollections, NftCollectionInterface, MetadataType } from './useCollections';
 export { useFetch } from './useFetch';
 export { useFormField } from './useFormField';
 export { useDebounce } from './useDebounce';

@@ -65,25 +65,6 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
     setOpenDetailedInformation(null);
   }, []);
 
-  const tokenUrl = useCallback((collection, tokenId: string): string => {
-    if (collection.offchainSchema.indexOf('image{id}.pn') !== -1) {
-      return collection.offchainSchema.replace('image{id}.pn', `image${tokenId}.png`)
-    }
-    if (collection.offchainSchema.indexOf('image{id}.jp') !== -1) {
-      return collection.offchainSchema.replace('image{id}.jp', `image${tokenId}.jpg`)
-    }
-    if (collection.offchainSchema.indexOf('image/{id}.jp') !== -1) {
-      return collection.offchainSchema.replace('{id}.jp', `${tokenId}.jpg`)
-    }
-    if (collection.offchainSchema.indexOf('image/{id}.pn') !== -1) {
-      return collection.offchainSchema.replace('{id}.pn', `${tokenId}.png`)
-    }
-    if (collection.offchainSchema.indexOf('images/{id') !== -1) {
-      return collection.offchainSchema.replace('{id', `${tokenId.toString()}`)
-    }
-    return '';
-  },  []);
-
   const updateTokens = useCallback((collectionId) => {
     setShouldUpdateTokens(collectionId);
   }, []);
@@ -147,7 +128,6 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
                 removeCollection={removeCollection}
                 setShouldUpdateTokens={setShouldUpdateTokens}
                 shouldUpdateTokens={shouldUpdateTokens}
-                tokenUrl={tokenUrl}
               />
             </td>
           </tr>
@@ -158,7 +138,6 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
           collection={openDetailedInformation.collection}
           closeModal={closeDetailedInformationModal}
           tokenId={openDetailedInformation.tokenId}
-          tokenUrl={tokenUrl}
         />
       )}
       { openTransfer && openTransfer.tokenId && openTransfer.collection && (
