@@ -1,9 +1,8 @@
 // Copyright 2020 UseTech authors & contributors
 import React, { useCallback, useEffect, useState } from 'react';
-import BN from 'bn.js';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
-import { NftCollectionInterface, useCollections } from '@polkadot/react-hooks';
+import { NftCollectionInterface } from '@polkadot/react-hooks';
 
 import './NftTokenCard.scss';
 import useSchema from "../../hooks/useSchema";
@@ -20,33 +19,35 @@ interface Props {
 
 function NftTokenCard({ account, canTransferTokens, collection, openTransferModal, openDetailedInformationModal, shouldUpdateTokens, token }: Props): React.ReactElement<Props> {
   const [balance, setBalance] = useState<number>(0);
-  const { tokenUrl } = useSchema(collection.id, token);
+  const { attributes, collectionInfo, tokenUrl, tokenDetails } = useSchema(collection.id, token);
 
-  /* const getTokenDetails = useCallback(async () => {
+  console.log('tokenDetails', tokenDetails, 'tokenUrl', tokenUrl);
+
+  const getTokenDetails = useCallback(() => {
     try {
-      const tokenDetails = (await getDetailedRefungibleTokenInfo(collection.id, token)) as any;
-      const owner = tokenDetails.Owner.find((item: any) => item.owner.toString() === account);
-      if (!owner) {
-        return;
-      }
-      if (typeof collection.DecimalPoints === 'number') {
-        const balance = owner.fraction.toNumber() / Math.pow(10, collection.DecimalPoints);
-        setBalance(balance);
+      if (tokenDetails?.Owner) {
+        if (collectionInfo?.Mode.isReFungible) {
+          const owner = tokenDetails.Owner.find((item: any) => item.owner.toString() === account);
+          if (typeof collection.DecimalPoints === 'number') {
+            const balance = owner.fraction.toNumber() / Math.pow(10, collection.DecimalPoints);
+            setBalance(balance);
+          }
+        }
       }
     } catch (e) {
       console.error('token balance calculation error', e);
     }
-  }, []); */
+  }, [tokenDetails]);
 
   useEffect(() => {
     if (shouldUpdateTokens && shouldUpdateTokens === collection.id) {
-      // void getTokenDetails();
+      getTokenDetails();
     }
   }, [shouldUpdateTokens]);
 
   useEffect(() => {
-    // void getTokenDetails();
-  }, []);
+    getTokenDetails();
+  }, [tokenDetails]);
 
   if (!balance && collection && collection.Mode.isReFungible) {
     return <></>;
@@ -65,6 +66,11 @@ function NftTokenCard({ account, canTransferTokens, collection, openTransferModa
       { collection && collection.Mode.isReFungible && (
         <td className='token-balance'>
           Balance: {balance}
+        </td>
+      )}
+      { attributes && Object.values(attributes).length > 0 && (
+        <td className='token-balance'>
+          Attributes: {Object.values(attributes).join(', ')}
         </td>
       )}
       <td className='token-actions'>

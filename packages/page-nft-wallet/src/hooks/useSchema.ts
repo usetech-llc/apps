@@ -3,9 +3,9 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import { useEffect, useState, useCallback } from 'react';
-import BN from 'bn.js';
 import { useCollections, NftCollectionInterface, MetadataType } from '@polkadot/react-hooks';
 import useDecoder from './useDecoder';
+import { TokenDetailsInterface } from '@polkadot/react-hooks/useCollections';
 
 /*
     {
@@ -31,11 +31,15 @@ export type TokenAttribute = {
 
 export type Attributes = TokenAttribute[];
 
-
 export default function useSchema (collectionId: string | number, tokenId: string | number) {
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
   const [tokenUrl, setTokenUrl] = useState<string>('');
+  const [attributesConst, setAttributesConst] = useState<any>();
+  const [attributesVar, setAttributesVar] = useState<any>();
   const [attributes, setAttributes] = useState<any>();
+  const [tokenDetails, setTokenDetails] = useState<TokenDetailsInterface>();
+  const [tokenVarData, setTokenVarData] = useState<string>();
+  const [tokenConstData, setTokenConstData] = useState<string>();
   const { getDetailedCollectionInfo, getDetailedTokenInfo, getDetailedReFungibleTokenInfo } = useCollections();
   const { collectionName8Decoder } = useDecoder();
 
@@ -47,26 +51,15 @@ export default function useSchema (collectionId: string | number, tokenId: strin
   },  []);
 
   const convertOnChainMetadata = useCallback((data: string) => {
-    console.log('data', data);
     try {
       if (data && data.length) {
-        const jsonData = JSON.parse(data);
-        console.log('jsonData', jsonData);
-        return jsonData;
+        return JSON.parse(data);
       } else {
         return {};
       }
     } catch (e) {
       console.log('schema json parse error', e);
     }
-    /*return data.map((dataItem) => {
-      return Object.keys(dataItem).map((dataItemKey: string) => {
-        if (dataItem[dataItemKey].type === 'enum') {
-          return dataItem[dataItemKey].values[dataItem[dataItemKey].size];
-        }
-        return null;
-      })
-    })*/
   }, []);
 
   const setSchema = useCallback(async () => {
@@ -85,10 +78,8 @@ export default function useSchema (collectionId: string | number, tokenId: strin
         default:
           break;
       }
-      setAttributes({
-        ...convertOnChainMetadata(collectionInfo.ConstOnChainSchema),
-        ...convertOnChainMetadata(collectionInfo.VariableOnChainSchema)
-      });
+      setAttributesConst(convertOnChainMetadata(collectionInfo.ConstOnChainSchema));
+      setAttributesVar(convertOnChainMetadata(collectionInfo.VariableOnChainSchema));
     }
   }, [collectionInfo]);
 
@@ -104,19 +95,44 @@ export default function useSchema (collectionId: string | number, tokenId: strin
   }, []);
 
   const getTokenDetails = useCallback(async () => {
-    console.log('getTokenDetails', 'collectionId', collectionId, 'tokenId', tokenId, 'collectionInfo', collectionInfo)
     if (collectionId && tokenId && collectionInfo) {
-      let tokenDetails = {};
+      let tokenDetailsData: TokenDetailsInterface = {};
       if (collectionInfo.Mode.isNft) {
-        tokenDetails = (await getDetailedTokenInfo(collectionId.toString(), tokenId.toString())) as any;
+        tokenDetailsData = (await getDetailedTokenInfo(collectionId.toString(), tokenId.toString())) as TokenDetailsInterface;
       } else if (collectionInfo.Mode.isReFungible) {
-        tokenDetails = (await getDetailedReFungibleTokenInfo(collectionId.toString(), tokenId.toString())) as any;
+        tokenDetailsData = (await getDetailedReFungibleTokenInfo(collectionId.toString(), tokenId.toString())) as TokenDetailsInterface;
       }
-      console.log('tokenDetails', tokenDetails);
+      setTokenDetails(tokenDetailsData);
+      if (tokenDetailsData.ConstData) {
+        setTokenConstData(collectionName8Decoder(tokenDetailsData.ConstData));
+      }
+      if (tokenDetailsData.VariableData) {
+        setTokenVarData(collectionName8Decoder(tokenDetailsData.VariableData));
+      }
     }
   }, [collectionId, collectionInfo, getDetailedTokenInfo, getDetailedReFungibleTokenInfo, tokenId]);
 
-  console.log('attributes', attributes);
+  const mergeData = useCallback((attrs, data) => {
+    const tokenAttributes: {[key: string]: any} = {};
+    if (attrs && data && Object.keys(attrs).length) {
+      Object.keys(attrs).forEach((attrKey) => {
+        if (attrs[attrKey].type === 'enum') {
+          tokenAttributes[attrKey] = attrs[attrKey].values[data];
+        } else if (attrs[attrKey].type === 'number' || attrs[attrKey].type === 'string') {
+          tokenAttributes[attrKey] = data;
+        }
+      })
+    }
+    return tokenAttributes;
+  }, []);
+
+  const mergeTokenAttributes = useCallback(() => {
+    const tokenAttributes = {
+      ...mergeData(attributesConst, tokenConstData),
+      ...mergeData(attributesVar, tokenVarData)
+    };
+    setAttributes(tokenAttributes);
+  }, [attributesConst, attributesVar, tokenConstData, tokenVarData]);
 
   useEffect(() => {
     if (collectionInfo) {
@@ -129,5 +145,18 @@ export default function useSchema (collectionId: string | number, tokenId: strin
     void getCollectionInfo();
   }, [getCollectionInfo]);
 
-  return { attributes, collectionInfo, tokenUrl };
+  useEffect(() => {
+    mergeTokenAttributes();
+  }, [mergeTokenAttributes]);
+
+  return {
+    attributes,
+    attributesConst,
+    attributesVar,
+    collectionInfo,
+    tokenUrl,
+    tokenConstData,
+    tokenDetails,
+    tokenVarData
+  };
 }

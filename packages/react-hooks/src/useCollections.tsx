@@ -35,6 +35,12 @@ export interface NftCollectionInterface {
   ConstOnChainSchema: any;
 }
 
+export interface TokenDetailsInterface {
+  Owner?: any[];
+  ConstData?: number[];
+  VariableData?: number[];
+}
+
 export function useCollections() {
   const { api } = useApi();
 
@@ -59,24 +65,28 @@ export function useCollections() {
     }
   }, []);
 
-  const getDetailedTokenInfo = useCallback( async(collectionId: string, tokenId: string) => {
+  const getDetailedTokenInfo = useCallback( async(collectionId: string, tokenId: string): Promise<TokenDetailsInterface> => {
     if (!api) {
-      return;
+      return {};
     }
     try {
-      return (await api.query.nft.nftItemList(collectionId, tokenId));
+      return (await api.query.nft.nftItemList(collectionId, tokenId) as unknown as TokenDetailsInterface);
     } catch (e) {
       console.log('getDetailedTokenInfo error', e);
-      return;
+      return {};
     }
   }, [api]);
 
-  const getDetailedReFungibleTokenInfo = useCallback(async (collectionId: string, tokenId: string) => {
+  const getDetailedReFungibleTokenInfo = useCallback(async (collectionId: string, tokenId: string): Promise<TokenDetailsInterface> => {
     if (!api) {
-      return;
+      return {};
     }
-    // @ts-ignore
-    return (await api.query.nft.reFungibleItemList(collectionId, tokenId));
+    try {
+      return (await api.query.nft.reFungibleItemList(collectionId, tokenId) as unknown as TokenDetailsInterface);
+    } catch (e) {
+      console.log('getDetailedReFungibleTokenInfo error', e);
+      return {};
+    }
   }, [api]);
 
   const presetTokensCollections = useCallback(async () => {
