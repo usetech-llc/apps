@@ -3,7 +3,9 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import { useEffect, useState, useCallback } from 'react';
+import BN from 'bn.js';
 import { useCollections, NftCollectionInterface, MetadataType } from '@polkadot/react-hooks';
+import useDecoder from './useDecoder';
 
 /*
     {
@@ -34,7 +36,8 @@ export default function useSchema (collectionId: string | number, tokenId: strin
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
   const [tokenUrl, setTokenUrl] = useState<string>('');
   const [attributes, setAttributes] = useState<any>();
-  const { getDetailedCollectionInfo } = useCollections();
+  const { getDetailedCollectionInfo, getDetailedTokenInfo, getDetailedReFungibleTokenInfo } = useCollections();
+  const { collectionName8Decoder } = useDecoder();
 
   const tokenImageUrl = useCallback((tokenId: string, urlString: string): string => {
     if (urlString.indexOf('{id}') !== -1) {
@@ -43,42 +46,84 @@ export default function useSchema (collectionId: string | number, tokenId: strin
     return '';
   },  []);
 
-  const convertOnChainMetadata = useCallback((data: Attributes) => {
-    return data.map((dataItem) => {
+  const convertOnChainMetadata = useCallback((data: string) => {
+    console.log('data', data);
+    try {
+      if (data && data.length) {
+        const jsonData = JSON.parse(data);
+        console.log('jsonData', jsonData);
+        return jsonData;
+      } else {
+        return {};
+      }
+    } catch (e) {
+      console.log('schema json parse error', e);
+    }
+    /*return data.map((dataItem) => {
       return Object.keys(dataItem).map((dataItemKey: string) => {
         if (dataItem[dataItemKey].type === 'enum') {
           return dataItem[dataItemKey].values[dataItem[dataItemKey].size];
         }
         return null;
       })
-    })
+    })*/
   }, []);
 
-  const setSchema = useCallback((collectionInfo: NftCollectionInterface) => {
-    // collectionInfo.VariableOnChainSchema
-    // collectionInfo.ConstOnChainSchema
-    // collectionInfo.OffchainSchema
-    switch (collectionInfo.SchemaVersion) {
-      case 'ImageURL':
-        setTokenUrl(tokenImageUrl(collectionInfo.OffchainSchema as string, tokenId.toString()));
-        break;
-      case 'Unique':
-        setTokenUrl(tokenImageUrl((collectionInfo.OffchainSchema as MetadataType).metadata, tokenId.toString()));
-        setAttributes(convertOnChainMetadata(collectionInfo.ConstOnChainSchema || collectionInfo.VariableOnChainSchema));
-        break;
-      default:
-        break;
+  const setSchema = useCallback(async () => {
+
+    if (collectionInfo) {
+      switch (collectionInfo.SchemaVersion) {
+        case 'ImageURL':
+          setTokenUrl(tokenImageUrl(collectionInfo.OffchainSchema as string, tokenId.toString()));
+          break;
+        case 'Unique':
+          const dataUrl = tokenImageUrl((collectionInfo.OffchainSchema as MetadataType).metadata, tokenId.toString());
+          const urlResponse = await fetch(dataUrl);
+          const jsonData = await urlResponse.json() as { image: string };
+          setTokenUrl(jsonData.image);
+          break;
+        default:
+          break;
+      }
+      setAttributes({
+        ...convertOnChainMetadata(collectionInfo.ConstOnChainSchema),
+        ...convertOnChainMetadata(collectionInfo.VariableOnChainSchema)
+      });
     }
-  }, []);
+  }, [collectionInfo]);
 
   const getCollectionInfo = useCallback(async () => {
     if (collectionId) {
       const info: NftCollectionInterface = await getDetailedCollectionInfo(collectionId) as unknown as NftCollectionInterface;
-      console.log('info', info);
-      setCollectionInfo(info);
-      setSchema(info);
+      setCollectionInfo({
+        ...info,
+        ConstOnChainSchema: collectionName8Decoder(info.ConstOnChainSchema),
+        VariableOnChainSchema: collectionName8Decoder(info.VariableOnChainSchema),
+      });
     }
   }, []);
+
+  const getTokenDetails = useCallback(async () => {
+    console.log('getTokenDetails', 'collectionId', collectionId, 'tokenId', tokenId, 'collectionInfo', collectionInfo)
+    if (collectionId && tokenId && collectionInfo) {
+      let tokenDetails = {};
+      if (collectionInfo.Mode.isNft) {
+        tokenDetails = (await getDetailedTokenInfo(collectionId.toString(), tokenId.toString())) as any;
+      } else if (collectionInfo.Mode.isReFungible) {
+        tokenDetails = (await getDetailedReFungibleTokenInfo(collectionId.toString(), tokenId.toString())) as any;
+      }
+      console.log('tokenDetails', tokenDetails);
+    }
+  }, [collectionId, collectionInfo, getDetailedTokenInfo, getDetailedReFungibleTokenInfo, tokenId]);
+
+  console.log('attributes', attributes);
+
+  useEffect(() => {
+    if (collectionInfo) {
+      void setSchema();
+      void getTokenDetails();
+    }
+  }, [collectionInfo, getTokenDetails, setSchema]);
 
   useEffect(() => {
     void getCollectionInfo();

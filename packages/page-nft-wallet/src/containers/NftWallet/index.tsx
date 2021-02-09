@@ -70,9 +70,6 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
   }, []);
 
   useEffect(() => {
-    if (currentAccount.current && account !== currentAccount.current) {
-      // setCollections([]);
-    }
     currentAccount.current = account;
   }, [account]);
 

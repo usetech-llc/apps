@@ -14,10 +14,11 @@ export interface NftCollectionInterface {
   Description: string;
   TokenPrefix: number | string;
   MintMode: boolean;
-  isReFungible: boolean;
   Mode: {
-    'NFT': any;
-    'isReFungible': any;
+    isNft: boolean;
+    isFungible: boolean;
+    isReFungible: boolean;
+    isInvalid: boolean;
   };
   Name: string;
   OffchainSchema: string | MetadataType;
@@ -49,19 +50,28 @@ export function useCollections() {
     if (!api) {
       return;
     }
-    // @ts-ignore
-    return (await api.query.nft.collection(collectionId));
+    try {
+      // @ts-ignore
+      return (await api.query.nft.collection(collectionId));
+    } catch (e) {
+      console.log('getDetailedCollectionInfo error', e);
+      return;
+    }
   }, []);
 
   const getDetailedTokenInfo = useCallback( async(collectionId: string, tokenId: string) => {
     if (!api) {
       return;
     }
-    // @ts-ignore
-    return (await api.query.nft.itemList([collectionId, tokenId]));
+    try {
+      return (await api.query.nft.nftItemList(collectionId, tokenId));
+    } catch (e) {
+      console.log('getDetailedTokenInfo error', e);
+      return;
+    }
   }, [api]);
 
-  const getDetailedRefungibleTokenInfo = useCallback(async (collectionId: number, tokenId: string) => {
+  const getDetailedReFungibleTokenInfo = useCallback(async (collectionId: string, tokenId: string) => {
     if (!api) {
       return;
     }
@@ -93,7 +103,7 @@ export function useCollections() {
     getTokensOfCollection,
     getDetailedTokenInfo,
     getDetailedCollectionInfo,
-    getDetailedRefungibleTokenInfo,
+    getDetailedReFungibleTokenInfo,
     presetTokensCollections
   };
 }

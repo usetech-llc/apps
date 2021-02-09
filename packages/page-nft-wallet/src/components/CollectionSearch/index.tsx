@@ -6,7 +6,8 @@ import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import { Button, Input, Table, Label, LabelHelp } from '@polkadot/react-components';
-import { useCollections, NftCollectionInterface, NftCollectionBigInterface } from '@polkadot/react-hooks';
+import { useCollections, NftCollectionInterface } from '@polkadot/react-hooks';
+import useDecoder from '../../hooks/useDecoder';
 
 import { useApi } from '@polkadot/react-hooks';
 
@@ -20,11 +21,12 @@ interface Props {
 
 function CollectionSearch({ addCollection, account, collections }: Props): React.ReactElement<Props> {
   const { api } = useApi();
-  const [collectionsAvailable, setCollectionsAvailabe] = useState<Array<NftCollectionBigInterface>>([]);
-  const [collectionsMatched, setCollectionsMatched] = useState<Array<NftCollectionBigInterface>>([]);
+  const [collectionsAvailable, setCollectionsAvailabe] = useState<Array<NftCollectionInterface>>([]);
+  const [collectionsMatched, setCollectionsMatched] = useState<Array<NftCollectionInterface>>([]);
   const [searchString, setSearchString] = useState<string>('');
   const { presetTokensCollections } = useCollections();
   const currentAccount = useRef<string | null | undefined>();
+  const { collectionName8Decoder, collectionName16Decoder } = useDecoder();
 
   const searchCollection = useCallback(async () => {
     const filteredCollections = collectionsAvailable.filter((collection) => {
@@ -43,18 +45,6 @@ function CollectionSearch({ addCollection, account, collections }: Props): React
     return !!collections.find(collection => collection.id === collectionInfo.id);
   }, [collections]);
 
-  const collectionName16Decoder = useCallback((name) => {
-    const collectionNameArr = name.map((item: any) => item.toNumber());
-    collectionNameArr.splice(-1, 1);
-    return String.fromCharCode(...collectionNameArr);
-  }, []);
-
-  const collectionName8Decoder = useCallback((name) => {
-    const collectionNameArr = Array.prototype.slice.call(name);
-    collectionNameArr.splice(-1, 1);
-    return String.fromCharCode(...collectionNameArr);
-  }, []);
-
   const addCollectionToAccount = useCallback((item: NftCollectionInterface) => {
     addCollection({
       ...item,
@@ -64,7 +54,6 @@ function CollectionSearch({ addCollection, account, collections }: Props): React
       Name: collectionName16Decoder(item.Name),
       OffchainSchema: collectionName8Decoder(item.OffchainSchema),
       TokenPrefix: collectionName8Decoder(item.TokenPrefix),
-      isReFungible: item.Mode.isReFungible,
     })
   }, [addCollection]);
 
