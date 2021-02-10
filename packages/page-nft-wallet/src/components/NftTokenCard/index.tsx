@@ -70,7 +70,7 @@ function NftTokenCard({ account, canTransferTokens, collection, openTransferModa
       )}
       { attributes && Object.values(attributes).length > 0 && (
         <td className='token-balance'>
-          Attributes: {Object.values(attributes).join(', ')}
+          Attributes: {Object.keys(attributes).map((attrKey) => (<span>{attrKey}: {attributes[attrKey]}</span>))}
         </td>
       )}
       <td className='token-actions'>
