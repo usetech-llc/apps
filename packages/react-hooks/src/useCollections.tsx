@@ -1,6 +1,9 @@
-// Copyright 2020 UseTech authors & contributors
-import { useCallback } from 'react';
+// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import BN from 'bn.js';
+import { useCallback } from 'react';
+
 import { useApi } from '@polkadot/react-hooks';
 
 export type MetadataType = {
@@ -8,12 +11,12 @@ export type MetadataType = {
 }
 
 export interface NftCollectionInterface {
-  Access: 'Normal'
+  Access?: 'Normal'
   id: number;
   DecimalPoints: BN | number;
   Description: string;
   TokenPrefix: number | string;
-  MintMode: boolean;
+  MintMode?: boolean;
   Mode: {
     isNft: boolean;
     isFungible: boolean;
@@ -22,10 +25,11 @@ export interface NftCollectionInterface {
   };
   Name: string;
   OffchainSchema: string | MetadataType;
+  Owner?: string;
   SchemaVersion: 'ImageURL' | 'Unique';
-  Sponsor: string; // account
-  SponsorConfirmed: boolean;
-  Limits: {
+  Sponsor?: string; // account
+  SponsorConfirmed?: boolean;
+  Limits?: {
     AccountTokenOwnershipLimit: string;
     SponsoredMintSize: string;
     TokenLimit: string;
@@ -41,38 +45,47 @@ export interface TokenDetailsInterface {
   VariableData?: number[];
 }
 
-export function useCollections() {
+export function useCollections () {
   const { api } = useApi();
 
   const getTokensOfCollection = useCallback(async (collectionId: number, ownerId: string) => {
     if (!api) {
-      return;
+      return [];
     }
-    // @ts-ignore
-    return (await api.query.nft.addressTokens(collectionId, ownerId));
+
+    try {
+      return (await api.query.nft.addressTokens(collectionId, ownerId));
+    } catch (e) {
+      console.log('getTokensOfCollection error', e);
+    }
+
+    return [];
   }, [api]);
 
   const getDetailedCollectionInfo = useCallback(async (collectionId) => {
     if (!api) {
-      return;
+      return {};
     }
+
     try {
-      // @ts-ignore
       return (await api.query.nft.collection(collectionId));
     } catch (e) {
       console.log('getDetailedCollectionInfo error', e);
-      return;
     }
-  }, []);
 
-  const getDetailedTokenInfo = useCallback( async(collectionId: string, tokenId: string): Promise<TokenDetailsInterface> => {
+    return {};
+  }, [api]);
+
+  const getDetailedTokenInfo = useCallback(async (collectionId: string, tokenId: string): Promise<TokenDetailsInterface> => {
     if (!api) {
       return {};
     }
+
     try {
       return (await api.query.nft.nftItemList(collectionId, tokenId) as unknown as TokenDetailsInterface);
     } catch (e) {
       console.log('getDetailedTokenInfo error', e);
+
       return {};
     }
   }, [api]);
@@ -81,39 +94,46 @@ export function useCollections() {
     if (!api) {
       return {};
     }
+
     try {
       return (await api.query.nft.reFungibleItemList(collectionId, tokenId) as unknown as TokenDetailsInterface);
     } catch (e) {
       console.log('getDetailedReFungibleTokenInfo error', e);
+
       return {};
     }
   }, [api]);
 
   const presetTokensCollections = useCallback(async () => {
     if (!api) {
-      return;
+      return [];
     }
+
     try {
       const collectionsCount = (await api.query.nft.collectionCount() as unknown as BN).toNumber();
       const collections: Array<NftCollectionInterface> = [];
+
       for (let i = 1; i <= collectionsCount; i++) {
-        const collectionInf = await getDetailedCollectionInfo(i) as any;
+        const collectionInf = await getDetailedCollectionInfo(i) as unknown as NftCollectionInterface;
+
         if (collectionInf && collectionInf.Owner && collectionInf.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
           collections.push({ ...collectionInf, id: i });
         }
       }
+
       return collections;
     } catch (e) {
       console.log('preset tokens collections error', e);
+
       return [];
     }
-  }, [api]);
+  }, [api, getDetailedCollectionInfo]);
 
   return {
-    getTokensOfCollection,
-    getDetailedTokenInfo,
     getDetailedCollectionInfo,
     getDetailedReFungibleTokenInfo,
+    getDetailedTokenInfo,
+    getTokensOfCollection,
     presetTokensCollections
   };
 }
