@@ -46,6 +46,8 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
     }
   }, [api]);
 
+  // @todo - preset custom node - wss://testnet2.uniquenetwork.io
+
   return (
     <>
       <GlobalStyle uiHighlight={uiHighlight} />
